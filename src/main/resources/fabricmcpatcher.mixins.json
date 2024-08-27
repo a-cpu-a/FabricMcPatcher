@@ -10,6 +10,7 @@
     "FireworksSparkParticleMixin",
     "FireworksSparkParticleMixin$Explosion",
     "FireworksSparkParticleMixin$Flash",
+    "MinecraftClientMixin",
     "ParticleManagerMixin",
     "SkyRenderingMixin",
     "WorldRendererMixin"
