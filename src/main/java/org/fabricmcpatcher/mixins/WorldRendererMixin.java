@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
 
-    @Inject(method = "method_62215",at= @At(value = "INVOKE", target = "Lnet/minecraft/client/render/SkyRendering;renderSky(FFF)V",shift = At.Shift.BEFORE),cancellable = true)
+    @Inject(method = "method_62215",at= @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getSkyColor(Lnet/minecraft/util/math/Vec3d;F)I"),cancellable = true)
     void renderSkyRenderSky(Fog fog, DimensionEffects.SkyType skyType, float f, DimensionEffects dimensionEffects, CallbackInfo ci) {
         if(SkyRenderer.renderAll(f))
             ci.cancel();

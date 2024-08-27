@@ -76,11 +76,12 @@ public class SkyRenderer {
     }
 
     public static boolean renderAll(float partialTick) {
-        if (active) {
-            ClientWorld world = MinecraftClient.getInstance().world;
-            float rot = world.getSkyAngle(partialTick);
+        ClientWorld world = MinecraftClient.getInstance().world;
+        float rot = world.getSkyAngle(partialTick);
 
-            setup(world, partialTick,rot);
+        setup(world, partialTick,rot);
+
+        if (active) {
             currentWorld.renderAll(Tessellator.getInstance());
 
             int phase = world.getMoonPhase();
@@ -416,19 +417,6 @@ public class SkyRenderer {
 
         boolean render(Tessellator tessellator) {
 
-            /*
-
-		RenderSystem.depthMask(false);
-		RenderSystem.setShader(ShaderProgramKeys.POSITION);
-		RenderSystem.setShaderColor(red, green, blue, 1.0F);
-		this.skyBuffer.bind();
-		this.skyBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-		VertexBuffer.unbind();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.depthMask(true);
-
-
-            */
 
             RenderSystem.setShaderTexture(0,texture);
             //TexturePackAPI.bindTexture(texture);
@@ -454,33 +442,35 @@ public class SkyRenderer {
 
             Matrix4fStack stack = new Matrix4fStack(3);
 
+            float deg90 = 1.57079633f;
+
             // north
-            stack.rotate(90.0f, 1.0f, 0.0f, 0.0f);
-            stack.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+            stack.rotate(deg90, 1.0f, 0.0f, 0.0f);
+            stack.rotate(-deg90, 0.0f, 0.0f, 1.0f);
             drawTile(stack,bufferBuilder, 4);
 
             // top
             stack.pushMatrix();
-            stack.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+            stack.rotate(deg90, 1.0f, 0.0f, 0.0f);
             drawTile(stack,bufferBuilder, 1);
-            GL11.glPopMatrix();
+            stack.popMatrix();
 
             // bottom
             stack.pushMatrix();
-            stack.rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+            stack.rotate(-deg90, 1.0f, 0.0f, 0.0f);
             drawTile(stack,bufferBuilder, 0);
             stack.popMatrix();
 
             // west
-            stack.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            stack.rotate(deg90, 0.0f, 0.0f, 1.0f);
             drawTile(stack,bufferBuilder, 5);
 
             // south
-            stack.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            stack.rotate(deg90, 0.0f, 0.0f, 1.0f);
             drawTile(stack,bufferBuilder, 2);
 
             // east
-            stack.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            stack.rotate(deg90, 0.0f, 0.0f, 1.0f);
             drawTile(stack,bufferBuilder, 3);
 
             return bufferBuilder.end();
