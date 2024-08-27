@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fabricmcpatcher",
+  "version": "${version}",
+  "name": "FabricMcPatcher",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/Da/FabricMcPatcher"
+  },
+  "license": "MIT",
+  "icon": "assets/fabricmcpatcher/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "fabricmcpatcher.fabricmcpatcher.client.FabricMcPatcherClient"
+    ],
+    "main": [
+      "fabricmcpatcher.fabricmcpatcher.FabricMcPatcher"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
