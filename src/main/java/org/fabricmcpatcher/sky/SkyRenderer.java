@@ -1,13 +1,22 @@
 package org.fabricmcpatcher.sky;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gl.ShaderProgramKeys;
+import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.RotationAxis;
 import org.fabricmcpatcher.resource.BlendMethod;
 import org.fabricmcpatcher.resource.PropertiesFile;
+import org.fabricmcpatcher.resource.TexturePackAPI;
+import org.fabricmcpatcher.resource.TexturePackChangeHandler;
 import org.fabricmcpatcher.utils.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
@@ -27,8 +36,11 @@ public class SkyRenderer {
     private static WorldEntry currentWorld;
 
     public static boolean active;
+    public static Identifier sunTex=null;
+    public static Identifier moonTex=null;
 
     static {
+
         TexturePackChangeHandler.register(new TexturePackChangeHandler(MCPatcherUtils.BETTER_SKIES, 2) {
             @Override
             public void beforeChange() {
@@ -48,8 +60,8 @@ public class SkyRenderer {
         });
     }
 
-    public static void setup(World world, float partialTick, float celestialAngle) {
-        int worldType = PortUtils.getWorldId(MinecraftClient.getInstance().world);
+    public static void setup(ClientWorld world, float partialTick, float celestialAngle) {
+        int worldType = PortUtils.getWorldId(world);
         WorldEntry newEntry = getWorldEntry(worldType);
         if (newEntry != currentWorld && currentWorld != null) {
             currentWorld.unloadTextures();
@@ -63,15 +75,48 @@ public class SkyRenderer {
         }
     }
 
-    public static void renderAll() {
+    public static boolean renderAll(float partialTick) {
         if (active) {
-            currentWorld.renderAll(TessellatorAPI.getTessellator());
+            ClientWorld world = MinecraftClient.getInstance().world;
+            float rot = world.getSkyAngle(partialTick);
+
+            setup(world, partialTick,rot);
+            currentWorld.renderAll(Tessellator.getInstance());
+
+            int phase = world.getMoonPhase();
+            float alpha = 1.0f - world.getRainGradient(partialTick);
+            float starBrightness = world.getStarBrightness(partialTick)*alpha;
+
+            MatrixStack matrices = new MatrixStack();
+
+            matrices.push();
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rot * 360.0F));
+
+            SkyRendering sky = MinecraftClient.getInstance().worldRenderer.skyRendering;
+
+            SkyRenderer.sunTex = setupCelestialObject(Identifier.ofVanilla("textures/environment/sun.png"));
+            sky.renderSun(alpha,Tessellator.getInstance(),matrices);
+            SkyRenderer.moonTex = setupCelestialObject(Identifier.ofVanilla("textures/environment/moon_phases.png"));
+            sky.renderMoon(phase,alpha,Tessellator.getInstance(),matrices);
+
+            if (starBrightness > 0.0F) {
+                sky.renderStars(RenderSystem.getShaderFog(), starBrightness, matrices);
+            }
+
+            matrices.pop();
+
+        } else {
+            sunTex=null;
+            moonTex=null;
         }
+        return active;
     }
 
     public static Identifier setupCelestialObject(Identifier defaultTexture) {
         if (active) {
-            Layer.clearBlendingMethod();
+            //Layer.clearBlendingMethod();
+            //RenderSystem.setShaderColor(1.0f,1.0f,1.0f,rainStrength);
             //TODO: color alpha with rainStrength
             Layer layer = currentWorld.getCelestialObject(defaultTexture);
             if (layer != null) {
@@ -79,7 +124,7 @@ public class SkyRenderer {
                 return layer.texture;
             }
         }
-        return defaultTexture;
+        return null;
     }
 
     private static WorldEntry getWorldEntry(int worldType) {
@@ -123,10 +168,10 @@ public class SkyRenderer {
         }
 
         private void loadCelestialObject(String objName) {
-            Identifier textureName = new Identifier(TexturePackAPI.select("", "textures") + "/environment/" + objName + ".png");
+            Identifier textureName = Identifier.ofVanilla("textures/environment/" + objName + ".png");
             String v1Path = "/environment/sky" + worldType + "/" + objName + ".properties";
             String v2Path = "sky/world" + worldType + "/" + objName + ".properties";
-            Identifier resource = TexturePackAPI.newMCPatcherIdentifier(v1Path, v2Path);
+            Identifier resource = TexturePackAPI.newMCPatcherIdentifier(v1Path,v2Path);
             PropertiesFile properties = PropertiesFile.get(logger, resource);
             if (properties != null) {
                 properties.setProperty("fade", "false");
@@ -158,6 +203,9 @@ public class SkyRenderer {
                     TexturePackAPI.unloadTexture(resource);
                 }
             }
+            RenderSystem.depthMask(false);
+            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0F);
             for (Layer layer : skies) {
                 if (!unloadTextures) {
                     layer.prepare();
@@ -168,6 +216,7 @@ public class SkyRenderer {
                     //TODO: color alpha with rainStrength
                 }
             }
+            RenderSystem.depthMask(true);
         }
 
         Layer getCelestialObject(Identifier defaultTexture) {
@@ -181,12 +230,14 @@ public class SkyRenderer {
         }
     }
 
+
     private static class Layer {
         private static final int SECS_PER_DAY = 24 * 60 * 60;
         private static final int TICKS_PER_DAY = 24000;
         private static final double TOD_OFFSET = -0.25;
+        private static VertexBuffer skyBuffer=null;
 
-        private static final double SKY_DISTANCE = 100.0;
+        private static final float SKY_DISTANCE = 100.0f;
 
         private final PropertiesFile properties;
         private Identifier texture;
@@ -214,6 +265,9 @@ public class SkyRenderer {
         Layer(PropertiesFile properties) {
             this.properties = properties;
             boolean valid = (readTexture() && readRotation() & readBlendingMethod() && readFadeTimers());
+            if(skyBuffer==null) {
+                skyBuffer = createSkyBuffer();
+            }
         }
 
         private boolean readTexture() {
@@ -361,58 +415,91 @@ public class SkyRenderer {
         }
 
         boolean render(Tessellator tessellator) {
-            TexturePackAPI.bindTexture(texture);
+
+            /*
+
+		RenderSystem.depthMask(false);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION);
+		RenderSystem.setShaderColor(red, green, blue, 1.0F);
+		this.skyBuffer.bind();
+		this.skyBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+		VertexBuffer.unbind();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.depthMask(true);
+
+
+            */
+
+            RenderSystem.setShaderTexture(0,texture);
+            //TexturePackAPI.bindTexture(texture);
             setBlendingMethod(brightness);
 
-            GL11.glPushMatrix();
 
+            Matrix4f modelViewMat = RenderSystem.getModelViewMatrix();
             if (rotate) {
-                GL11.glRotatef(celestialAngle * 360.0f * speed, axis[0], axis[1], axis[2]);
+                modelViewMat = new Matrix4f(modelViewMat);
+                modelViewMat.rotate((float) (celestialAngle * Math.TAU * speed), axis[0], axis[1], axis[2]);
             }
 
-            // north
-            GL11.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GL11.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-            drawTile(tessellator, 4);
-
-            // top
-            GL11.glPushMatrix();
-            GL11.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            drawTile(tessellator, 1);
-            GL11.glPopMatrix();
-
-            // bottom
-            GL11.glPushMatrix();
-            GL11.glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
-            drawTile(tessellator, 0);
-            GL11.glPopMatrix();
-
-            // west
-            GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            drawTile(tessellator, 5);
-
-            // south
-            GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            drawTile(tessellator, 2);
-
-            // east
-            GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            drawTile(tessellator, 3);
-
-            GL11.glPopMatrix();
+            skyBuffer.bind();
+            skyBuffer.draw(modelViewMat, RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+            VertexBuffer.unbind();
 
             return true;
         }
 
-        private static void drawTile(Tessellator tessellator, int tile) {
-            double tileX = (tile % 3) / 3.0;
-            double tileY = (tile / 3) / 2.0;
-            TessellatorAPI.startDrawingQuads(tessellator);
-            TessellatorAPI.addVertexWithUV(tessellator, -SKY_DISTANCE, -SKY_DISTANCE, -SKY_DISTANCE, tileX, tileY);
-            TessellatorAPI.addVertexWithUV(tessellator, -SKY_DISTANCE, -SKY_DISTANCE, SKY_DISTANCE, tileX, tileY + 0.5);
-            TessellatorAPI.addVertexWithUV(tessellator, SKY_DISTANCE, -SKY_DISTANCE, SKY_DISTANCE, tileX + 1.0 / 3.0, tileY + 0.5);
-            TessellatorAPI.addVertexWithUV(tessellator, SKY_DISTANCE, -SKY_DISTANCE, -SKY_DISTANCE, tileX + 1.0 / 3.0, tileY);
-            TessellatorAPI.draw(tessellator);
+
+        private static BuiltBuffer tessellateSky(Tessellator tesselator) {
+            BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+
+            Matrix4fStack stack = new Matrix4fStack(3);
+
+            // north
+            stack.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+            stack.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+            drawTile(stack,bufferBuilder, 4);
+
+            // top
+            stack.pushMatrix();
+            stack.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+            drawTile(stack,bufferBuilder, 1);
+            GL11.glPopMatrix();
+
+            // bottom
+            stack.pushMatrix();
+            stack.rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+            drawTile(stack,bufferBuilder, 0);
+            stack.popMatrix();
+
+            // west
+            stack.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            drawTile(stack,bufferBuilder, 5);
+
+            // south
+            stack.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            drawTile(stack,bufferBuilder, 2);
+
+            // east
+            stack.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            drawTile(stack,bufferBuilder, 3);
+
+            return bufferBuilder.end();
+        }
+        private static VertexBuffer createSkyBuffer() {
+            VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            vertexBuffer.bind();
+            vertexBuffer.upload(tessellateSky(Tessellator.getInstance()));
+            VertexBuffer.unbind();
+            return vertexBuffer;
+        }
+
+        private static void drawTile(Matrix4f mat, BufferBuilder tessellator, int tile) {
+            float tileX = (tile % 3) / 3.0f;
+            float tileY = (int)(tile / 3) / 2.0f;
+            tessellator.vertex(mat,-SKY_DISTANCE, -SKY_DISTANCE, -SKY_DISTANCE).texture(tileX, tileY);
+            tessellator.vertex(mat,-SKY_DISTANCE, -SKY_DISTANCE, SKY_DISTANCE).texture(tileX, tileY + 0.5f);
+            tessellator.vertex(mat,SKY_DISTANCE, -SKY_DISTANCE, SKY_DISTANCE).texture(tileX + 1.0f / 3.0f, tileY + 0.5f);
+            tessellator.vertex(mat,SKY_DISTANCE, -SKY_DISTANCE, -SKY_DISTANCE).texture(tileX + 1.0f / 3.0f, tileY);
         }
 
         void setBlendingMethod(float brightness) {
@@ -428,6 +515,7 @@ public class SkyRenderer {
             GL11.glEnable(GL11.GL_BLEND);
             GLAPI.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             GLAPI.glColor4f(1.0f, 1.0f, 1.0f, rainStrength);*/
+            RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
         }
     }
 }

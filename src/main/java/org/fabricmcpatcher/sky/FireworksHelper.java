@@ -1,6 +1,7 @@
 package org.fabricmcpatcher.sky;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.particle.ParticleManager;
 import org.fabricmcpatcher.resource.BlendMethod;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.utils.Config;
@@ -79,7 +80,7 @@ public class FireworksHelper {
 
     static void reload() {
         PropertiesFile properties = PropertiesFile.getNonNull(logger, PARTICLE_PROPERTIES);
-        String blend = properties.getString("blend.4", "add");
+        String blend = properties.getString("blend.4", "alpha");
         blendMethod = BlendMethod.parse(blend);
         if (blendMethod == null) {
             properties.error("%s: unknown blend method %s", PARTICLE_PROPERTIES, blend);

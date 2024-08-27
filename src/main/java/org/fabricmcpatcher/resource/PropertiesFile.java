@@ -5,7 +5,6 @@ import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.utils.PortUtils;
-import org.fabricmcpatcher.utils.TexturePackAPI;
 
 import java.util.Map;
 import java.util.Properties;

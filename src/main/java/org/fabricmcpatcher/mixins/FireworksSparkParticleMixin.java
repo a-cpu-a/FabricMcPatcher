@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(FireworksSparkParticle.class)
 public class FireworksSparkParticleMixin {
 
-    @Mixin(targets = "net.minecraft.client.particle.FireworksSparkParticle.Explosion")
+    @Mixin(targets = "net.minecraft.client.particle.FireworksSparkParticle$Explosion")
     static class Explosion extends Particle {
 
         protected Explosion(ClientWorld world, double x, double y, double z) {

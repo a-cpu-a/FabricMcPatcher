@@ -3,11 +3,16 @@
   "minVersion": "0.8",
   "package": "org.fabricmcpatcher.mixins",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "ReloadableResourceManagerImplMixin"
+  ],
   "client": [
     "FireworksSparkParticleMixin",
     "FireworksSparkParticleMixin$Explosion",
-    "FireworksSparkParticleMixin$Flash"
+    "FireworksSparkParticleMixin$Flash",
+    "ParticleManagerMixin",
+    "SkyRenderingMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

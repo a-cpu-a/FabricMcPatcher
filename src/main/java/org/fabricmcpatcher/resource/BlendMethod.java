@@ -92,14 +92,20 @@ public class BlendMethod {
     }
 
     public void applyFade(float fade) {
-        //TODO: change vertex colors
-        /*if (fadeRGB && fadeAlpha) {
-            GLAPI.glColor4f(fade, fade, fade, fade);
+        //TODO: change vertex colors instead?
+        if (fadeRGB && fadeAlpha) {
+            RenderSystem.setShaderColor(fade, fade,fade,fade);
+            //GLAPI.glColor4f(fade, fade, fade, fade);
         } else if (fadeRGB) {
-            GLAPI.glColor4f(fade, fade, fade, 1.0f);
+            RenderSystem.setShaderColor(fade, fade,fade, 1.0F);
+            //GLAPI.glColor4f(fade, fade, fade, 1.0f);
         } else if (fadeAlpha) {
-            GLAPI.glColor4f(1.0f, 1.0f, 1.0f, fade);
-        }*/
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
+            //GLAPI.glColor4f(1.0f, 1.0f, 1.0f, fade);
+        } else {
+            //no fading
+            RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
+        }
     }
 
     public void applyAlphaTest() {
