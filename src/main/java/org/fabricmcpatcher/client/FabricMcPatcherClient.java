@@ -1,4 +1,4 @@
-package fabricmcpatcher.fabricmcpatcher.client;
+package org.fabricmcpatcher.client;
 
 import net.fabricmc.api.ClientModInitializer;
 

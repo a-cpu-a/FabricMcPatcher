@@ -13,15 +13,18 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "fabricmcpatcher.fabricmcpatcher.client.FabricMcPatcherClient"
+      "org.fabricmcpatcher.client.FabricMcPatcherClient"
     ],
     "main": [
-      "fabricmcpatcher.fabricmcpatcher.FabricMcPatcher"
+      "org.fabricmcpatcher.FabricMcPatcher"
     ]
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
-  }
+  },
+  "mixins": [
+    "fabricmcpatcher.mixins.json"
+  ]
 }
