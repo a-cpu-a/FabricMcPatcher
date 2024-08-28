@@ -1,6 +1,8 @@
 package org.fabricmcpatcher.color;
 
 import net.minecraft.util.Identifier;
+import org.fabricmcpatcher.color.biome.ColorMap;
+import org.fabricmcpatcher.color.biome.ColorUtils;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.resource.TexturePackChangeHandler;

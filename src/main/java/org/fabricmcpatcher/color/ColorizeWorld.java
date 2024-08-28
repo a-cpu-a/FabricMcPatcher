@@ -4,7 +4,9 @@ package org.fabricmcpatcher.color;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import org.fabricmcpatcher.color.biome.*;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.utils.Config;
@@ -13,6 +15,8 @@ import org.fabricmcpatcher.utils.PortUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.fabricmcpatcher.color.Colorizer.*;
 
 public class ColorizeWorld {
     private static final int fogBlendRadius = Config.getInt(MCPatcherUtils.CUSTOM_COLORS, "fogBlendRadius", 7);
@@ -153,7 +157,7 @@ public class ColorizeWorld {
         fogCamera = entity;
     }
 
-    private static boolean computeFogColor(IBlockAccess blockAccess, IColorMap colorMap) {
+    private static boolean computeFogColor(ClientWorld blockAccess, IColorMap colorMap) {
         if (colorMap == null || fogCamera == null) {
             return false;
         } else {
@@ -188,7 +192,7 @@ public class ColorizeWorld {
 
     private static void computeLightningFlash(ClientWorld world, float f) {
         if (world.getLightningTicksLeft() > 0) {
-            f = 0.45f * ColorUtils.clamp(world.lightningFlash - f);
+            f = 0.45f * ColorUtils.clamp(world.getLightningTicksLeft() - f);
             setColor[0] = setColor[0] * (1.0f - f) + 0.8f * f;
             setColor[1] = setColor[1] * (1.0f - f) + 0.8f * f;
             setColor[2] = setColor[2] * (1.0f - f) + 0.8f * f;
@@ -232,6 +236,7 @@ public class ColorizeWorld {
         } else {
             return high | newColor;
         }
+        TextColor
     }
 
     public static int colorizeText(int defaultColor, int index) {
