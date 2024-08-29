@@ -13,7 +13,7 @@ import org.fabricmcpatcher.utils.MCPatcherUtils;
 public class Colorizer {
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_COLORS);
 
-    static Identifier COLOR_PROPERTIES=null;
+    static String COLOR_PROPERTIES = "color.properties";
     private static PropertiesFile properties;
 
     static final boolean usePotionColors = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "potion", true);
@@ -42,37 +42,36 @@ public class Colorizer {
 
             @Override
             public void afterChange() {
-                COLOR_PROPERTIES = TexturePackAPI.newMCPatcherIdentifier("color.properties");
                 reloadColorProperties();
                 ColorMap.reloadColorMapSettings(properties);
-                if (useParticleColors) {
+                /*if (useParticleColors) {
                     ColorizeEntity.reloadParticleColors(properties);
                 }
                 try {
                     ColorizeBlock.reloadAll(properties);
                 } catch (NoClassDefFoundError e) {
                     // not present in 1.8
-                }
+                }*/ //TODO
                 if (useFogColors) {
                     ColorizeWorld.reloadFogColors(properties);
                 }
                 if (usePotionColors) {
-                    ColorizeItem.reloadPotionColors(properties);
+                    //ColorizeItem.reloadPotionColors(properties); //TODO
                 }
                 if (useCloudType) {
                     ColorizeWorld.reloadCloudType(properties);
                 }
-                if (useMapColors) {
+                /*if (useMapColors) {
                     ColorizeItem.reloadMapColors(properties);
                 }
                 if (useDyeColors) {
                     ColorizeEntity.reloadDyeColors(properties);
-                }
+                }*/ //TODO
                 if (useTextColors) {
                     ColorizeWorld.reloadTextColors(properties);
                 }
                 if (useXPOrbColors) {
-                    ColorizeEntity.reloadXPOrbColors(properties);
+                    //ColorizeEntity.reloadXPOrbColors(properties); //TODO
                 }
             }
         });
@@ -92,18 +91,19 @@ public class Colorizer {
     }
 
     private static void reset() {
-        properties = new PropertiesFile(logger, COLOR_PROPERTIES);
+        //properties = new PropertiesFile(logger, COLOR_PROPERTIES);
+        properties = PropertiesFile.getNonNull(logger, COLOR_PROPERTIES);
 
         ColorMap.reset();
-        try {
+        /*try {
             ColorizeBlock.reset();
         } catch (NoClassDefFoundError e) {
             // not present in 1.8
         }
         Lightmap.reset();
-        ColorizeItem.reset();
+        ColorizeItem.reset();*/ //TODO
         ColorizeWorld.reset();
-        ColorizeEntity.reset();
+        //ColorizeEntity.reset(); //TODO
     }
 
     private static void reloadColorProperties() {
@@ -118,10 +118,10 @@ public class Colorizer {
             return "" + index;
         }
     }
-
+/*
     static void loadIntColor(String key, Potion potion) {
         potion.color = loadIntColor(key, potion.color);
-    }
+    }*/
 
     static boolean loadIntColor(String key, int[] color, int index) {
         logger.config("%s=%06x", key, color[index]);
@@ -164,5 +164,9 @@ public class Colorizer {
             ColorUtils.intToFloat3(color, rgb);
             return rgb;
         }
+    }
+
+    public static int getColorInt() {
+        return ColorUtils.float3ToInt(setColor);
     }
 }

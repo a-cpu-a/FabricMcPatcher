@@ -70,14 +70,7 @@ public class BiomeAPI {
 
     public static Biome findBiomeByName(String name) {
         logBiomes();
-        //TODO: inject identifier -> name mapper, also add to logBiomes
-        if (name == null) {
-            return null;
-        }
-        name = name.replace(" ", "");
-        if (name.isEmpty()) {
-            return null;
-        }
+        /*
         for (Biome biome : Biome.biomeList) {
             if (biome == null || biome.biomeName == null) {
                 continue;
@@ -87,8 +80,8 @@ public class BiomeAPI {
                     return biome;
                 }
             }
-        }
-        return null;
+        }*/
+        return PortUtils.findBiomeByName(name);
     }
 
     public static ClientWorld getWorld() {

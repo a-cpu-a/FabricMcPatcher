@@ -61,7 +61,7 @@ public class FireworksHelper {
     }
     public static ParticleTextureSheet getUsedParticleSheet() {
         if( blendMethod==null)
-            return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+            return null;
         if(!blendMethod.isBlendEnabled())
             return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
         if(blendMethod.isDefaultBlendMode())

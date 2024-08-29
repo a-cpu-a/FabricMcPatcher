@@ -7,4 +7,6 @@ accessible method net/minecraft/client/render/SkyRendering renderMoon (IFLnet/mi
 accessible method net/minecraft/client/render/SkyRendering renderStars (Lnet/minecraft/client/render/Fog;FLnet/minecraft/client/util/math/MatrixStack;)V
 
 accessible method net/minecraft/world/biome/Biome getTemperature (Lnet/minecraft/util/math/BlockPos;I)F
+
+accessible class net/minecraft/world/biome/Biome$Weather
 accessible field net/minecraft/world/biome/Biome weather Lnet/minecraft/world/biome/Biome$Weather;

@@ -3,6 +3,7 @@ package org.fabricmcpatcher.color;
 
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;

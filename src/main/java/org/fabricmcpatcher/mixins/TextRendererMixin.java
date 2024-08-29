@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TextRenderer.class)
 public class TextRendererMixin {
-    @Inject(method = "tweakTransparency",at=@At(value = "RETURN"))
+    @Inject(method = "tweakTransparency",at=@At(value = "RETURN"),cancellable = true)
     private static void tweakTransparencyRet(int argb, CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(ColorizeWorld.colorizeText(argb));
     }

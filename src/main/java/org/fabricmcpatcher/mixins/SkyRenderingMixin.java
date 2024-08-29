@@ -18,7 +18,7 @@ public class SkyRenderingMixin {
     *
     * */
 
-    @Redirect(method = "renderSun",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V"))
+    @Redirect(method = "renderSun",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V",remap = false))
     void renderSunOverlayBlendFunc() {
         if(SkyRenderer.sunTex!=null)return;
         RenderSystem.overlayBlendFunc();
@@ -33,7 +33,7 @@ public class SkyRenderingMixin {
     }
 
 
-    @Redirect(method = "renderMoon",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V"))
+    @Redirect(method = "renderMoon",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V",remap = false))
     void renderMoonOverlayBlendFunc() {
         if(SkyRenderer.moonTex!=null)return;
         RenderSystem.overlayBlendFunc();

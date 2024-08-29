@@ -1,6 +1,7 @@
 package org.fabricmcpatcher.color.biome;
 
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
@@ -8,6 +9,7 @@ import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import org.fabricmcpatcher.resource.PropertiesFile;
+import org.fabricmcpatcher.resource.ResourceList;
 import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.utils.*;
 
@@ -27,7 +29,7 @@ abstract public class ColorMap implements IColorMap {
     private static final int COLORMAP_HEIGHT = 256;
 
     //private static Object TexturePackAPI;
-    public static final String BLOCK_COLORMAP_DIR = TexturePackAPI.MCPATCHER_SUBDIR + "colormap/blocks";
+    public static final String BLOCK_COLORMAP_DIR = "colormap/blocks"; // in TexturePackAPI.MCPATCHER_SUBDIR
     public static final List<Identifier> unusedPNGs = new ArrayList<Identifier>();
 
     private static final String VANILLA_TYPE = "_vanillaType";
@@ -158,7 +160,7 @@ abstract public class ColorMap implements IColorMap {
     }
 
     public static void reloadColorMapSettings(PropertiesFile properties) {
-        unusedPNGs.addAll(ResourceList.getInstance().listResources(BLOCK_COLORMAP_DIR, ".png", false));
+        unusedPNGs.addAll(ResourceList.getInstance().listMcPatcherResources(BLOCK_COLORMAP_DIR, ".png", false));
         defaultColorMapFormat = parseFormat(properties.getString("palette.format", ""));
         defaultFlipY = properties.getBoolean("palette.flipY", false);
         defaultYVariance = properties.getFloat("palette.yVariance", 0.0f);
@@ -210,7 +212,7 @@ abstract public class ColorMap implements IColorMap {
 
     @Override
     public final int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-        computeXY(blockAccess.getBiomeAccess(), i, j, k, xy, );
+        computeXY(blockAccess.getBiomeAccess(), i, j, k, xy, blockAccess.getSeaLevel());
         return getRGB(xy[0], xy[1]);
     }
 
@@ -565,7 +567,8 @@ abstract public class ColorMap implements IColorMap {
     }
 
     public static final class Grid extends ColorMap {
-        private final float[] biomeX = new float[BiomeGenBase.biomeList.length];
+        /** Maps biome id to X coord on image, not normalized */
+        private final float[] biomeX = new float[4096];//4k biomes, maybe some mod used more...
         private final float yVariance;
         private final float yOffset;
         private final int defaultColor;
@@ -588,15 +591,16 @@ abstract public class ColorMap implements IColorMap {
             for (int i = 0; i < biomeX.length; i++) {
                 biomeX[i] = i % width;
             }
+            //undocumented, even optifine doesnt know about this
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 String key = (String) entry.getKey();
                 String value = (String) entry.getValue();
                 if (key.endsWith(".x") && !MCPatcherUtils.isNullOrEmpty(value)) {
                     key = key.substring(0, key.length() - 2);
-                    BiomeGenBase biome = BiomeAPI.findBiomeByName(key);
-                    if (biome != null && biome.biomeID >= 0 && biome.biomeID < BiomeGenBase.biomeList.length) {
+                    int id = PortUtils.getBiomeId(key);
+                    if (id!=-1) {
                         try {
-                            biomeX[biome.biomeID] = Float.parseFloat(value);
+                            biomeX[id] = Float.parseFloat(value);
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }
