@@ -92,7 +92,7 @@ public class Colorizer {
 
     private static void reset() {
         //properties = new PropertiesFile(logger, COLOR_PROPERTIES);
-        properties = PropertiesFile.getNonNull(logger, COLOR_PROPERTIES);
+        properties = null;//PropertiesFile.getNonNull(logger, COLOR_PROPERTIES);
 
         ColorMap.reset();
         /*try {

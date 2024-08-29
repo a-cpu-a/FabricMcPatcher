@@ -17,8 +17,8 @@ public abstract class StyleMixin {
 
     @Inject(method = "withColor(I)Lnet/minecraft/text/Style;",at=@At(value = "HEAD"),cancellable = true)
     void withColorHead(int rgbColor, CallbackInfoReturnable<Style> cir) {
-        int col = ColorizeWorld.colorizeText(rgbColor);
-        if(col==-1)return;//not changed
+        Integer col = ColorizeWorld.colorizeText(rgbColor);
+        if(col==null)return;//not changed
 
         cir.setReturnValue(this.withColor(TextColor.fromRgb(col)));
         cir.cancel();

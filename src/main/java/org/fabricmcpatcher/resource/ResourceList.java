@@ -191,8 +191,8 @@ public class ResourceList {
         }
         if (MCPatcherUtils.isNullOrEmpty(directory)) {
             directory = "";
-        } else if (!directory.endsWith("/")) {
-            directory += '/';
+        } else if (directory.endsWith("/")) {
+            directory.substring(0,directory.length()-1);
         }
 
         //MinecraftClient.getInstance().getResourceManager().findResources()

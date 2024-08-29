@@ -1,13 +1,14 @@
 package org.fabricmcpatcher.color;
 
 
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.CloudRenderMode;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.text.TextColor;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.color.biome.*;
+import org.fabricmcpatcher.accessors.IMutableColor;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.utils.Config;
@@ -77,6 +78,11 @@ public class ColorizeWorld {
         for (int i = 0; i < textCodeColorSet.length; i++) {
             textCodeColorSet[i] = false;
         }
+        for (Formatting formatting : Formatting.values()) {
+            if(!formatting.isColor())continue;
+
+            ((IMutableColor)(Object)TextColor.fromFormatting(formatting)).mcpatcher$setRgb(formatting.getColorValue());
+        }
         signTextColor = 0;
     }
 
@@ -129,6 +135,10 @@ public class ColorizeWorld {
                 textCodeColors[i + 16] = (textCodeColors[i] & 0xfcfcfc) >> 2;
                 textCodeColorSet[i + 16] = true;
             }
+        }
+        for (Formatting formatting : Formatting.values()) {
+            if(!formatting.isColor())continue;
+            ((IMutableColor)(Object)TextColor.fromFormatting(formatting)).mcpatcher$setRgb(formatting.getColorValue());
         }
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             String key = entry.getKey();
@@ -228,12 +238,12 @@ public class ColorizeWorld {
         }
     }
 
-    public static int colorizeText(int defaultColor) {
+    public static Integer colorizeText(int defaultColor) {
         int high = defaultColor & 0xff000000;
         defaultColor &= 0xffffff;
         Integer newColor = textColorMap.get(defaultColor);
         if (newColor == null) {
-            return -1;
+            return null;
         } else {
             return high | newColor;
         }
@@ -245,6 +255,9 @@ public class ColorizeWorld {
         } else {
             return (defaultColor & 0xff000000) | textCodeColors[index];
         }
+    }
+    public static boolean shouldColorizeText(int index) {
+        return index >= 0 && index < textCodeColors.length && textCodeColorSet[index];
     }
 
     public static int colorizeSignText() {

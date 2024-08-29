@@ -51,8 +51,8 @@ public class PortUtils {
         return info.propName;
     }
 
-    public static int getBiomeId(RegistryEntry<Biome> biome) {
-        BiomeIdUtils.BiomeInfo info = BiomeIdUtils.newId2Info.get(biome.getKey().get().getValue().getPath());
+    public static int getBiomeId(Identifier biome) {
+        BiomeIdUtils.BiomeInfo info = BiomeIdUtils.newId2Info.get(biome.getPath());
         if(info==null)return -1;
 
         return info.id;

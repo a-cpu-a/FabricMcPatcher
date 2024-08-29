@@ -32,7 +32,8 @@ public class BiomeAPI {
 
     private static boolean biomesLogged;
 
-    private static RegistryEntry<Biome> lastBiome;
+    private static Identifier lastBiomeId;
+    private static Biome lastBiome;
     private static int lastI;
     private static int lastK;
 
@@ -89,32 +90,36 @@ public class BiomeAPI {
     }
 
     public static int getBiomeIDAt(BiomeAccess blockAccess, int i, int j, int k) {
-        RegistryEntry<Biome> biome = getBiomeRegGenAt(blockAccess, i, j, k);
+        Identifier biome = getBiomeRegGenAt(blockAccess, i, j, k);
         return biome==null?0xFF : PortUtils.getBiomeId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
     }
 
-    public static RegistryEntry<Biome> getBiomeRegGenAt(BiomeAccess blockAccess, int i, int j, int k) {
-        if (lastBiome == null || i != lastI || k != lastK) {
+    public static Identifier getBiomeRegGenAt(BiomeAccess blockAccess, int i, int j, int k) {
+        if (lastBiomeId == null || i != lastI || k != lastK) {
+            if(i != lastI || k != lastK)
+                lastBiome=null;
             lastI = i;
             lastK = k;
-            lastBiome = instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
+            lastBiomeId =instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
+        }
+        return lastBiomeId;
+    }
+    public static Biome getBiomeGenAt(ClientWorld blockAccess, int i, int j, int k) {
+        if (lastBiome == null || i != lastI || k != lastK) {
+            if(i != lastI || k != lastK)
+                lastBiomeId=null;
+            lastI = i;
+            lastK = k;
+            lastBiome =instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
         }
         return lastBiome;
-    }
-    public static Biome getBiomeGenAt(BiomeAccess blockAccess, int i, int j, int k) {
-        if (lastBiome == null || i != lastI || k != lastK) {
-            lastI = i;
-            lastK = k;
-            lastBiome = instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
-        }
-        return lastBiome.getKeyOrValue().right().get();
     }
 
     public static float getTemperature(Biome biome, int i, int j, int k,int seaLevel) {
         return instance.getTemperaturef_Impl(biome, i, j, k,seaLevel);
     }
 
-    public static float getTemperature(BiomeAccess blockAccess, int i, int j, int k,int seaLevel) {
+    public static float getTemperature(ClientWorld blockAccess, int i, int j, int k,int seaLevel) {
         return getTemperature(getBiomeGenAt(blockAccess, i, j, k), i, j, k,seaLevel);
     }
 
@@ -122,7 +127,7 @@ public class BiomeAPI {
         return biome.weather.downfall();
     }
 
-    public static float getRainfall(BiomeAccess blockAccess, int i, int j, int k) {
+    public static float getRainfall(ClientWorld blockAccess, int i, int j, int k) {
         return getRainfall(getBiomeGenAt(blockAccess, i, j, k), i, j, k);
     }
 
@@ -160,8 +165,11 @@ public class BiomeAPI {
         return true;
     }
 
-    protected RegistryEntry<Biome> getBiomeGenAt_Impl(BiomeAccess blockAccess, int i, int j, int k) {
-        return blockAccess.getBiome(new BlockPos(i, j, k));
+    protected Identifier getBiomeGenAt_Impl(BiomeAccess blockAccess, int i, int j, int k) {
+        return blockAccess.getBiome(new BlockPos(i, j, k)).getKey().get().getValue();
+    }
+    protected Biome getBiomeGenAt_Impl(ClientWorld blockAccess, int i, int j, int k) {
+        return blockAccess.getRegistryManager().get(RegistryKeys.BIOME).get(blockAccess.getBiome(new BlockPos(i, j, k)).getKey().get());
     }
 
     protected float getTemperaturef_Impl(Biome biome, int i, int j, int k,int seaLevel) {

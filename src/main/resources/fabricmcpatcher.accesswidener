@@ -10,3 +10,5 @@ accessible method net/minecraft/world/biome/Biome getTemperature (Lnet/minecraft
 
 accessible class net/minecraft/world/biome/Biome$Weather
 accessible field net/minecraft/world/biome/Biome weather Lnet/minecraft/world/biome/Biome$Weather;
+
+mutable field net/minecraft/text/TextColor rgb I

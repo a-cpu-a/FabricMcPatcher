@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class TextRendererMixin {
     @Inject(method = "tweakTransparency",at=@At(value = "RETURN"),cancellable = true)
     private static void tweakTransparencyRet(int argb, CallbackInfoReturnable<Integer> cir) {
-        cir.setReturnValue(ColorizeWorld.colorizeText(argb));
+        Integer newCol = ColorizeWorld.colorizeText(cir.getReturnValue());
+        if(newCol!=null)
+            cir.setReturnValue(newCol);
     }
 }
