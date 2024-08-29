@@ -182,7 +182,7 @@ public class ColorizeEntity {
 
     public static int getDyeColor(int rgb, int index) {
         Integer newRGB = dyeColors[index];
-        return newRGB == null ? rgb : newRGB;
+        return newRGB == null ? rgb : (newRGB|0xFF000000);
     }
 
     public static Integer getFleeceColor(int index) {
