@@ -232,11 +232,10 @@ public class ColorizeWorld {
         defaultColor &= 0xffffff;
         Integer newColor = textColorMap.get(defaultColor);
         if (newColor == null) {
-            return high | defaultColor;
+            return -1;
         } else {
             return high | newColor;
         }
-        TextColor
     }
 
     public static int colorizeText(int defaultColor, int index) {

@@ -17,6 +17,7 @@ public class FormattingMixin {
 
     @Shadow @Final private int colorIndex;
 
+    //TODO: add special shadow color override to TextColor, cuz the upper colorIndexes are shadow colors
     @Inject(method = "getColorValue", at=@At(value = "HEAD"),cancellable = true)
     void getColorValueHead(CallbackInfoReturnable<Integer> cir) {
         if(colorValue==null)return;
