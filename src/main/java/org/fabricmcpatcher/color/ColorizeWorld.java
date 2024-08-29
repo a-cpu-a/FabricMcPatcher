@@ -2,6 +2,7 @@ package org.fabricmcpatcher.color;
 
 
 import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.TextColor;
@@ -70,7 +71,7 @@ public class ColorizeWorld {
 
         netherFogColor = new float[]{0.2f, 0.03f, 0.03f};
         endFogColor = new float[]{0.075f, 0.075f, 0.094f};
-        endSkyColor = 0x181818;
+        endSkyColor = -14145496;
 
         cloudType = CLOUDS_DEFAULT;
 
@@ -179,7 +180,7 @@ public class ColorizeWorld {
             return true;
         }
     }
-
+SkyRendering
     public static boolean computeFogColor(ClientWorld worldProvider, float f) {
         return PortUtils.getWorldId(worldProvider) == 0 && computeFogColor(worldProvider, fogColorMap);
     }

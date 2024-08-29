@@ -3,9 +3,12 @@ package org.fabricmcpatcher.mixins;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.util.Identifier;
+import org.fabricmcpatcher.color.ColorizeWorld;
 import org.fabricmcpatcher.sky.SkyRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(SkyRendering.class)
@@ -45,5 +48,10 @@ public class SkyRenderingMixin {
             return;
         }
         RenderSystem.setShaderTexture(texture,id);
+    }
+
+    @ModifyConstant(method = "renderEndSky",constant = @Constant(intValue = -14145496))
+    int renderEndSkyM14145496(int constant) {
+        return ColorizeWorld.endSkyColor;
     }
 }
