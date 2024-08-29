@@ -1,11 +1,10 @@
 package org.fabricmcpatcher.color;
 
 
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.color.biome.*;
 import org.fabricmcpatcher.resource.PropertiesFile;
@@ -42,6 +41,7 @@ public class ColorizeWorld {
     private static final int[] textCodeColors = new int[32]; // text.code.*
     private static final boolean[] textCodeColorSet = new boolean[32];
     private static int signTextColor; // text.sign
+    private static int bossBarTextColor=-1; // text.sign
 
     static IColorMap underwaterColor;
     private static IColorMap underlavaColor;
@@ -124,7 +124,7 @@ public class ColorizeWorld {
     static void reloadTextColors(PropertiesFile properties) {
         for (int i = 0; i < textCodeColors.length; i++) {
             textCodeColorSet[i] = loadIntColor(TEXT_CODE_KEY + i, textCodeColors, i);
-            if (textCodeColorSet[i] && i + 16 < textCodeColors.length) {
+            if (textCodeColorSet[i] && i + 16 < textCodeColors.length) {//shadow colors
                 textCodeColors[i + 16] = (textCodeColors[i] & 0xfcfcfc) >> 2;
                 textCodeColorSet[i + 16] = true;
             }
@@ -141,17 +141,16 @@ public class ColorizeWorld {
                 int oldColor;
                 if (key.equals("xpbar")) {
                     oldColor = 0x80ff20;
-                } else if (key.equals("boss")) {
-                    oldColor = 0xff00ff;
                 } else {
                     oldColor = Integer.parseInt(key, 16);
                 }
                 newColor = Integer.parseInt(value, 16);
                 textColorMap.put(oldColor, newColor);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
         }
         signTextColor = loadIntColor("text.sign", 0);
+        bossBarTextColor = loadIntColor("text.boss",  0xffffff);//was once 0xff00ff
     }
 
     public static void setupForFog(Entity entity) {
@@ -249,5 +248,8 @@ public class ColorizeWorld {
 
     public static int colorizeSignText() {
         return signTextColor;
+    }
+    public static int colorizeBossBarText() {
+        return bossBarTextColor;
     }
 }

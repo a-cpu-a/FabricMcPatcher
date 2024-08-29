@@ -4,11 +4,13 @@
   "package": "org.fabricmcpatcher.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "DyeColorMixin",
     "FormattingMixin",
     "ReloadableResourceManagerImplMixin",
     "StyleMixin"
   ],
   "client": [
+    "BossBarHudMixin",
     "FireworksSparkParticleMixin",
     "FireworksSparkParticleMixin$Explosion",
     "FireworksSparkParticleMixin$Flash",
