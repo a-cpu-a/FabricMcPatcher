@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "DyeColorMixin",
+    "DyedColorComponentMixin",
     "FormattingMixin",
     "ReloadableResourceManagerImplMixin",
     "SheepEntityMixin",
@@ -24,6 +25,7 @@
     "FireworksSparkParticleMixin$Flash",
     "MinecraftClientMixin",
     "ParticleManagerMixin",
+    "PortalParticleMixin",
     "SkyRenderingMixin",
     "TextRendererMixin",
     "WolfCollarFeatureRendererMixin",

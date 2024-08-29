@@ -25,12 +25,22 @@ public class BlockLeakParticleMixin {
 
 
     @WrapOperation(method = {"createFallingLava","createLandingLava"},at= @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/BlockLeakParticle;setColor(FFF)V"))
-    private static void initReturn(BlockLeakParticle instance, float r, float g, float b, Operation<Void> original) {
+    private static void createLavaSetColor(BlockLeakParticle instance, float r, float g, float b, Operation<Void> original) {
         if(ColorizeEntity.computeLavaDropColor(40))
         {
             r= Colorizer.setColor[0];
             g= Colorizer.setColor[1];
             b= Colorizer.setColor[2];
+        }
+        original.call(instance,r,g,b);
+    }
+    @WrapOperation(method = {"createDrippingWater","createFallingWater","createFallingDripstoneWater","createDrippingDripstoneWater"},at= @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/BlockLeakParticle;setColor(FFF)V"))
+    private static void createWaterSetColor(BlockLeakParticle instance, float r, float g, float b, Operation<Void> original) {
+        if(ColorizeEntity.waterBaseColor!=null)
+        {
+            r= ColorizeEntity.waterBaseColor[0];
+            g= ColorizeEntity.waterBaseColor[1];
+            b= ColorizeEntity.waterBaseColor[2];
         }
         original.call(instance,r,g,b);
     }

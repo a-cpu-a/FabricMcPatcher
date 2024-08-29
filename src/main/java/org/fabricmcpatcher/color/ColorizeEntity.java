@@ -1,6 +1,7 @@
 package org.fabricmcpatcher.color;
 
 import net.minecraft.client.particle.LavaEmberParticle;
+import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.color.biome.BiomeAPI;
 import org.fabricmcpatcher.color.biome.ColorUtils;
@@ -16,10 +17,12 @@ public class ColorizeEntity {
     private static Identifier MYCELIUM_COLORS;
     private static Identifier XPORB_COLORS;
 
-    static float[] waterBaseColor; // particle.water
+    public static float[] waterBaseColor; // particle.water
     private static float[] lavaDropColors; // misc/lavadropcolor.png
 
-    public static float[] portalColor = new float[]{1.0f, 0.3f, 0.9f};
+    public static float[] portalColor= new float[]{1.0f, 0.3f, 0.9f};
+
+    public static int undyedLeatherColor=0xa06540; // armor.default
 
     private static final Random random = new Random();
     private static int[] myceliumColors;
@@ -63,8 +66,6 @@ public class ColorizeEntity {
     private static final Integer[] fleeceColors = new Integer[colorNames.length]; // sheep.*
     private static final Integer[] collarColors = new Integer[colorNames.length]; // collar.*
     private static final Integer[] armorColors = new Integer[colorNames.length]; // armor.*
-
-    public static int undyedLeatherColor; // armor.default
 
     static {
         try {
