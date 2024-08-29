@@ -16,6 +16,7 @@ import org.fabricmcpatcher.utils.Config;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 import org.fabricmcpatcher.utils.PortUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,13 +58,13 @@ public class ColorizeWorld {
 
     static {
         try {
-            reset();
+            reset(true);
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
-    static void reset() {
+    static void reset(boolean staticInit) {
         underwaterColor = null;
         underlavaColor = null;
         fogColorMap = null;
@@ -76,16 +77,18 @@ public class ColorizeWorld {
         cloudType = CLOUDS_DEFAULT;
 
         textColorMap.clear();
-        for (int i = 0; i < textCodeColorSet.length; i++) {
-            textCodeColorSet[i] = false;
-        }
+        Arrays.fill(textCodeColorSet, false);
         signTextColor = 0;
+
+        if(staticInit)return;//dont run the code bellow, cuz errors
+
         for (Formatting formatting : Formatting.values()) {
             if(!formatting.isColor())continue;
 
             ((IMutableColor)(Object)TextColor.fromFormatting(formatting)).mcpatcher$setRgb(formatting.getColorValue());
         }
     }
+    static void reset() {reset(false);}
 
     static void reloadFogColors(PropertiesFile properties) {
 
