@@ -1,10 +1,14 @@
 package org.fabricmcpatcher.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.CubicSampler;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
 import org.fabricmcpatcher.color.ColorizeWorld;
 import org.fabricmcpatcher.color.Colorizer;
@@ -62,5 +66,13 @@ public class BackgroundRendererMixin {
             return Colorizer.getColorInt();
         }
         return instance.getFogColor();
+    }
+
+
+    @WrapOperation(method = "getFogColor",at= @At(value = "INVOKE", target = "Lnet/minecraft/util/CubicSampler;sampleColor(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/CubicSampler$RgbFetcher;)Lnet/minecraft/util/math/Vec3d;"))
+    private static Vec3d getFogColorSampleColor(Vec3d pos, CubicSampler.RgbFetcher rgbFetcher, Operation<Vec3d> original,Camera camera, float tickDelta, ClientWorld world) {
+        if(ColorizeWorld.computeFogColor(world,tickDelta))
+            return new Vec3d(Colorizer.setColor[0],Colorizer.setColor[1],Colorizer.setColor[2]);
+        return original.call(pos,rgbFetcher);
     }
 }

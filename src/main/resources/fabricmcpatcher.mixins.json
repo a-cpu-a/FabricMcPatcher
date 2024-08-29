@@ -13,6 +13,7 @@
   "client": [
     "BackgroundRendererMixin",
     "BossBarHudMixin",
+    "ClientWorldMixin",
     "FireworksSparkParticleMixin",
     "FireworksSparkParticleMixin$Explosion",
     "FireworksSparkParticleMixin$Flash",

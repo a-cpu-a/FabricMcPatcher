@@ -79,12 +79,12 @@ public class ColorizeWorld {
         for (int i = 0; i < textCodeColorSet.length; i++) {
             textCodeColorSet[i] = false;
         }
+        signTextColor = 0;
         for (Formatting formatting : Formatting.values()) {
             if(!formatting.isColor())continue;
 
             ((IMutableColor)(Object)TextColor.fromFormatting(formatting)).mcpatcher$setRgb(formatting.getColorValue());
         }
-        signTextColor = 0;
     }
 
     static void reloadFogColors(PropertiesFile properties) {
@@ -180,14 +180,14 @@ public class ColorizeWorld {
             return true;
         }
     }
-SkyRendering
+
     public static boolean computeFogColor(ClientWorld worldProvider, float f) {
         return PortUtils.getWorldId(worldProvider) == 0 && computeFogColor(worldProvider, fogColorMap);
     }
 
     public static boolean computeSkyColor(ClientWorld world, float f) {
         if (PortUtils.getWorldId(world) == 0 && computeFogColor(world, skyColorMap)) {
-            computeLightningFlash(world, f);
+            //computeLightningFlash(world, f);
             return true;
         } else {
             return false;
