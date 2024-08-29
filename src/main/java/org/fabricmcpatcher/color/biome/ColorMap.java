@@ -2,13 +2,14 @@ package org.fabricmcpatcher.color.biome;
 
 
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeAccess;
 import org.fabricmcpatcher.resource.PropertiesFile;
-import org.fabricmcpatcher.utils.Config;
-import org.fabricmcpatcher.utils.MCLogger;
-import org.fabricmcpatcher.utils.MCPatcherUtils;
+import org.fabricmcpatcher.resource.TexturePackAPI;
+import org.fabricmcpatcher.utils.*;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -25,7 +26,7 @@ abstract public class ColorMap implements IColorMap {
     private static final int COLORMAP_WIDTH = 256;
     private static final int COLORMAP_HEIGHT = 256;
 
-    private static Object TexturePackAPI;
+    //private static Object TexturePackAPI;
     public static final String BLOCK_COLORMAP_DIR = TexturePackAPI.MCPATCHER_SUBDIR + "colormap/blocks";
     public static final List<Identifier> unusedPNGs = new ArrayList<Identifier>();
 
@@ -200,7 +201,7 @@ abstract public class ColorMap implements IColorMap {
         maxY = height - 1.0f;
     }
 
-    abstract protected void computeXY(Biome biome, int i, int j, int k, float[] f);
+    abstract protected void computeXY(BiomeAccess biome, int i, int j, int k, float[] f, int seaLevel);
 
     @Override
     public String toString() {
@@ -209,7 +210,7 @@ abstract public class ColorMap implements IColorMap {
 
     @Override
     public final int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-        computeXY(BiomeAPI.getBiomeGenAt(blockAccess, i, j, k), i, j, k, xy);
+        computeXY(blockAccess.getBiomeAccess(), i, j, k, xy, );
         return getRGB(xy[0], xy[1]);
     }
 
@@ -372,7 +373,7 @@ abstract public class ColorMap implements IColorMap {
 
         @Override
         public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-            return BiomeAPI.getWaterColorMultiplier(BiomeAPI.getBiomeGenAt(blockAccess, i, j, k));
+            return BiomeAPI.getWaterColorMultiplier(BiomeAPI.getBiomeGenAt(blockAccess.getBiomeAccess(), i, j, k));
         }
 
         @Override
@@ -555,8 +556,8 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        protected void computeXY(Biome biome, int i, int j, int k, float[] f) {
-            float temperature = ColorUtils.clamp(BiomeAPI.getTemperature(biome, i, j, k));
+        protected void computeXY(BiomeAccess biome, int i, int j, int k, float[] f, int seaLevel) {
+            float temperature = ColorUtils.clamp(BiomeAPI.getTemperature(biome, i, j, k,seaLevel));
             float rainfall = ColorUtils.clamp(BiomeAPI.getRainfall(biome, i, j, k));
             f[0] = maxX * (1.0f - temperature);
             f[1] = maxY * (1.0f - temperature * rainfall);
@@ -642,23 +643,23 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        protected void computeXY(Biome biome, int i, int j, int k, float[] f) {
-            f[0] = getX(biome, i, j, k);
-            f[1] = getY(biome, i, j, k);
+        protected void computeXY(BiomeAccess biome, int i, int j, int k, float[] f, int seaLevel) {
+            f[0] = getX(BiomeAPI.getBiomeRegGenAt(biome, i, j, k), i, j, k);
+            f[1] = getY(BiomeAPI.getBiomeRegGenAt(biome, i, j, k), i, j, k);
         }
 
-        private float getX(Biome biome, int i, int j, int k) {
-            return biomeX[biome.biomeID];
+        private float getX(RegistryEntry<Biome> biome, int i, int j, int k) {
+            return biomeX[PortUtils.getBiomeId(biome)];
         }
 
         private float getY(int j) {
             return (float) j - yOffset;
         }
 
-        private float getY(Biome biome, int i, int j, int k) {
+        private float getY(RegistryEntry<Biome> biome, int i, int j, int k) {
             float y = getY(j);
             if (yVariance != 0.0f) {
-                y += yVariance * noiseMinus1to1(k, -j, i, ~biome.biomeID);
+                y += yVariance * noiseMinus1to1(k, -j, i, ~PortUtils.getBiomeId(biome));//biome.biomeID
             }
             return y;
         }

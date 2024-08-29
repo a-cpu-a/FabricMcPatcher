@@ -2,8 +2,10 @@ package org.fabricmcpatcher.utils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.biome.Biome;
 import org.fabricmcpatcher.FabricMcPatcher;
 
 import java.util.Optional;
@@ -28,5 +30,9 @@ public class PortUtils {
 
     public static String getBiomeName(Identifier id) {
         return null;
+    }
+
+    public static int getBiomeId(RegistryEntry<Biome> biome) {
+        return 0;
     }
 }

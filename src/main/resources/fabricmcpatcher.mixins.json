@@ -15,6 +15,7 @@
     "MinecraftClientMixin",
     "ParticleManagerMixin",
     "SkyRenderingMixin",
+    "TextRendererMixin",
     "WorldRendererMixin"
   ],
   "injectors": {

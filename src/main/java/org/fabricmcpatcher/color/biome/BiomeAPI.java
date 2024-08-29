@@ -32,7 +32,7 @@ public class BiomeAPI {
 
     private static boolean biomesLogged;
 
-    private static Biome lastBiome;
+    private static RegistryEntry<Biome> lastBiome;
     private static int lastI;
     private static int lastK;
 
@@ -95,18 +95,26 @@ public class BiomeAPI {
         return MinecraftClient.getInstance().world;
     }
 
-    public static Biome getBiomeIDAt(BiomeAccess blockAccess, int i, int j, int k) {
-        Biome biome = getBiomeGenAt(blockAccess, i, j, k);
-        return biome;//biome == null ? Biome.biomeList.length : biome.biomeID;
+    public static int getBiomeIDAt(BiomeAccess blockAccess, int i, int j, int k) {
+        RegistryEntry<Biome> biome = getBiomeRegGenAt(blockAccess, i, j, k);
+        return biome==null?0xFF : PortUtils.getBiomeId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
     }
 
-    public static Biome getBiomeGenAt(BiomeAccess blockAccess, int i, int j, int k) {
+    public static RegistryEntry<Biome> getBiomeRegGenAt(BiomeAccess blockAccess, int i, int j, int k) {
         if (lastBiome == null || i != lastI || k != lastK) {
             lastI = i;
             lastK = k;
             lastBiome = instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
         }
         return lastBiome;
+    }
+    public static Biome getBiomeGenAt(BiomeAccess blockAccess, int i, int j, int k) {
+        if (lastBiome == null || i != lastI || k != lastK) {
+            lastI = i;
+            lastK = k;
+            lastBiome = instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
+        }
+        return lastBiome.getKeyOrValue().right().get();
     }
 
     public static float getTemperature(Biome biome, int i, int j, int k,int seaLevel) {
@@ -159,8 +167,8 @@ public class BiomeAPI {
         return true;
     }
 
-    protected Biome getBiomeGenAt_Impl(BiomeAccess blockAccess, int i, int j, int k) {
-        return blockAccess.getBiome(new BlockPos(i, j, k)).getKeyOrValue().right().get();
+    protected RegistryEntry<Biome> getBiomeGenAt_Impl(BiomeAccess blockAccess, int i, int j, int k) {
+        return blockAccess.getBiome(new BlockPos(i, j, k));
     }
 
     protected float getTemperaturef_Impl(Biome biome, int i, int j, int k,int seaLevel) {

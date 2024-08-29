@@ -1,6 +1,7 @@
 package org.fabricmcpatcher.color;
 
 
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
