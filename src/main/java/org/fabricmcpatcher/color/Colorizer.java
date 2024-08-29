@@ -44,10 +44,10 @@ public class Colorizer {
             public void afterChange() {
                 reloadColorProperties();
                 ColorMap.reloadColorMapSettings(properties);
-                /*if (useParticleColors) {
+                if (useParticleColors) {
                     ColorizeEntity.reloadParticleColors(properties);
                 }
-                try {
+                /*try {
                     ColorizeBlock.reloadAll(properties);
                 } catch (NoClassDefFoundError e) {
                     // not present in 1.8
@@ -63,15 +63,15 @@ public class Colorizer {
                 }
                 /*if (useMapColors) {
                     ColorizeItem.reloadMapColors(properties);
-                }
+                }*/ //TODO
                 if (useDyeColors) {
                     ColorizeEntity.reloadDyeColors(properties);
-                }*/ //TODO
+                }
                 if (useTextColors) {
                     ColorizeWorld.reloadTextColors(properties);
                 }
                 if (useXPOrbColors) {
-                    //ColorizeEntity.reloadXPOrbColors(properties); //TODO
+                    ColorizeEntity.reloadXPOrbColors(properties);
                 }
             }
         });
@@ -103,7 +103,7 @@ public class Colorizer {
         Lightmap.reset();
         ColorizeItem.reset();*/ //TODO
         ColorizeWorld.reset();
-        //ColorizeEntity.reset(); //TODO
+        ColorizeEntity.reset();
     }
 
     private static void reloadColorProperties() {

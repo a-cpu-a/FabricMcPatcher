@@ -7,13 +7,18 @@
     "DyeColorMixin",
     "FormattingMixin",
     "ReloadableResourceManagerImplMixin",
+    "SheepEntityMixin",
     "StyleMixin",
     "TextColorMixin"
   ],
   "client": [
     "BackgroundRendererMixin",
+    "BlockLeakParticleMixin",
+    "BlockLeakParticleMixin$DrippingLava",
     "BossBarHudMixin",
+    "CatCollarFeatureRendererMixin",
     "ClientWorldMixin",
+    "ExperienceOrbEntityRendererMixin",
     "FireworksSparkParticleMixin",
     "FireworksSparkParticleMixin$Explosion",
     "FireworksSparkParticleMixin$Flash",
@@ -21,6 +26,7 @@
     "ParticleManagerMixin",
     "SkyRenderingMixin",
     "TextRendererMixin",
+    "WolfCollarFeatureRendererMixin",
     "WorldRendererMixin"
   ],
   "injectors": {

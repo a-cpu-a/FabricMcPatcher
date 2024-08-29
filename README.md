@@ -8,9 +8,13 @@ Cloud type override
 Under (water / lava) fog colormaps  
 sky.end  
 Fog, sky colormaps
+Dripping lava, xp orb colormaps
+Sheep, collar, dye colors
 
 >Currently working on:  
-
+Default armor color
+Mycelium particle color
+Armor color: dye crafting
 
 >Eventually  
 Map fog.nether, fog.end to nether & end biome fog colors  
