@@ -33,6 +33,7 @@
     "WolfCollarFeatureRendererMixin",
     "WorldRendererMixin",
     "cit.ArmorFeatureRendererMixin",
+    "cit.BannerBlockEntityRendererMixin",
     "cit.BufferBuilderStorageMixin",
     "cit.BuiltinModelItemRendererMixin",
     "cit.WorldRendererMixin"

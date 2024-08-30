@@ -3,10 +3,7 @@ package org.fabricmcpatcher.mixins.cit;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.SpriteTexturedVertexConsumer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
@@ -16,9 +13,9 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import org.fabricmcpatcher.accessors.IGetBuilding;
 import org.fabricmcpatcher.cit.CITUtils;
+import org.fabricmcpatcher.cit.CitMixinUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -51,7 +48,7 @@ public class BuiltinModelItemRendererMixin {
 
 
     @Unique
-    void mcPatcher$renderRender(Object realInst,ModelPart instance, MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, Operation<Void> original, ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
+    private void mcPatcher$renderRender(Object realInst,ModelPart instance, MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, Operation<Void> original, ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
 
         boolean trident = realInst instanceof TridentEntityModel;
 
@@ -67,25 +64,9 @@ public class BuiltinModelItemRendererMixin {
                             ItemRenderer.getItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(ModelBaker.SHIELD_BASE.getAtlasId()), false, false)
                     );
         }
-        original.call(realInst,matrixStack,vertexConsumer,light,overlay);
-
-        if(!CITUtils.isArmorEnchantmentActive())
-            return;
-
-
-        while (CITUtils.preRenderArmorEnchantment()) {
-
-            Identifier tex = trident?TridentEntityModel.TEXTURE:ModelBaker.SHIELD_BASE.getAtlasId();
-
-            //every layer can have a different consumer
-            VertexConsumer vertexConsumer2 = CITUtils.getVertexConsumer(vertexConsumers, trident?modelTrident.getLayer(tex):modelShield.getLayer(tex), false);
-            //draw something
-            instance.render(matrixStack, vertexConsumer2, light, overlay,ColorHelper.fromFloats(
-                    CITUtils.boundFade.x,CITUtils.boundFade.y,
-                    CITUtils.boundFade.z,CITUtils.boundFade.w
-            ));
-
-            CITUtils.postRenderArmorEnchantment();
-        }
+        Identifier tex = trident ?TridentEntityModel.TEXTURE:ModelBaker.SHIELD_BASE.getAtlasId();
+        CitMixinUtils.renderGlintLayers(realInst, instance, matrixStack, vertexConsumer, light, overlay, original, vertexConsumers, trident ? modelTrident.getLayer(tex) : modelShield.getLayer(tex));
     }
+
+
 }
