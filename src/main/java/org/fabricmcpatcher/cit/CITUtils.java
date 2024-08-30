@@ -2,6 +2,7 @@ package org.fabricmcpatcher.cit;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.SpriteContents;
@@ -31,6 +32,15 @@ import static net.minecraft.client.render.RenderPhase.ITEM_ENTITY_TARGET;
 
 
 public class CITUtils {
+
+    public static VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid) {
+        return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()
+                ? vertexConsumers.getBuffer(FANCY_ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfo))
+                : vertexConsumers.getBuffer(
+                        solid ? ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfoGui)
+                                : ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfo));
+    }
+
 
     public record GlintTextureInfo(double speed, float rot, float scaleX, float scaleY) {
         @Override
@@ -150,7 +160,8 @@ public class CITUtils {
     public static Identifier boundTex;
     public static RenderPhase.Transparency boundBlending;
     public static Vector4f boundFade;
-    public static GlintTextureInfo boundEnchantRotation;
+    public static GlintTextureInfo boundGlintInfo;
+    public static GlintTextureInfo boundGlintInfoGui;
 
     private static ItemStack lastItemStack;
     private static int lastRenderPass;
@@ -419,6 +430,10 @@ public class CITUtils {
         } else {
             armorMatches = null;
             armorMatchIndex = 0;
+
+            //help find errors:
+            CITUtils.boundTex=null;
+            CITUtils.boundBlending=null;
             return false;
         }
     }

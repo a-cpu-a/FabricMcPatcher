@@ -180,7 +180,8 @@ final class Enchantment extends OverrideBase {
         //blendMethod.applyBlending();
         //blendMethod.applyDepthFunc();
         CITUtils.boundFade =  blendMethod.getFade(intensity);
-        CITUtils.boundEnchantRotation = this.entityGlintInfo;
+        CITUtils.boundGlintInfo = this.entityGlintInfo;
+        CITUtils.boundGlintInfoGui = this.guiGlintInfo;
         /*GL11.glPushMatrix();
         if (speed != 0.0) {
             double offset = ((double) System.currentTimeMillis() * speed) / 3000.0;

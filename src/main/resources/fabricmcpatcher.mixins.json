@@ -32,6 +32,7 @@
     "WorldRendererMixin",
     "cit.ArmorFeatureRendererMixin",
     "cit.BufferBuilderStorageMixin",
+    "cit.BuiltinModelItemRendererMixin",
     "cit.WorldRendererMixin"
   ],
   "injectors": {
