@@ -4,7 +4,6 @@ package org.fabricmcpatcher.cit;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -34,7 +33,7 @@ public class CITUtils {
 
     static final String CIT_PROPERTIES = "cit.properties";
     private static Identifier CIT_PROPERTIES1;
-    private static Identifier CIT_PROPERTIES2;
+    private static final String CIT_PROPERTIES2 = "cit/" + CIT_PROPERTIES;
     static final Identifier FIXED_ARMOR_RESOURCE = Identifier.ofVanilla("textures/models/armor/iron_layer_1.png");
 
     static final int MAX_ENCHANTMENTS = 256;
@@ -96,7 +95,6 @@ public class CITUtils {
                 }
 
                 CIT_PROPERTIES1 = TexturePackAPI.newMCPatcherIdentifier(CIT_PROPERTIES);
-                CIT_PROPERTIES2 = TexturePackAPI.newMCPatcherIdentifier("cit/" + CIT_PROPERTIES);
 
                 PropertiesFile properties = PropertiesFile.get(logger, CIT_PROPERTIES1);
                 if (properties == null) {
@@ -106,7 +104,7 @@ public class CITUtils {
                 EnchantmentList.setProperties(properties);
 
                 if (enableItems || enableEnchantments || enableArmor) {
-                    for (Identifier resource : ResourceList.getInstance().listResources(TexturePackAPI.MCPATCHER_SUBDIR + "cit", ".properties", true)) {
+                    for (Identifier resource : ResourceList.getInstance().listMcPatcherResources("cit", ".properties", true)) {
                         registerOverride(OverrideBase.create(resource));
                     }
                     if (enableItems) {
@@ -348,7 +346,7 @@ public class CITUtils {
 
         int[] levels = null;
 
-        for (RegistryEntry<Enchantment> e : enchList.getEnchantments()) {
+        for (RegistryEntry<net.minecraft.enchantment.Enchantment> e : enchList.getEnchantments()) {
             int lvl = enchList.getLevel(e);
             if(lvl<=0)
                 continue;

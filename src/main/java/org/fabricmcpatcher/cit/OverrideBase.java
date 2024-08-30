@@ -9,6 +9,7 @@ import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 import org.fabricmcpatcher.utils.NBTRule;
+import org.fabricmcpatcher.utils.PortUtils;
 
 import java.io.File;
 import java.util.*;
@@ -261,7 +262,7 @@ abstract class OverrideBase implements Comparable<OverrideBase> {
 
     private boolean matchNBT(ItemStack itemStack) {
         for (NBTRule rule : nbtRules) {
-            if (!rule.match(itemStack.getTagCompound())) {
+            if (!rule.match(PortUtils.getTagCompound(itemStack))) {
                 return false;
             }
         }
