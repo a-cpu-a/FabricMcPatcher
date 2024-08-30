@@ -77,7 +77,7 @@ abstract public class NBTRule {
         }
     }
 
-    private boolean match(NbtList nbt, int index) {
+    private boolean match(AbstractNbtList<?> nbt, int index) {
         if (index >= tagIndex.length) {
             return false;
         } else if (tagIndex[index] == null) {
@@ -98,8 +98,8 @@ abstract public class NBTRule {
             return false;
         } else if (nbt instanceof NbtCompound) {
             return match((NbtCompound) nbt, index);
-        } else if (nbt instanceof NbtList) {
-            return match((NbtList) nbt, index);
+        } else if (nbt instanceof AbstractNbtList<?>) {
+            return match((AbstractNbtList<?>) nbt, index);
         } else if (index < tagName.length) {
             return false;
         } else if (nbt instanceof NbtString) {

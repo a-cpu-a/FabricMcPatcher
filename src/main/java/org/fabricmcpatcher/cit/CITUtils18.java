@@ -1,7 +1,12 @@
 package org.fabricmcpatcher.cit;
 
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
+import org.fabricmcpatcher.resource.FaceInfo;
 import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 
@@ -9,7 +14,7 @@ public class CITUtils18 {
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "CIT");
 
     private static ItemStack currentItem;
-    private static CTMUtils18 ctm;
+    //private static CTMUtils18 ctm;//TODO
     private static ItemOverride itemOverride;
     private static boolean renderingEnchantment;
 
@@ -18,36 +23,36 @@ public class CITUtils18 {
             // rendering custom enchantment -- keep current state
         } else if (itemStack == null) {
             clear();
-        } else if (itemStack.getItem() instanceof ItemBlock) {
+        } else if (itemStack.getItem() instanceof BlockItem) {
             clear();
-            ctm = CTMUtils18.getInstance();
-            ctm.preRenderHeld(null, ((ItemBlock) itemStack.getItem()).getBlock(), itemStack.getItemDamage());
+            /*ctm = CTMUtils18.getInstance();
+            ctm.preRenderHeld(null, ((BlockItem) itemStack.getItem()).getBlock(), itemStack.getDamage());*///TODO
         } else {
-            ctm = null;
+            //ctm = null;//TODO
             currentItem = itemStack;
             itemOverride = CITUtils.findItemOverride(itemStack);
         }
     }
 
     public static void postRender() {
-        if (ctm != null) {
+        /*if (ctm != null) {
             ctm.clear();
-        }
+        }*/ //TODO
         clear();
     }
 
     public static ModelFace getModelFace(ModelFace origFace) {
         if (renderingEnchantment) {
             return FaceInfo.getFaceInfo(origFace).getNonAtlasFace();
-        } else if (ctm != null) {
+        } /*else if (ctm != null) {
             int face = FaceInfo.getFaceInfo(origFace).getEffectiveFace();
             ctm.setDirection(face < 0 ? null : Direction.values()[face]);
-            return ctm.getModelFace(origFace);
-        } else if (itemOverride == null) {
+            return ctm.getModelFace(origFace); //TODO
+        }*/ else if (itemOverride == null) {
             return origFace;
         } else {
             FaceInfo faceInfo = FaceInfo.getFaceInfo(origFace);
-            TextureAtlasSprite newIcon = (TextureAtlasSprite) itemOverride.getReplacementIcon(faceInfo.getSprite());
+            Sprite newIcon =  itemOverride.getReplacementIcon(faceInfo.getSprite());
             return faceInfo.getAltFace(newIcon);
         }
     }
@@ -84,7 +89,7 @@ public class CITUtils18 {
         }
     }
 
-    public static boolean renderArmorEnchantments(EntityLivingBase entity, ModelBase model, ItemStack itemStack, int slot, float f1, float f2, float f3, float f4, float f5, float f6) {
+    public static boolean renderArmorEnchantments(LivingEntity entity, ModelBase model, ItemStack itemStack, int slot, float f1, float f2, float f3, float f4, float f5, float f6) {
         EnchantmentList enchantments = CITUtils.findEnchantments(itemStack);
         if (!enchantments.isEmpty()) {
             Enchantment.beginOuter3D();
@@ -104,7 +109,7 @@ public class CITUtils18 {
 
     static void clear() {
         currentItem = null;
-        ctm = null;
+        //ctm = null;//TODO
         itemOverride = null;
         renderingEnchantment = false;
     }

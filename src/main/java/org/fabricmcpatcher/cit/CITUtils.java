@@ -1,14 +1,19 @@
 package org.fabricmcpatcher.cit;
 
 
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.AbstractNbtList;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
-import org.fabricmcpatcher.resource.PropertiesFile;
-import org.fabricmcpatcher.resource.ResourceList;
-import org.fabricmcpatcher.resource.TexturePackAPI;
-import org.fabricmcpatcher.resource.TexturePackChangeHandler;
+import org.fabricmcpatcher.resource.*;
 import org.fabricmcpatcher.utils.Config;
 import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
@@ -35,7 +40,7 @@ public class CITUtils {
     static final boolean enableEnchantments = Config.getBoolean(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "enchantments", true);
     static final boolean enableArmor = Config.getBoolean(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "armor", true);
 
-    private static TileLoader tileLoader;
+    //private static TileLoader tileLoader;
     private static final Map<Item, List<ItemOverride>> items = new IdentityHashMap<Item, List<ItemOverride>>();
     private static final Map<Item, List<Enchantment>> enchantments = new IdentityHashMap<Item, List<Enchantment>>();
     private static final List<Enchantment> allItemEnchantments = new ArrayList<Enchantment>();
@@ -48,8 +53,8 @@ public class CITUtils {
 
     private static ItemStack lastItemStack;
     private static int lastRenderPass;
-    static Icon lastOrigIcon;
-    private static Icon lastIcon;
+    static SpriteContents lastOrigIcon;
+    private static SpriteContents lastIcon;
 
     private static Field potionItemStackField;
 
@@ -69,7 +74,7 @@ public class CITUtils {
                 itemCompass = ItemAPI.getFixedItem("minecraft:compass");
                 itemClock = ItemAPI.getFixedItem("minecraft:clock");
 
-                tileLoader = new TileLoader("textures/items", logger);
+                //tileLoader = new TileLoader("textures/items", logger);
                 items.clear();
                 enchantments.clear();
                 allItemEnchantments.clear();
@@ -180,7 +185,7 @@ public class CITUtils {
     public static void init() {
     }
 
-    public static Icon getIcon(Icon icon, ItemStack itemStack, int renderPass) {
+    public static SpriteContents getIcon(SpriteContents icon, ItemStack itemStack, int renderPass) {
         if (icon == lastIcon && itemStack == lastItemStack && renderPass == lastRenderPass) {
             return icon;
         }
@@ -190,7 +195,7 @@ public class CITUtils {
         if (enableItems) {
             ItemOverride override = findItemOverride(itemStack);
             if (override != null) {
-                Icon newIcon = override.getReplacementIcon(icon);
+                SpriteContents newIcon = override.getReplacementIcon(icon);
                 if (newIcon != null) {
                     lastIcon = newIcon;
                 }
@@ -199,7 +204,7 @@ public class CITUtils {
         return lastIcon;
     }
 
-    public static Icon getEntityIcon(Icon icon, Entity entity) {
+    public static SpriteContents getEntityIcon(SpriteContents icon, Entity entity) {
         if (entity instanceof EntityPotion) {
             if (potionItemStackField != null) {
                 try {
@@ -213,7 +218,7 @@ public class CITUtils {
         return icon;
     }
 
-    public static Identifier getArmorTexture(Identifier texture, EntityLivingBase entity, ItemStack itemStack) {
+    public static Identifier getArmorTexture(Identifier texture, LivingEntity entity, ItemStack itemStack) {
         if (enableArmor) {
             ArmorOverride override = findArmorOverride(itemStack);
             if (override != null) {
@@ -294,13 +299,13 @@ public class CITUtils {
         }
         Enchantment.beginOuter2D();
         for (int i = 0; i < matches.size(); i++) {
-            matches.getEnchantment(i).render2D(TessellatorAPI.getTessellator(), matches.getIntensity(i), x, y, x + 16, y + 16, z);
+            matches.getEnchantment(i).render2D(Tessellator.getInstance(), matches.getIntensity(i), x, y, x + 16, y + 16, z);
         }
         Enchantment.endOuter2D();
         return !useGlint;
     }
 
-    public static boolean setupArmorEnchantments(EntityLivingBase entity, int pass) {
+    public static boolean setupArmorEnchantments(LivingEntity entity, int pass) {
         return setupArmorEnchantments(entity.getCurrentItemOrArmor(4 - pass));
     }
 
@@ -341,22 +346,22 @@ public class CITUtils {
         armorMatchIndex++;
     }
 
-    static int[] getEnchantmentLevels(Item item, NBTTagCompound nbt) {
+    //TODO: replace this with component stuff
+    static int[] getEnchantmentLevels(Item item, NbtCompound nbt) {
         int[] levels = null;
         if (nbt != null) {
-            NBTBase base;
+            NbtElement base;
             if (item == itemEnchantedBook) {
-                base = nbt.getTag("StoredEnchantments");
+                base = nbt.get("StoredEnchantments");
             } else {
-                base = nbt.getTag("ench");
+                base = nbt.get("ench");
             }
-            if (base instanceof NBTTagList) {
-                NBTTagList list = (NBTTagList) base;
-                for (int i = 0; i < list.tagCount(); i++) {
-                    base = list.tagAt(i);
-                    if (base instanceof NBTTagCompound) {
-                        short id = ((NBTTagCompound) base).getShort("id");
-                        short level = ((NBTTagCompound) base).getShort("lvl");
+            if (base instanceof AbstractNbtList<?> list) {
+                for (int i = 0; i < list.size(); i++) {
+                    base = list.get(i);
+                    if (base instanceof NbtCompound) {
+                        short id = ((NbtCompound) base).getShort("id");
+                        short level = ((NbtCompound) base).getShort("lvl");
                         if (id >= 0 && id < MAX_ENCHANTMENTS && level > 0) {
                             if (levels == null) {
                                 levels = new int[MAX_ENCHANTMENTS];

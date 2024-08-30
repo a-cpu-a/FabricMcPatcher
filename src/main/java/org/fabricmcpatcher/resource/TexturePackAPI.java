@@ -347,6 +347,11 @@ public class TexturePackAPI {
         return texture==null?-1:texture.getGlId();
     }
 
+/*
+    protected void bindTexture_Impl(Identifier resource) {
+        MinecraftClient.getInstance().getTextureManager().getTexture(resource).bindTexture();
+    }*/
+
     protected void unloadTexture_Impl(Identifier resource) {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         AbstractTexture texture = textureManager.getTexture(resource);
