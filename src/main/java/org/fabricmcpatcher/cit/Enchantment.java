@@ -2,6 +2,7 @@ package org.fabricmcpatcher.cit;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.util.Identifier;
@@ -28,6 +29,8 @@ final class Enchantment extends OverrideBase {
     private boolean armorScaleSet;
     private float armorScaleX;
     private float armorScaleY;
+
+    private CITUtils.ArmorGlintInfo glintInfo;
 
     static void beginOuter2D() {
         RenderSystem.enableBlend();
@@ -82,6 +85,12 @@ final class Enchantment extends OverrideBase {
                 e.printStackTrace();
             }
         }
+
+        if (!armorScaleSet) {
+            setArmorScale();
+        }
+
+        this.glintInfo = new CITUtils.ArmorGlintInfo(speed,rotation,armorScaleX,armorScaleY);
     }
 
     @Override
@@ -90,7 +99,7 @@ final class Enchantment extends OverrideBase {
     }
 
     void render2D(Tessellator tessellator, float intensity, float x0, float y0, float x1, float y1, float z) {
-        if (intensity <= 0.0f) {
+        /*if (intensity <= 0.0f) {
             return;
         }
         if (intensity > 1.0f) {
@@ -106,11 +115,11 @@ final class Enchantment extends OverrideBase {
         TessellatorAPI.addVertexWithUV(tessellator, x1, y1, z, 1.0f, 1.0f);
         TessellatorAPI.addVertexWithUV(tessellator, x1, y0, z, 1.0f, 0.0f);
         TessellatorAPI.draw(tessellator);
-        end();
+        end();*/
     }
 
     void render3D(DrawContext context, float intensity, int width, int height) {
-        if (intensity <= 0.0f) {
+        /*if (intensity <= 0.0f) {
             return;
         }
         if (intensity > 1.0f) {
@@ -120,9 +129,8 @@ final class Enchantment extends OverrideBase {
             return;
         }
         begin(intensity);
-        context.drawItem();
         ItemRenderer.renderItemIn2D(tessellator, 1.0f, 0.0f, 0.0f, 1.0f, width, height, ITEM_2D_THICKNESS);
-        end();
+        end();*/
     }
 
     boolean bindTexture(SpriteContents icon) {
@@ -138,27 +146,24 @@ final class Enchantment extends OverrideBase {
         if (texture == null) {
             return false;
         } else {
-            TexturePackAPI.bindTexture(texture);
+            CITUtils.boundTex = texture;
             return true;
         }
     }
 
     void beginArmor(float intensity) {
-        GL11.glEnable(GL11.GL_BLEND);
+        /*GL11.glEnable(GL11.GL_BLEND);
         GLAPI.glDepthFunc(GL11.GL_EQUAL);
         GLAPI.glDepthMask(false);
         GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glMatrixMode(GL11.GL_TEXTURE);
+        GL11.glMatrixMode(GL11.GL_TEXTURE);*/
         begin(intensity);
-        if (!armorScaleSet) {
-            setArmorScale();
-        }
-        GL11.glScalef(armorScaleX, armorScaleY, 1.0f);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        //GL11.glScalef(armorScaleX, armorScaleY, 1.0f);
+        //GL11.glMatrixMode(GL11.GL_MODELVIEW);
     }
 
     void endArmor() {
-        GLAPI.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        /*GLAPI.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GL11.glDisable(GL11.GL_BLEND);
         GLAPI.glDepthFunc(GL11.GL_LEQUAL);
         GLAPI.glDepthMask(true);
@@ -166,24 +171,26 @@ final class Enchantment extends OverrideBase {
         GL11.glMatrixMode(GL11.GL_TEXTURE);
         end();
         GL11.glLoadIdentity();
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);*/
     }
 
     void begin(float intensity) {
-        blendMethod.applyBlending();
-        blendMethod.applyDepthFunc();
-        blendMethod.applyFade(intensity);
-        GL11.glPushMatrix();
+        CITUtils.boundBlending = blendMethod.TRANSPARENCY_TYPE;
+        //blendMethod.applyBlending();
+        //blendMethod.applyDepthFunc();
+        CITUtils.boundFade =  blendMethod.getFade(intensity);
+        CITUtils.boundEnchantRotation = this.glintInfo;
+        /*GL11.glPushMatrix();
         if (speed != 0.0) {
             double offset = ((double) System.currentTimeMillis() * speed) / 3000.0;
             offset -= Math.floor(offset);
             GL11.glTranslatef((float) offset * 8.0f, 0.0f, 0.0f);
         }
-        GL11.glRotatef(rotation, 0.0f, 0.0f, 1.0f);
+        GL11.glRotatef(rotation, 0.0f, 0.0f, 1.0f);*/
     }
 
     void end() {
-        GL11.glPopMatrix();
+        //GL11.glPopMatrix();
     }
 
     private void setArmorScale() {

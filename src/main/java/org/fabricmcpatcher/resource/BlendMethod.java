@@ -1,7 +1,12 @@
 package org.fabricmcpatcher.resource;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.util.Identifier;
+import org.fabricmcpatcher.utils.MCPatcherUtils;
+import org.joml.Vector4d;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
@@ -27,6 +32,9 @@ public class BlendMethod {
     private final boolean fadeRGB;
     private final boolean fadeAlpha;
     private final Identifier blankResource;
+
+
+    public final RenderPhase.Transparency TRANSPARENCY_TYPE;
 
     public static BlendMethod parse(String text) {
         text = text.toLowerCase().trim();
@@ -76,14 +84,19 @@ public class BlendMethod {
         if (neutralRGB == null) {
             blankResource = null;
         } else {
-            //TODO: create a mipmap sized png, with the neutral color, or maybe just put 32x32 textures inside resources
-            blankResource=null;
-            //String filename = String.format(MCPatcherUtils.BLANK_PNG_FORMAT, neutralRGB);
-            //blankResource = TexturePackAPI.newMCPatcherIdentifier(filename);
+            String filename = String.format(MCPatcherUtils.BLANK_PNG_FORMAT, neutralRGB);
+            blankResource = TexturePackAPI.newMCPatcherIdentifier(filename);
         }
         if (blankResource != null) {
             blankResources.add(blankResource);
         }
+
+        TRANSPARENCY_TYPE = new RenderPhase.Transparency("transparency_"+name, this::applyBlending, () -> {
+            if (blend) {
+                RenderSystem.disableBlend();
+                RenderSystem.defaultBlendFunc();
+            }
+        });
     }
 
     @Override
@@ -91,6 +104,21 @@ public class BlendMethod {
         return name;
     }
 
+    public Vector4f getFade(float fade) {
+        if (fadeRGB && fadeAlpha) {
+            return new Vector4f(fade, fade,fade,fade);
+            //GLAPI.glColor4f(fade, fade, fade, fade);
+        } else if (fadeRGB) {
+            return new Vector4f(fade, fade,fade, 1.0F);
+            //GLAPI.glColor4f(fade, fade, fade, 1.0f);
+        } else if (fadeAlpha) {
+            return new Vector4f(1.0f, 1.0f, 1.0f, fade);
+            //GLAPI.glColor4f(1.0f, 1.0f, 1.0f, fade);
+        } else {
+            //no fading
+            return new Vector4f(1.0f,1.0f,1.0f,1.0f);
+        }
+    }
     public void applyFade(float fade) {
         //TODO: change vertex colors instead?
         if (fadeRGB && fadeAlpha) {

@@ -4,13 +4,14 @@ package org.fabricmcpatcher.cit;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.resource.PropertiesFile;
+import org.fabricmcpatcher.resource.TileLoader;
 
 import java.util.HashMap;
 import java.util.Map;
 
 final class ItemOverride extends OverrideBase {
     private Sprite icon;
-    private final Map<Sprite, Sprite> iconMap;
+    private final Map<Identifier, Sprite> iconMap;
 
     ItemOverride(PropertiesFile properties) {
         super(properties);
@@ -19,7 +20,7 @@ final class ItemOverride extends OverrideBase {
             properties.error("no matching items specified");
         }
 
-        iconMap = alternateTextures == null ? null : new HashMap<Sprite, Sprite>();
+        iconMap = alternateTextures == null ? null : new HashMap<Identifier, Sprite>();
     }
 
     @Override
@@ -27,7 +28,7 @@ final class ItemOverride extends OverrideBase {
         return "item";
     }
 
-    Sprite getReplacementIcon(Sprite origIcon) {
+    Sprite getReplacementIcon(Identifier origIcon) {
         if (iconMap != null) {
             Sprite newIcon = iconMap.get(origIcon);
             if (newIcon != null) {
@@ -45,7 +46,7 @@ final class ItemOverride extends OverrideBase {
             } else if (items.contains(CITUtils.itemClock)) {
                 special = "clock";
             }
-        }
+        }/*
         if (textureName != null) {
             tileLoader.preloadTile(textureName, false, special);
         }
@@ -53,11 +54,11 @@ final class ItemOverride extends OverrideBase {
             for (Map.Entry<String, Identifier> entry : alternateTextures.entrySet()) {
                 tileLoader.preloadTile(entry.getValue(), false, special);
             }
-        }
+        }*/ //TODO
     }
 
     void registerIcon(TileLoader tileLoader) {
-        if (textureName != null) {
+        /*if (textureName != null) {
             icon = tileLoader.getIcon(textureName);
         }
         if (alternateTextures != null) {
@@ -68,7 +69,7 @@ final class ItemOverride extends OverrideBase {
                     iconMap.put(from, to);
                 }
             }
-        }
+        }*/ //TODO
     }
 
     @Override

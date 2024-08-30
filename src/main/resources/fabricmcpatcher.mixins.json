@@ -29,7 +29,10 @@
     "SkyRenderingMixin",
     "TextRendererMixin",
     "WolfCollarFeatureRendererMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "cit.ArmorFeatureRendererMixin",
+    "cit.BufferBuilderStorageMixin",
+    "cit.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

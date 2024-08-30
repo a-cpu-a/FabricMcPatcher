@@ -20,7 +20,7 @@ public class ColorizeEntity {
     public static float[] waterBaseColor; // particle.water
     private static float[] lavaDropColors; // misc/lavadropcolor.png
 
-    public static float[] portalColor= new float[]{1.0f, 0.3f, 0.9f};
+    public static float[] portalColor= new float[]{1.0f, 0.3f, 0.9f};// particle.portal
 
     public static int undyedLeatherColor=0xa06540; // armor.default
 

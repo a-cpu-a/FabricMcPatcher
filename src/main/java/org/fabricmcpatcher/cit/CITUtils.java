@@ -1,7 +1,10 @@
 package org.fabricmcpatcher.cit;
 
 
-import net.minecraft.client.render.Tessellator;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -10,25 +13,78 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.AbstractNbtList;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
+import net.minecraft.util.Util;
+import org.apache.commons.lang3.function.TriFunction;
 import org.fabricmcpatcher.resource.*;
-import org.fabricmcpatcher.utils.Config;
-import org.fabricmcpatcher.utils.MCLogger;
-import org.fabricmcpatcher.utils.MCPatcherUtils;
-import org.fabricmcpatcher.utils.PortUtils;
+import org.fabricmcpatcher.utils.*;
 import org.fabricmcpatcher.utils.id.EnchantmentIdUtils;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
+
 
 public class CITUtils {
+
+    public record ArmorGlintInfo(double speed, float rot, float armorScaleX, float armorScaleY) {
+        @Override
+        public String toString() {
+                return "customized_" + Integer.toHexString(hashCode());
+            }
+        }
+
+    private static void setupGlintTexturing(ArmorGlintInfo info) {
+        /*long l = (long)((double)Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue()*speed * 8.0);
+        float f = (float)(l % 110000L) / 110000.0F;
+        float g = (float)(l % 30000L) / 30000.0F;
+        Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0F);
+        matrix4f.rotateZ((float) (Math.PI / 18)).scale(0.16F);
+        RenderSystem.setTextureMatrix(matrix4f);
+        */
+        Matrix4f matrix4f = new Matrix4f();
+
+        if (info.speed != 0.0) {
+            double offset = ((double) Util.getMeasuringTimeMs() * info.speed) / 3000.0;
+            offset -= Math.floor(offset);
+            matrix4f.translate((float) offset * 8.0f, 0.0f, 0.0f);
+        }
+        matrix4f.rotateZ(info.rot*0.0174532925f);//deg2rad
+
+        matrix4f.scale(info.armorScaleX,info.armorScaleY,1.0f);
+
+        RenderSystem.setTextureMatrix(matrix4f);
+    }
+
+    public static final Function<ArmorGlintInfo,RenderPhase.Texturing> ROTATED_TEXTURING = Util.memoize((info)->{
+        return new RenderPhase.Texturing(
+                "rotated_texturing_"+info, () -> setupGlintTexturing(info), () -> RenderSystem.resetTextureMatrix()
+        );
+    });
+
+    public static final TriFunction<Identifier,RenderPhase.Transparency,ArmorGlintInfo, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
+            (texture, blendType, rotation) -> {
+                RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+                        .program(RenderPhase.ARMOR_ENTITY_GLINT_PROGRAM)
+                        .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
+                        .writeMaskState(RenderPhase.COLOR_MASK)
+                        .cull(RenderPhase.DISABLE_CULLING)
+                        .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
+                        .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
+                        .texturing(ROTATED_TEXTURING.apply(rotation))
+                        .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
+                        .build(false);
+                return RenderLayer.of(
+                        "armor_entity_glint_customized", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 1536, false, true, multiPhaseParameters
+                );
+            }
+    );
+
+
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "CIT");
 
     static final String CIT_PROPERTIES = "cit.properties";
@@ -46,7 +102,7 @@ public class CITUtils {
     static final boolean enableEnchantments = Config.getBoolean(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "enchantments", true);
     static final boolean enableArmor = Config.getBoolean(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "armor", true);
 
-    //private static TileLoader tileLoader;
+    private static TileLoader tileLoader;
     private static final Map<Item, List<ItemOverride>> items = new IdentityHashMap<Item, List<ItemOverride>>();
     private static final Map<Item, List<Enchantment>> enchantments = new IdentityHashMap<Item, List<Enchantment>>();
     private static final List<Enchantment> allItemEnchantments = new ArrayList<Enchantment>();
@@ -56,6 +112,11 @@ public class CITUtils {
 
     private static EnchantmentList armorMatches;
     private static int armorMatchIndex;
+
+    public static Identifier boundTex;
+    public static RenderPhase.Transparency boundBlending;
+    public static Vector4f boundFade;
+    public static ArmorGlintInfo boundEnchantRotation;
 
     private static ItemStack lastItemStack;
     private static int lastRenderPass;
@@ -70,7 +131,7 @@ public class CITUtils {
                 itemCompass = ItemAPI.getFixedItem("minecraft:compass");
                 itemClock = ItemAPI.getFixedItem("minecraft:clock");
 
-                //tileLoader = new TileLoader("textures/items", logger);
+                tileLoader = new TileLoader("textures/items", logger);
                 items.clear();
                 enchantments.clear();
                 allItemEnchantments.clear();
@@ -193,7 +254,7 @@ public class CITUtils {
         if (enableItems) {
             ItemOverride override = findItemOverride(itemStack);
             if (override != null) {
-                SpriteContents newIcon = override.getReplacementIcon(icon);
+                SpriteContents newIcon = override.getReplacementIcon(icon.getId()).getContents();
                 if (newIcon != null) {
                     lastIcon = newIcon;
                 }
@@ -227,7 +288,7 @@ public class CITUtils {
         List<T> list = overrides.get(item);
         if (list != null) {
             int[] enchantmentLevels = getEnchantmentLevels(item, itemStack);
-            boolean hasEffect = itemStack.hasEffectVanilla();
+            boolean hasEffect = itemStack.hasGlint();
             for (T override : list) {
                 if (override.match(itemStack, enchantmentLevels, hasEffect)) {
                     return override;
@@ -249,7 +310,7 @@ public class CITUtils {
         return new EnchantmentList(enchantments, allItemEnchantments, itemStack);
     }
 
-    public static boolean renderEnchantmentHeld(ItemStack itemStack, int renderPass) {
+    public static boolean renderEnchantmentHeld(DrawContext drawContext,ItemStack itemStack, int renderPass) {
         if (itemStack == null || renderPass != 0) {
             return true;
         }
@@ -270,14 +331,14 @@ public class CITUtils {
         }
         Enchantment.beginOuter3D();
         for (int i = 0; i < matches.size(); i++) {
-            matches.getEnchantment(i).render3D(TessellatorAPI.getTessellator(), matches.getIntensity(i), width, height);
+            matches.getEnchantment(i).render3D(drawContext, matches.getIntensity(i), width, height);
         }
         Enchantment.endOuter3D();
         return !useGlint;
     }
 
-    public static boolean renderEnchantmentDropped(ItemStack itemStack) {
-        return renderEnchantmentHeld(itemStack, lastRenderPass);
+    public static boolean renderEnchantmentDropped(DrawContext drawContext,ItemStack itemStack) {
+        return renderEnchantmentHeld(drawContext,itemStack, lastRenderPass);
     }
 
     public static boolean renderEnchantmentGUI(ItemStack itemStack, int x, int y, float z) {
@@ -295,10 +356,10 @@ public class CITUtils {
         Enchantment.endOuter2D();
         return !useGlint;
     }
-
+/*
     public static boolean setupArmorEnchantments(LivingEntity entity, int pass) {
-        return setupArmorEnchantments(entity.getCurrentItemOrArmor(4 - pass));
-    }
+        return setupArmorEnchantments(entity.getCurrentItemOrArmor(4 - pass));//getCurrentItemOrArmor -> 0 held item, 1... armor
+    }*/
 
     public static boolean setupArmorEnchantments(ItemStack itemStack) {
         armorMatches = null;

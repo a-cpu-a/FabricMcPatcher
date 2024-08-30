@@ -10,6 +10,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import org.fabricmcpatcher.FabricMcPatcher;
 import org.fabricmcpatcher.utils.MAL;
 import org.fabricmcpatcher.utils.MCLogger;
@@ -195,7 +196,12 @@ public class TexturePackAPI {
         path = path.replaceFirst("^/+", "");
         Identifier fallback = null;
         for (String folder : FabricMcPatcher.CHECK_FOLDERS) {
-            fallback = Identifier.ofVanilla(folder+path);
+            try {
+                fallback = Identifier.ofVanilla(folder+path);
+            }
+            catch (InvalidIdentifierException ignored) {
+                fallback = Identifier.ofVanilla(folder+path.toLowerCase());//fallback, for some old assets (damageBoost, ...)
+            }
             Optional<Resource> testRes =  MinecraftClient.getInstance().getResourceManager().getResource(fallback);
             if(testRes.isEmpty())
                 continue;

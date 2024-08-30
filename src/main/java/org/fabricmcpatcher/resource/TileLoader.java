@@ -18,8 +18,16 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
+
+/**
+ *
+ * Allows old code to add textures to the atlas
+ *
+ * */
+
+//TODO: inject into atlas texture gatherer, and merge into its lists
 public class TileLoader {
-    /*private static final MCLogger logger = MCLogger.getLogger("Tilesheet");
+    private static final MCLogger logger = MCLogger.getLogger("Tilesheet");
 
     private static final List<TileLoader> loaders = new ArrayList<TileLoader>();
 
@@ -30,13 +38,13 @@ public class TileLoader {
     private static boolean changeHandlerCalled;
     private static boolean useFullPath;
 
-    private static final long MAX_TILESHEET_SIZE;
+    //private static final long MAX_TILESHEET_SIZE;
 
     protected final String mapName;
     protected final MCLogger subLogger;
 
     private SpriteAtlasTexture baseTextureMap;
-    //private final Map<String, SpriteContents> baseTexturesByName = new HashMap<String, SpriteContents>();
+    private final Map<String, SpriteContents> baseTexturesByName = new HashMap<String, SpriteContents>();
     private final Set<Identifier> tilesToRegister = new HashSet<Identifier>();
     private final Map<Identifier, BufferedImage> tileImages = new HashMap<Identifier, BufferedImage>();
     private final Map<String, Sprite> iconMap = new HashMap<String, Sprite>();
@@ -49,8 +57,8 @@ public class TileLoader {
         } catch (Throwable e) {
             e.printStackTrace();
         }
-        MAX_TILESHEET_SIZE = (maxSize * maxSize * 4) * 7 / 8;
-        logger.config("max texture size is %dx%d (%.1fMB)", maxSize, maxSize, MAX_TILESHEET_SIZE / 1048576.0f);
+        //MAX_TILESHEET_SIZE = (maxSize * maxSize * 4) * 7 / 8;
+        //logger.config("max texture size is %dx%d (%.1fMB)", maxSize, maxSize, MAX_TILESHEET_SIZE / 1048576.0f);
 
         changeHandler = new TexturePackChangeHandler("Tilesheet API", 2) {
             @Override
@@ -62,13 +70,13 @@ public class TileLoader {
                 changeHandlerCalled = true;
                 loaders.clear();
                 specialTextures.clear();
-                try {
+                /*try {
                     FaceInfo.clear();
                 } catch (NoClassDefFoundError e) {
                     // nothing
                 } catch (Throwable e) {
                     e.printStackTrace();
-                }
+                }*/ //TODO
             }
 
             @Override
@@ -92,7 +100,7 @@ public class TileLoader {
         TexturePackChangeHandler.register(changeHandler);
     }
 
-    public static void registerIcons(SpriteAtlasTexture textureMap, String mapName, Map<String, SpriteContents> map) {
+    /*public static void registerIcons(SpriteAtlasTexture textureMap, String mapName, Map<String, SpriteContents> map) {
         mapName = mapName.replaceFirst("/$", "");
         logger.fine("before registerIcons(%s) %d icons", mapName, map.size());
         if (!changeHandlerCalled) {
@@ -174,6 +182,7 @@ public class TileLoader {
         }
         return image;
     }
+*/
 
     static void init() {
     }
@@ -185,13 +194,12 @@ public class TileLoader {
     public static Identifier getItemsAtlas() {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
-
     public TileLoader(String mapName, MCLogger logger) {
         this.mapName = mapName;
         subLogger = logger;
         loaders.add(this);
     }
-
+/*
     private static long getTextureSize(SpriteContents texture) {
         return texture == null ? 0 : 4 * IconAPI.getIconWidth(texture) * IconAPI.getIconHeight(texture);
     }
@@ -203,7 +211,8 @@ public class TileLoader {
         }
         return size;
     }
-
+*/
+    /** Used to get default image for CIT files */
     public static Identifier getDefaultAddress(Identifier propertiesAddress) {
         return TexturePackAPI.transformIdentifier(propertiesAddress, ".properties", ".png");
     }
@@ -219,7 +228,7 @@ public class TileLoader {
         if (value.equals("blank")) {
             return blankResource;
         }
-        if (value.equals("null") || value.equals("none") || value.equals("default") || value.equals("")) {
+        if (value.equals("null") || value.equals("none") || value.equals("default") || value.isEmpty()) {
             return null;
         }
         if (!value.endsWith(".png")) {
@@ -227,100 +236,100 @@ public class TileLoader {
         }
         return TexturePackAPI.parseIdentifier(propertiesAddress, value);
     }
-
-    public boolean preloadTile(Identifier resource, boolean alternate, String special) {
-        if (tileImages.containsKey(resource)) {
-            return true;
-        }
-        BufferedImage image = null;
-        if (!debugTextures) {
-            image = TexturePackAPI.getImage(resource);
-            if (image == null) {
-                subLogger.warning("missing %s", resource);
-            }
-        }
-        if (image == null) {
-            image = generateDebugTexture(resource.getPath(), 64, 64, alternate);
-        }
-        tilesToRegister.add(resource);
-        tileImages.put(resource, image);
-        if (special != null) {
-            specialTextures.put(resource.toString(), special);
-        }
-        return true;
-    }
-
-    public boolean preloadTile(Identifier resource, boolean alternate) {
-        return preloadTile(resource, alternate, null);
-    }
-
-    protected boolean isForThisMap(String mapName) {
-        return mapName.equals("textures") || mapName.startsWith(this.mapName);
-    }
-
-    private boolean registerDefaultIcon(String name) {
-        if (name.startsWith(mapName) && name.endsWith(".png") && baseTextureMap != null) {
-            String defaultName = name.substring(mapName.length()).replaceFirst("\\.png$", "");
-            Sprite texture = iconMap.get(defaultName);
-            if (texture != null) {
-                subLogger.finer("%s -> existing icon %s", name, defaultName);
-                iconMap.put(name, texture);
+    /*
+        public boolean preloadTile(Identifier resource, boolean alternate, String special) {
+            if (tileImages.containsKey(resource)) {
                 return true;
             }
+            BufferedImage image = null;
+            if (!debugTextures) {
+                image = TexturePackAPI.getImage(resource);
+                if (image == null) {
+                    subLogger.warning("missing %s", resource);
+                }
+            }
+            if (image == null) {
+                image = generateDebugTexture(resource.getPath(), 64, 64, alternate);
+            }
+            tilesToRegister.add(resource);
+            tileImages.put(resource, image);
+            if (special != null) {
+                specialTextures.put(resource.toString(), special);
+            }
+            return true;
         }
-        return false;
-    }
 
-    private boolean registerOneIcon(SpriteAtlasTexture textureMap, String mapName, Map<String, SpriteContents> map) {
-        Identifier resource = tilesToRegister.iterator().next();
-        String name = resource.toString();
-        if (registerDefaultIcon(name)) {
-            tilesToRegister.remove(resource);
-            return true;
+        public boolean preloadTile(Identifier resource, boolean alternate) {
+            return preloadTile(resource, alternate, null);
         }
-        BufferedImage image = tileImages.get(resource);
-        if (image == null) {
-            subLogger.error("tile for %s unexpectedly missing", resource);
-            tilesToRegister.remove(resource);
-            return true;
+
+        protected boolean isForThisMap(String mapName) {
+            return mapName.equals("textures") || mapName.startsWith(this.mapName);
         }
-        int width = image.getWidth();
-        int height = image.getHeight();
-        long currentSize = getTextureSize(map.values());
-        long newSize = 4 * width * width;
-        if (newSize + currentSize > MAX_TILESHEET_SIZE) {
-            float sizeMB = (float) currentSize / 1048576.0f;
-            if (currentSize <= 0) {
-                subLogger.error("%s too big for any tilesheet (%.1fMB), dropping", name, sizeMB);
+
+        private boolean registerDefaultIcon(String name) {
+            if (name.startsWith(mapName) && name.endsWith(".png") && baseTextureMap != null) {
+                String defaultName = name.substring(mapName.length()).replaceFirst("\\.png$", "");
+                Sprite texture = iconMap.get(defaultName);
+                if (texture != null) {
+                    subLogger.finer("%s -> existing icon %s", name, defaultName);
+                    iconMap.put(name, texture);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean registerOneIcon(SpriteAtlasTexture textureMap, String mapName, Map<String, SpriteContents> map) {
+            Identifier resource = tilesToRegister.iterator().next();
+            String name = resource.toString();
+            if (registerDefaultIcon(name)) {
                 tilesToRegister.remove(resource);
                 return true;
+            }
+            BufferedImage image = tileImages.get(resource);
+            if (image == null) {
+                subLogger.error("tile for %s unexpectedly missing", resource);
+                tilesToRegister.remove(resource);
+                return true;
+            }
+            int width = image.getWidth();
+            int height = image.getHeight();
+            long currentSize = getTextureSize(map.values());
+            long newSize = 4 * width * width;
+            if (newSize + currentSize > MAX_TILESHEET_SIZE) {
+                float sizeMB = (float) currentSize / 1048576.0f;
+                if (currentSize <= 0) {
+                    subLogger.error("%s too big for any tilesheet (%.1fMB), dropping", name, sizeMB);
+                    tilesToRegister.remove(resource);
+                    return true;
+                } else {
+                    subLogger.warning("%s nearly full (%.1fMB), will start a new tilesheet", mapName, sizeMB);
+                    return false;
+                }
+            }
+            Sprite icon;
+            if (mapName.equals("textures")) { // 1.8
+                icon = map.get(name);
+                if (icon == null) {
+                    icon = SpriteContents.createSprite(resource);
+                }
             } else {
-                subLogger.warning("%s nearly full (%.1fMB), will start a new tilesheet", mapName, sizeMB);
-                return false;
+                icon = textureMap.registerSprite(name);
             }
+            map.put(name, (SpriteContents) icon);
+            iconMap.put(name, icon);
+            String extra = (width == height ? "" : ", " + (height / width) + " frames");
+            subLogger.finer("%s -> %s icon %dx%d%s", name, mapName, width, width, extra);
+            tilesToRegister.remove(resource);
+            return true;
         }
-        Sprite icon;
-        if (mapName.equals("textures")) { // 1.8
-            icon = map.get(name);
-            if (icon == null) {
-                icon = SpriteContents.createSprite(resource);
-            }
-        } else {
-            icon = textureMap.registerSprite(name);
-        }
-        map.put(name, (SpriteContents) icon);
-        iconMap.put(name, icon);
-        String extra = (width == height ? "" : ", " + (height / width) + " frames");
-        subLogger.finer("%s -> %s icon %dx%d%s", name, mapName, width, width, extra);
-        tilesToRegister.remove(resource);
-        return true;
-    }
-
+    */
     public void finish() {
         tilesToRegister.clear();
         tileImages.clear();
     }
-
+/*
     public Sprite getIcon(String name) {
         if (MCPatcherUtils.isNullOrEmpty(name)) {
             return null;

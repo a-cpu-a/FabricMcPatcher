@@ -40,15 +40,15 @@ public class CITUtils18 {
         }*/ //TODO
         clear();
     }
-
+/*
     public static ModelFace getModelFace(ModelFace origFace) {
         if (renderingEnchantment) {
             return FaceInfo.getFaceInfo(origFace).getNonAtlasFace();
-        } /*else if (ctm != null) {
+        } else if (ctm != null) {
             int face = FaceInfo.getFaceInfo(origFace).getEffectiveFace();
             ctm.setDirection(face < 0 ? null : Direction.values()[face]);
-            return ctm.getModelFace(origFace); //TODO
-        }*/ else if (itemOverride == null) {
+            return ctm.getModelFace(origFace);
+        } else if (itemOverride == null) {
             return origFace;
         } else {
             FaceInfo faceInfo = FaceInfo.getFaceInfo(origFace);
@@ -78,7 +78,7 @@ public class CITUtils18 {
             }
         }
         return !CITUtils.useGlint;
-    }
+    }*/ //TODO
 
     public static Identifier getArmorTexture(Identifier origTexture, ItemStack itemStack, int slot) {
         ArmorOverride override = CITUtils.findArmorOverride(itemStack);
@@ -88,7 +88,7 @@ public class CITUtils18 {
             return override.getReplacementTexture(origTexture);
         }
     }
-
+/*
     public static boolean renderArmorEnchantments(LivingEntity entity, ModelBase model, ItemStack itemStack, int slot, float f1, float f2, float f3, float f4, float f5, float f6) {
         EnchantmentList enchantments = CITUtils.findEnchantments(itemStack);
         if (!enchantments.isEmpty()) {
@@ -105,7 +105,7 @@ public class CITUtils18 {
             Enchantment.endOuter3D();
         }
         return !CITUtils.useGlint;
-    }
+    }*/ //TODO
 
     static void clear() {
         currentItem = null;
