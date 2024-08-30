@@ -12,6 +12,10 @@ import java.util.Map;
 
 public class PotionIdUtils {
 
+    //https://minecraft.wiki/w/Potion?oldid=859543#Unused_potions
+    //https://minecraft.fandom.com/wiki/Potion/Before_1.9
+    //https://minecraft.wiki/w/Potion
+
     public static final Map<String,PotionInfo> potionName2Info = new HashMap<>();
     public static final Map<RegistryEntry<Potion>,PotionInfo> potionType2Info = new HashMap<>();
     public static final Map<RegistryEntry<Potion>,Integer> potionType2Damage = new HashMap<>();
