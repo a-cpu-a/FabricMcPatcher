@@ -2,7 +2,6 @@ package org.fabricmcpatcher.cit;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.SpriteContents;
@@ -28,17 +27,19 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.function.Function;
 
+import static net.minecraft.client.render.RenderPhase.ITEM_ENTITY_TARGET;
+
 
 public class CITUtils {
 
-    public record ArmorGlintInfo(double speed, float rot, float armorScaleX, float armorScaleY) {
+    public record GlintTextureInfo(double speed, float rot, float scaleX, float scaleY) {
         @Override
         public String toString() {
                 return "customized_" + Integer.toHexString(hashCode());
             }
         }
 
-    private static void setupGlintTexturing(ArmorGlintInfo info) {
+    private static void setupGlintTexturing(GlintTextureInfo info) {
         /*long l = (long)((double)Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue()*speed * 8.0);
         float f = (float)(l % 110000L) / 110000.0F;
         float g = (float)(l % 30000L) / 30000.0F;
@@ -55,18 +56,18 @@ public class CITUtils {
         }
         matrix4f.rotateZ(info.rot*0.0174532925f);//deg2rad
 
-        matrix4f.scale(info.armorScaleX,info.armorScaleY,1.0f);
+        matrix4f.scale(info.scaleX,info.scaleY,1.0f);
 
         RenderSystem.setTextureMatrix(matrix4f);
     }
 
-    public static final Function<ArmorGlintInfo,RenderPhase.Texturing> ROTATED_TEXTURING = Util.memoize((info)->{
+    public static final Function<GlintTextureInfo,RenderPhase.Texturing> CUSTOMIZED_GLINT_TEXTURING = Util.memoize((info)->{
         return new RenderPhase.Texturing(
-                "rotated_texturing_"+info, () -> setupGlintTexturing(info), () -> RenderSystem.resetTextureMatrix()
+                "customized_glint_texturing_"+info, () -> setupGlintTexturing(info), () -> RenderSystem.resetTextureMatrix()
         );
     });
 
-    public static final TriFunction<Identifier,RenderPhase.Transparency,ArmorGlintInfo, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
+    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
             (texture, blendType, rotation) -> {
                 RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
                         .program(RenderPhase.ARMOR_ENTITY_GLINT_PROGRAM)
@@ -75,11 +76,44 @@ public class CITUtils {
                         .cull(RenderPhase.DISABLE_CULLING)
                         .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
                         .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
-                        .texturing(ROTATED_TEXTURING.apply(rotation))
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation))
                         .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
                         .build(false);
                 return RenderLayer.of(
                         "armor_entity_glint_customized", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 1536, false, true, multiPhaseParameters
+                );
+            }
+    );
+    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
+            (texture, blendType, rotation) -> {
+                RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+                        .program(RenderPhase.ENTITY_GLINT_PROGRAM)
+                        .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
+                        .writeMaskState(RenderPhase.COLOR_MASK)
+                        .cull(RenderPhase.DISABLE_CULLING)
+                        .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
+                        .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation))
+                        .build(false);
+                return RenderLayer.of(
+                        "entity_glint_customized", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 1536, false, true, multiPhaseParameters
+                );
+            }
+    );
+    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> FANCY_ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
+            (texture, blendType, rotation) -> {
+                RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+                        .program(RenderPhase.ENTITY_GLINT_PROGRAM)
+                        .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
+                        .writeMaskState(RenderPhase.COLOR_MASK)
+                        .cull(RenderPhase.DISABLE_CULLING)
+                        .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
+                        .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation))
+                        .target(ITEM_ENTITY_TARGET)
+                        .build(false);
+                return RenderLayer.of(
+                        "fancy_entity_glint_customized", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 1536, false, true, multiPhaseParameters
                 );
             }
     );
@@ -116,7 +150,7 @@ public class CITUtils {
     public static Identifier boundTex;
     public static RenderPhase.Transparency boundBlending;
     public static Vector4f boundFade;
-    public static ArmorGlintInfo boundEnchantRotation;
+    public static GlintTextureInfo boundEnchantRotation;
 
     private static ItemStack lastItemStack;
     private static int lastRenderPass;

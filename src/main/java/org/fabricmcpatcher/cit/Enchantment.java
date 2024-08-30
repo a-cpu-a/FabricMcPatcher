@@ -3,7 +3,6 @@ package org.fabricmcpatcher.cit;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.resource.BlendMethod;
@@ -30,7 +29,8 @@ final class Enchantment extends OverrideBase {
     private float armorScaleX;
     private float armorScaleY;
 
-    private CITUtils.ArmorGlintInfo glintInfo;
+    private CITUtils.GlintTextureInfo entityGlintInfo;
+    private CITUtils.GlintTextureInfo guiGlintInfo;
 
     static void beginOuter2D() {
         RenderSystem.enableBlend();
@@ -90,7 +90,8 @@ final class Enchantment extends OverrideBase {
             setArmorScale();
         }
 
-        this.glintInfo = new CITUtils.ArmorGlintInfo(speed,rotation,armorScaleX*0.16f,armorScaleY*0.16f);
+        this.entityGlintInfo = new CITUtils.GlintTextureInfo(speed,rotation,armorScaleX*0.16f,armorScaleY*0.16f);
+        this.guiGlintInfo = new CITUtils.GlintTextureInfo(speed,rotation,armorScaleX*8.0f,armorScaleY*8.0f);
     }
 
     @Override
@@ -158,7 +159,7 @@ final class Enchantment extends OverrideBase {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glMatrixMode(GL11.GL_TEXTURE);*/
         begin(intensity);
-        //GL11.glScalef(armorScaleX, armorScaleY, 1.0f);
+        //GL11.glScalef(scaleX, scaleY, 1.0f);
         //GL11.glMatrixMode(GL11.GL_MODELVIEW);
     }
 
@@ -179,7 +180,7 @@ final class Enchantment extends OverrideBase {
         //blendMethod.applyBlending();
         //blendMethod.applyDepthFunc();
         CITUtils.boundFade =  blendMethod.getFade(intensity);
-        CITUtils.boundEnchantRotation = this.glintInfo;
+        CITUtils.boundEnchantRotation = this.entityGlintInfo;
         /*GL11.glPushMatrix();
         if (speed != 0.0) {
             double offset = ((double) System.currentTimeMillis() * speed) / 3000.0;
