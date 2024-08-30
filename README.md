@@ -12,9 +12,10 @@ Dripping lava, xp orb colormaps
 Sheep, collar, dye colors  
 Armor color: dye crafting  
 Default armor color
-Enchantment CIT on armor and tridents, cit.properties  
+Multilayer enchantment CIT on armor, shields and tridents, cit.properties  
 
 >Currently working on:  
+Shield with banner support
 Enchantment CIT on items  
 Mycelium particle color  
 
