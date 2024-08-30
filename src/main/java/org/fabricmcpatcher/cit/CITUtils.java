@@ -137,10 +137,10 @@ public class CITUtils {
     static final boolean enableArmor = Config.getBoolean(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "armor", true);
 
     private static TileLoader tileLoader;
-    private static final Map<Item, List<ItemOverride>> items = new IdentityHashMap<Item, List<ItemOverride>>();
-    private static final Map<Item, List<Enchantment>> enchantments = new IdentityHashMap<Item, List<Enchantment>>();
-    private static final List<Enchantment> allItemEnchantments = new ArrayList<Enchantment>();
-    private static final Map<Item, List<ArmorOverride>> armors = new IdentityHashMap<Item, List<ArmorOverride>>();
+    private static final Map<Item, List<ItemOverride>> items = new IdentityHashMap<>();
+    private static final Map<Item, List<Enchantment>> enchantments = new IdentityHashMap<>();
+    private static final List<Enchantment> allItemEnchantments = new ArrayList<>();
+    private static final Map<Item, List<ArmorOverride>> armors = new IdentityHashMap<>();
 
     static boolean useGlint;
 
@@ -214,8 +214,8 @@ public class CITUtils {
             @Override
             public void afterChange() {
                 for (List<ItemOverride> list : items.values()) {
-                    for (OverrideBase override : list) {
-                        ((ItemOverride) override).registerIcon(tileLoader);
+                    for (ItemOverride override : list) {
+                        override.registerIcon(tileLoader);
                     }
                     Collections.sort(list);
                 }
