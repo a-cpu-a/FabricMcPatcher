@@ -90,7 +90,7 @@ final class Enchantment extends OverrideBase {
             setArmorScale();
         }
 
-        this.glintInfo = new CITUtils.ArmorGlintInfo(speed,rotation,armorScaleX,armorScaleY);
+        this.glintInfo = new CITUtils.ArmorGlintInfo(speed,rotation,armorScaleX*0.16f,armorScaleY*0.16f);
     }
 
     @Override
