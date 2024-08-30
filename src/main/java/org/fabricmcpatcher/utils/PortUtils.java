@@ -3,13 +3,15 @@ package org.fabricmcpatcher.utils;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import org.fabricmcpatcher.FabricMcPatcher;
+import org.fabricmcpatcher.utils.id.BiomeIdUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,5 +82,9 @@ public class PortUtils {
 
         Registry<Biome> bioReg = MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME);
         return bioReg.get(Identifier.of(info.newId));
+    }
+
+    public static NbtCompound getTagCompound(ItemStack itemStack) {
+        return null;//TODO: implement, by converting components & adding to custom data
     }
 }

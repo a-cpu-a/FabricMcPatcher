@@ -3,20 +3,27 @@ package org.fabricmcpatcher.cit;
 
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.resource.*;
 import org.fabricmcpatcher.utils.Config;
 import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
+import org.fabricmcpatcher.utils.PortUtils;
+import org.fabricmcpatcher.utils.id.EnchantmentIdUtils;
 
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
@@ -26,9 +33,9 @@ public class CITUtils {
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, "CIT");
 
     static final String CIT_PROPERTIES = "cit.properties";
-    private static final Identifier CIT_PROPERTIES1 = TexturePackAPI.newMCPatcherIdentifier(CIT_PROPERTIES);
-    private static final Identifier CIT_PROPERTIES2 = TexturePackAPI.newMCPatcherIdentifier("cit/" + CIT_PROPERTIES);
-    static final Identifier FIXED_ARMOR_RESOURCE = new Identifier("textures/models/armor/iron_layer_1.png");
+    private static Identifier CIT_PROPERTIES1;
+    private static Identifier CIT_PROPERTIES2;
+    static final Identifier FIXED_ARMOR_RESOURCE = Identifier.ofVanilla("textures/models/armor/iron_layer_1.png");
 
     static final int MAX_ENCHANTMENTS = 256;
 
@@ -56,17 +63,7 @@ public class CITUtils {
     static SpriteContents lastOrigIcon;
     private static SpriteContents lastIcon;
 
-    private static Field potionItemStackField;
-
     static {
-        for (Field f : EntityPotion.class.getDeclaredFields()) {
-            if (ItemStack.class.isAssignableFrom(f.getType())) {
-                f.setAccessible(true);
-                potionItemStackField = f;
-                break;
-            }
-        }
-
         TexturePackChangeHandler.register(new TexturePackChangeHandler(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, 3) {
             @Override
             public void beforeChange() {
@@ -97,6 +94,9 @@ public class CITUtils {
                     Enchantment.baseArmorWidth = image.getWidth();
                     Enchantment.baseArmorHeight = image.getHeight();
                 }
+
+                CIT_PROPERTIES1 = TexturePackAPI.newMCPatcherIdentifier(CIT_PROPERTIES);
+                CIT_PROPERTIES2 = TexturePackAPI.newMCPatcherIdentifier("cit/" + CIT_PROPERTIES);
 
                 PropertiesFile properties = PropertiesFile.get(logger, CIT_PROPERTIES1);
                 if (properties == null) {
@@ -205,15 +205,8 @@ public class CITUtils {
     }
 
     public static SpriteContents getEntityIcon(SpriteContents icon, Entity entity) {
-        if (entity instanceof EntityPotion) {
-            if (potionItemStackField != null) {
-                try {
-                    return getIcon(icon, (ItemStack) potionItemStackField.get(entity), 1);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    potionItemStackField = null;
-                }
-            }
+        if (entity instanceof PotionEntity) {
+            return getIcon(icon, ((PotionEntity) entity).getStack(), 1);
         }
         return icon;
     }
@@ -235,7 +228,7 @@ public class CITUtils {
         Item item = itemStack.getItem();
         List<T> list = overrides.get(item);
         if (list != null) {
-            int[] enchantmentLevels = getEnchantmentLevels(item, itemStack.getTagCompound());
+            int[] enchantmentLevels = getEnchantmentLevels(item, itemStack);
             boolean hasEffect = itemStack.hasEffectVanilla();
             for (T override : list) {
                 if (override.match(itemStack, enchantmentLevels, hasEffect)) {
@@ -346,9 +339,30 @@ public class CITUtils {
         armorMatchIndex++;
     }
 
-    //TODO: replace this with component stuff
-    static int[] getEnchantmentLevels(Item item, NbtCompound nbt) {
+    static int[] getEnchantmentLevels(Item item, ItemStack nbt) {
+
+        ItemEnchantmentsComponent enchList = EnchantmentHelper.getEnchantments(nbt);
+
+        if(enchList==null || enchList.isEmpty())
+            return null;
+
         int[] levels = null;
+
+        for (RegistryEntry<Enchantment> e : enchList.getEnchantments()) {
+            int lvl = enchList.getLevel(e);
+            if(lvl<=0)
+                continue;
+
+            int id = EnchantmentIdUtils.newId2Int(e);
+            if(id<0 || id>=MAX_ENCHANTMENTS)
+                continue;
+
+            if(levels==null) levels = new int[MAX_ENCHANTMENTS];
+
+            levels[id]+=lvl;
+        }
+
+        /*
         if (nbt != null) {
             NbtElement base;
             if (item == itemEnchantedBook) {
@@ -371,7 +385,7 @@ public class CITUtils {
                     }
                 }
             }
-        }
+        }*/
         return levels;
     }
 }

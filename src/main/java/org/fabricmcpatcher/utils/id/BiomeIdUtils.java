@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.utils;
+package org.fabricmcpatcher.utils.id;
 
 import java.util.HashMap;
 import java.util.Map;
