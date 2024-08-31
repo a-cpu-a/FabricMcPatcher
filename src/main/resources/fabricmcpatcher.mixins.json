@@ -37,6 +37,7 @@
     "cit.BedBlockEntityRendererMixin",
     "cit.BufferBuilderStorageMixin",
     "cit.BuiltinModelItemRendererMixin",
+    "cit.ItemRendererMixin",
     "cit.WorldRendererMixin"
   ],
   "injectors": {

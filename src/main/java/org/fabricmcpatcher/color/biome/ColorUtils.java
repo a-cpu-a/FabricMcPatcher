@@ -2,6 +2,7 @@ package org.fabricmcpatcher.color.biome;
 
 public class ColorUtils {
 
+    /** outputs ARGB */
     public static void intToFloat4(int argb, float[] f, int offset) {
         if ((argb & 0xffffff) == 0xffffff) {
             f[offset+1] = f[offset + 2] = f[offset + 3] = 1.0f;
@@ -14,8 +15,10 @@ public class ColorUtils {
         f[offset] = (float) (argb & 0xff000000) / (float) 0xff000000;
     }
 
+
+    /** outputs ARGB */
     public static void intToFloat4(int argb, float[] f) {
-        intToFloat3(argb, f, 0);
+        intToFloat4(argb, f, 0);
     }
 
 

@@ -33,11 +33,11 @@ public abstract class ArmorFeatureRendererMixin<S extends BipedEntityRenderState
             while (CITUtils.preRenderArmorEnchantment()) {
                 //draw something
                 model.render(matrices, vertexConsumers.getBuffer(CITUtils.ARMOR_ENTITY_GLINT_CUSTOMIZED.apply(
-                        CITUtils.boundTex, CITUtils.boundBlending,CITUtils.boundGlintInfo)), light, OverlayTexture.DEFAULT_UV,
+                        CITUtils.boundTex, CITUtils.boundBlending,CITUtils.boundGlintInfo,
                         ColorHelper.fromFloats(
                                 CITUtils.boundFade.x,CITUtils.boundFade.y,
                                 CITUtils.boundFade.z,CITUtils.boundFade.w
-                        ));
+                        ))), light, OverlayTexture.DEFAULT_UV);
 
                 CITUtils.postRenderArmorEnchantment();
             }

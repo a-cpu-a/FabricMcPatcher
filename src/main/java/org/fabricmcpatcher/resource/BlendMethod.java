@@ -104,15 +104,16 @@ public class BlendMethod {
         return name;
     }
 
+    /** returns in ARGB */
     public Vector4f getFade(float fade) {
         if (fadeRGB && fadeAlpha) {
             return new Vector4f(fade, fade,fade,fade);
             //GLAPI.glColor4f(fade, fade, fade, fade);
         } else if (fadeRGB) {
-            return new Vector4f(fade, fade,fade, 1.0F);
+            return new Vector4f(1.0F,fade, fade,fade);
             //GLAPI.glColor4f(fade, fade, fade, 1.0f);
         } else if (fadeAlpha) {
-            return new Vector4f(1.0f, 1.0f, 1.0f, fade);
+            return new Vector4f(fade,1.0f, 1.0f, 1.0f);
             //GLAPI.glColor4f(1.0f, 1.0f, 1.0f, fade);
         } else {
             //no fading

@@ -55,7 +55,7 @@ public class CITUtils {
         if(fadeColor!=-1) {
             float[] col = new float[4];
             ColorUtils.intToFloat4(fadeColor,col);
-            RenderSystem.setShaderColor(col[0],col[1],col[2],col[3]);
+            RenderSystem.setShaderColor(col[1],col[2],col[3],col[0]);
         }
 
         /*long l = (long)((double)Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue()*speed * 8.0);
@@ -89,8 +89,8 @@ public class CITUtils {
         );
     });
 
-    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize.memoize3(
-            (texture, blendType, rotation) -> {
+    public static final QuadFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo,Integer, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize.memoize4(
+            (texture, blendType, rotation,fadeColor) -> {
                 RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
                         .program(RenderPhase.ARMOR_ENTITY_GLINT_PROGRAM)
                         .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
@@ -98,7 +98,7 @@ public class CITUtils {
                         .cull(RenderPhase.DISABLE_CULLING)
                         .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
                         .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
-                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation,-1))
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation,fadeColor))
                         .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
                         .build(false);
                 return RenderLayer.of(
@@ -130,7 +130,7 @@ public class CITUtils {
                         .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
                         .writeMaskState(RenderPhase.COLOR_MASK)
                         .cull(RenderPhase.DISABLE_CULLING)
-                        .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
+                        .depthTest(RenderPhase.EQUAL_DEPTH_TEST)//EQUAL_DEPTH_TEST
                         .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
                         .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation,fadeColor))
                         .target(ITEM_ENTITY_TARGET)
@@ -447,6 +447,7 @@ public class CITUtils {
             //help find errors:
             CITUtils.boundTex=null;
             CITUtils.boundBlending=null;
+            CITUtils.boundFade=null;
             return false;
         }
     }
