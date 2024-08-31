@@ -9,6 +9,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.ColorHelper;
 
 public class CitMixinUtils {
+    public static boolean renderingBlockEntity=false;
+
     public CitMixinUtils() {
     }
 

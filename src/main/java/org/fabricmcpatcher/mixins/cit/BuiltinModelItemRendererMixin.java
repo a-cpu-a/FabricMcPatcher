@@ -20,6 +20,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BuiltinModelItemRenderer.class)
 public class BuiltinModelItemRendererMixin {
@@ -27,6 +29,15 @@ public class BuiltinModelItemRendererMixin {
     @Shadow private TridentEntityModel modelTrident;
 
     @Shadow private ShieldEntityModel modelShield;
+
+    @Inject(method = "render",at= @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;renderEntity(Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)Z",shift = At.Shift.BEFORE))
+    void renderRenderEntityBefore(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CallbackInfo ci) {
+        CitMixinUtils.renderingBlockEntity= CITUtils.setupArmorEnchantments(stack);
+    }
+    @Inject(method = "render",at= @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;renderEntity(Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)Z",shift = At.Shift.AFTER))
+    void renderRenderEntityAfter(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CallbackInfo ci) {
+        CitMixinUtils.renderingBlockEntity=false;
+    }
 
     @WrapOperation(method = "render",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasGlint()Z"))
     boolean renderHasGlint(ItemStack instance, Operation<Boolean> original) {

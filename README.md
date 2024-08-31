@@ -22,3 +22,4 @@ Mycelium particle colorarray
 >Eventually  
 Map fog.nether, fog.end to (fixed) nether & end biome fog colormaps  
 Optionally allow uppercase assets  
+Fix block entity enchantment overlays (vanilla bug)  
