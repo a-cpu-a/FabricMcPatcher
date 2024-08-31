@@ -6,9 +6,9 @@ Firework blending modes (particle.properties)
 Text color overrides (except text.code.(16-31))  
 Cloud type override  
 Under (water / lava) fog colormaps  
-sky.end color and portal, water particle colors  
+sky.end color, portal and water particle colors  
 Fog, sky colormaps  
-Dripping lava, xp orb colormaps  
+Dripping lava, xp orb colorarrays  
 Sheep, collar, dye colors  
 Armor color: dye crafting  
 Default armor color
@@ -17,8 +17,8 @@ cit.properties
 
 >Currently working on:  
 Enchantment CIT on items  
-Mycelium particle color  
+Mycelium particle colorarray  
 
 >Eventually  
-Map fog.nether, fog.end to nether & end biome fog colors  
+Map fog.nether, fog.end to (fixed) nether & end biome fog colormaps  
 Optionally allow uppercase assets  
