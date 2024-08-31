@@ -29,7 +29,7 @@ final class Enchantment extends OverrideBase {
     private float armorScaleX;
     private float armorScaleY;
 
-    private CITUtils.GlintTextureInfo entityGlintInfo;
+    private CITUtils.GlintTextureInfo armorGlintInfo;
     private CITUtils.GlintTextureInfo guiGlintInfo;
 
     static void beginOuter2D() {
@@ -90,8 +90,8 @@ final class Enchantment extends OverrideBase {
             setArmorScale();
         }
 
-        this.entityGlintInfo = new CITUtils.GlintTextureInfo(speed,rotation,armorScaleX*0.16f,armorScaleY*0.16f);
-        this.guiGlintInfo = new CITUtils.GlintTextureInfo(speed,rotation,armorScaleX*8.0f,armorScaleY*8.0f);
+        this.armorGlintInfo = new CITUtils.GlintTextureInfo(speed,rotation,armorScaleX*0.16f,armorScaleY*0.16f);
+        this.guiGlintInfo = new CITUtils.GlintTextureInfo(speed,rotation,8.0f,8.0f);
     }
 
     @Override
@@ -180,7 +180,7 @@ final class Enchantment extends OverrideBase {
         //blendMethod.applyBlending();
         //blendMethod.applyDepthFunc();
         CITUtils.boundFade =  blendMethod.getFade(intensity);
-        CITUtils.boundGlintInfo = this.entityGlintInfo;
+        CITUtils.boundGlintInfo = this.armorGlintInfo;
         CITUtils.boundGlintInfoGui = this.guiGlintInfo;
         /*GL11.glPushMatrix();
         if (speed != 0.0) {

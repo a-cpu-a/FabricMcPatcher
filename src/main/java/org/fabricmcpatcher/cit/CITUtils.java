@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.function.TriFunction;
+import org.fabricmcpatcher.color.biome.ColorUtils;
 import org.fabricmcpatcher.resource.*;
 import org.fabricmcpatcher.utils.*;
 import org.fabricmcpatcher.utils.id.EnchantmentIdUtils;
@@ -26,19 +27,19 @@ import org.joml.Vector4f;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static net.minecraft.client.render.RenderPhase.ITEM_ENTITY_TARGET;
 
 
 public class CITUtils {
 
-    public static VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid) {
+    public static VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid,int blendCol) {
         return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()
-                ? vertexConsumers.getBuffer(FANCY_ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfo))
+                ? vertexConsumers.getBuffer(FANCY_ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfo,blendCol))
                 : vertexConsumers.getBuffer(
-                        solid ? ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfoGui)
-                                : ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfo));
+                        solid ? ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfoGui,blendCol)
+                                : ENTITY_GLINT_CUSTOMIZED.apply(boundTex,boundBlending, boundGlintInfo,blendCol));
     }
 
 
@@ -49,7 +50,14 @@ public class CITUtils {
             }
         }
 
-    private static void setupGlintTexturing(GlintTextureInfo info) {
+    private static void setupGlintTexturing(GlintTextureInfo info,int fadeColor) {
+
+        if(fadeColor!=-1) {
+            float[] col = new float[4];
+            ColorUtils.intToFloat4(fadeColor,col);
+            RenderSystem.setShaderColor(col[0],col[1],col[2],col[3]);
+        }
+
         /*long l = (long)((double)Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue()*speed * 8.0);
         float f = (float)(l % 110000L) / 110000.0F;
         float g = (float)(l % 30000L) / 30000.0F;
@@ -71,13 +79,17 @@ public class CITUtils {
         RenderSystem.setTextureMatrix(matrix4f);
     }
 
-    public static final Function<GlintTextureInfo,RenderPhase.Texturing> CUSTOMIZED_GLINT_TEXTURING = Util.memoize((info)->{
+    public static final BiFunction<GlintTextureInfo,Integer,RenderPhase.Texturing> CUSTOMIZED_GLINT_TEXTURING = Util.memoize((info,fadeColor)->{
         return new RenderPhase.Texturing(
-                "customized_glint_texturing_"+info, () -> setupGlintTexturing(info), () -> RenderSystem.resetTextureMatrix()
+                "customized_glint_texturing_"+info, () -> setupGlintTexturing(info,fadeColor), () -> {
+                    if(fadeColor!=-1)
+                        RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
+                    RenderSystem.resetTextureMatrix();
+                }
         );
     });
 
-    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
+    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> ARMOR_ENTITY_GLINT_CUSTOMIZED = Memoize.memoize3(
             (texture, blendType, rotation) -> {
                 RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
                         .program(RenderPhase.ARMOR_ENTITY_GLINT_PROGRAM)
@@ -86,7 +98,7 @@ public class CITUtils {
                         .cull(RenderPhase.DISABLE_CULLING)
                         .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
                         .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
-                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation))
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation,-1))
                         .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
                         .build(false);
                 return RenderLayer.of(
@@ -94,8 +106,8 @@ public class CITUtils {
                 );
             }
     );
-    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
-            (texture, blendType, rotation) -> {
+    public static final QuadFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo,Integer, RenderLayer> ENTITY_GLINT_CUSTOMIZED = Memoize.memoize4(
+            (texture, blendType, rotation,fadeColor) -> {
                 RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
                         .program(RenderPhase.ENTITY_GLINT_PROGRAM)
                         .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
@@ -103,15 +115,16 @@ public class CITUtils {
                         .cull(RenderPhase.DISABLE_CULLING)
                         .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
                         .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
-                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation))
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation,fadeColor))
                         .build(false);
                 return RenderLayer.of(
                         "entity_glint_customized", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 1536, false, true, multiPhaseParameters
                 );
             }
     );
-    public static final TriFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo, RenderLayer> FANCY_ENTITY_GLINT_CUSTOMIZED = Memoize3.memoize(
-            (texture, blendType, rotation) -> {
+
+    public static final QuadFunction<Identifier,RenderPhase.Transparency, GlintTextureInfo,Integer, RenderLayer> FANCY_ENTITY_GLINT_CUSTOMIZED = Memoize.memoize4(
+            (texture, blendType, rotation,fadeColor) -> {
                 RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
                         .program(RenderPhase.ENTITY_GLINT_PROGRAM)
                         .texture(new RenderPhase.Texture(texture, TriState.DEFAULT, false))//new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false)
@@ -119,7 +132,7 @@ public class CITUtils {
                         .cull(RenderPhase.DISABLE_CULLING)
                         .depthTest(RenderPhase.EQUAL_DEPTH_TEST)
                         .transparency(blendType)//RenderPhase.GLINT_TRANSPARENCY
-                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation))
+                        .texturing(CUSTOMIZED_GLINT_TEXTURING.apply(rotation,fadeColor))
                         .target(ITEM_ENTITY_TARGET)
                         .build(false);
                 return RenderLayer.of(

@@ -22,7 +22,7 @@ public class CitMixinUtils {
         while (CITUtils.preRenderArmorEnchantment()) {
 
             //every layer can have a different consumer
-            VertexConsumer vertexConsumer2 = CITUtils.getVertexConsumer(vertexConsumers, baseLayer, false);
+            VertexConsumer vertexConsumer2 = CITUtils.getVertexConsumer(vertexConsumers, baseLayer, false,-1);
             //draw something
             instance.render(matrixStack, vertexConsumer2, light, overlay, ColorHelper.fromFloats(
                     CITUtils.boundFade.x, CITUtils.boundFade.y,
