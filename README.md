@@ -16,7 +16,8 @@ Multilayer enchantment CIT on armor, normal items, shields and tridents
 cit.properties  
 Map colors  
 Potion colors  
-Spawn egg colors
+Spawn egg colors  
+Lightmaps  
 
 >Currently working on:  
 Enchantment CIT on compasses, clocks, ...  

@@ -40,6 +40,7 @@
     "color.BossBarHudMixin",
     "color.CatCollarFeatureRendererMixin",
     "color.ExperienceOrbEntityRendererMixin",
+    "color.LightmapTextureManagerMixin",
     "color.PortalParticleMixin",
     "color.TextRendererMixin",
     "color.WolfCollarFeatureRendererMixin"

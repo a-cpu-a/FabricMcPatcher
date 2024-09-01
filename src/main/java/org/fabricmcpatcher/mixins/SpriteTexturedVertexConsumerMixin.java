@@ -15,6 +15,8 @@ public class SpriteTexturedVertexConsumerMixin implements IGetBuilding {
 
     @Unique
     public boolean mcPatcher$getBuilding() {
-        return ((IGetBuilding)delegate).mcPatcher$getBuilding();
+        if(delegate instanceof IGetBuilding)
+            return ((IGetBuilding)delegate).mcPatcher$getBuilding();
+        return false;
     }
 }

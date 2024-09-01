@@ -101,8 +101,8 @@ public class Colorizer {
             ColorizeBlock.reset();
         } catch (NoClassDefFoundError e) {
             // not present in 1.8
-        }
-        Lightmap.reset();*/ //TODO
+        }*/ //TODO
+        Lightmap.reset();
         ColorizeItem.reset();
         ColorizeWorld.reset();
         ColorizeEntity.reset();
@@ -127,6 +127,8 @@ public class Colorizer {
 
     static boolean loadIntColor(String key, int[] color, int index) {
         logger.config("%s=%06x", key, color[index]);
+
+        if(properties==null)return false;
         String value = properties.getString(key, "");
         if (!value.equals("")) {
             try {
