@@ -17,8 +17,6 @@ public class FabricMcPatcher implements ModInitializer {
         return ret;
     }
 
-    //public static final String[] SKY = suffixFolders("sky");
-
 
     @Override
     public void onInitialize() {

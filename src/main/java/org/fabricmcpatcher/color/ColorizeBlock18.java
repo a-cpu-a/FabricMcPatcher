@@ -21,6 +21,12 @@ import org.fabricmcpatcher.utils.block.RenderPassAPI;
 import java.util.List;
 
 public class ColorizeBlock18 {
+
+    //https://github.com/NicosMinecraftArchive/mcpatcher-bitbucket/blob/1aa45839b2cd029143809edfa60ec59e5ef75f80/stubs/src/net/minecraft/src/ModelFace.java#L4
+
+    //https://github.com/NicosMinecraftArchive/mcpatcher-bitbucket/blob/master/mods/src/com/prupe/mcpatcher/mod/cc/CC_Block.java
+    //https://github.com/NicosMinecraftArchive/mcpatcher-bitbucket/blob/master/mods/src/com/prupe/mcpatcher/mod/cc/CustomColors.java
+
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_COLORS);
 
     private static final String COLOR_PROPERTIES = "color.properties";
