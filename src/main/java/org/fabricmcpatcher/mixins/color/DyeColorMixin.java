@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins;
+package org.fabricmcpatcher.mixins.color;
 
 import net.minecraft.util.DyeColor;
 import org.fabricmcpatcher.color.ColorizeEntity;

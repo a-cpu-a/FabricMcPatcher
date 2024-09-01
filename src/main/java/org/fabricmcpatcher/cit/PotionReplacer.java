@@ -72,7 +72,7 @@ class PotionReplacer {
             for(Potion potion : Registries.POTION.stream().toList()) {
                 PotionIdUtils.PotionInfo info = PotionIdUtils.potionType2Info.get(Registries.POTION.getEntry(potion));
                 if(info==null)continue;
-                logger.fine("%s potion -> effect %d", info.name, i++); //potion.getName().replaceFirst("^potion\\.", "")
+                logger.fine("%s/%s potion -> effect %d", info.name,info.newName==null?"":info.newName, i++); //potion.getName().replaceFirst("^potion\\.", "")
             }
         } catch (Throwable e) {
             e.printStackTrace();

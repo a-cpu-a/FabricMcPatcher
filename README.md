@@ -14,8 +14,11 @@ Armor color: dye crafting
 Default armor color
 Multilayer enchantment CIT on armor, normal items, shields and tridents  
 cit.properties  
+Map colors  
+Potion colors  
 
 >Currently working on:  
+Spawn egg colors  
 Enchantment CIT on compasses, clocks, ...  
 Mycelium particle colorarray  
 

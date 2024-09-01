@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins;
+package org.fabricmcpatcher.mixins.color;
 
 import net.minecraft.util.Formatting;
 import org.fabricmcpatcher.color.ColorizeWorld;

@@ -1,6 +1,8 @@
 package org.fabricmcpatcher.color;
 
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.Identifier;
+import org.fabricmcpatcher.accessors.IOverrideColor;
 import org.fabricmcpatcher.color.biome.ColorMap;
 import org.fabricmcpatcher.color.biome.ColorUtils;
 import org.fabricmcpatcher.resource.PropertiesFile;
@@ -56,14 +58,14 @@ public class Colorizer {
                     ColorizeWorld.reloadFogColors(properties);
                 }
                 if (usePotionColors) {
-                    //ColorizeItem.reloadPotionColors(properties); //TODO
+                    ColorizeItem.reloadPotionColors(properties);
                 }
                 if (useCloudType) {
                     ColorizeWorld.reloadCloudType(properties);
                 }
-                /*if (useMapColors) {
+                if (useMapColors) {
                     ColorizeItem.reloadMapColors(properties);
-                }*/ //TODO
+                }
                 if (useDyeColors) {
                     ColorizeEntity.reloadDyeColors(properties);
                 }
@@ -100,8 +102,8 @@ public class Colorizer {
         } catch (NoClassDefFoundError e) {
             // not present in 1.8
         }
-        Lightmap.reset();
-        ColorizeItem.reset();*/ //TODO
+        Lightmap.reset();*/ //TODO
+        ColorizeItem.reset();
         ColorizeWorld.reset();
         ColorizeEntity.reset();
     }
@@ -118,10 +120,10 @@ public class Colorizer {
             return "" + index;
         }
     }
-/*
-    static void loadIntColor(String key, Potion potion) {
-        potion.color = loadIntColor(key, potion.color);
-    }*/
+
+    static void loadIntColor(String key, StatusEffect potion) {
+        ((IOverrideColor)potion).mcPatcher$overrideColor(loadIntColor(key, potion.getColor()));
+    }
 
     static boolean loadIntColor(String key, int[] color, int index) {
         logger.config("%s=%06x", key, color[index]);

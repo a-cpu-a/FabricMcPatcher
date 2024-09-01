@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins;
+package org.fabricmcpatcher.mixins.color;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -6,7 +6,6 @@ import net.minecraft.client.particle.PortalParticle;
 import org.fabricmcpatcher.color.ColorizeEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(PortalParticle.class)
 public class PortalParticleMixin {

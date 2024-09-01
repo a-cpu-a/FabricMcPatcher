@@ -1,8 +1,7 @@
-package org.fabricmcpatcher.mixins;
+package org.fabricmcpatcher.mixins.color;
 
 import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
 import org.fabricmcpatcher.color.ColorizeWorld;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

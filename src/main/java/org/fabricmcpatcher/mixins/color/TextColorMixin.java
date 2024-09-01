@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins;
+package org.fabricmcpatcher.mixins.color;
 
 import net.minecraft.text.TextColor;
 import org.fabricmcpatcher.accessors.IMutableColor;
