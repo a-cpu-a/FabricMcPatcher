@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins.color;
+package org.fabricmcpatcher.mixins.color.text;
 
 import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;

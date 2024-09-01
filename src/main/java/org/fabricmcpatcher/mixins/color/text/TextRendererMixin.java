@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins.color;
+package org.fabricmcpatcher.mixins.color.text;
 
 import net.minecraft.client.font.TextRenderer;
 import org.fabricmcpatcher.color.ColorizeWorld;

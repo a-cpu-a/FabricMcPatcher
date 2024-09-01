@@ -53,7 +53,7 @@ public class Colorizer {
                     ColorizeBlock.reloadAll(properties);
                 } catch (NoClassDefFoundError e) {
                     // not present in 1.8
-                }*/ //TODO
+                }*/
                 if (useFogColors) {
                     ColorizeWorld.reloadFogColors(properties);
                 }

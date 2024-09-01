@@ -1,7 +1,9 @@
 package org.fabricmcpatcher.color;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.color.biome.*;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.resource.ResourceList;
@@ -25,7 +27,7 @@ public class ColorizeBlock {
     private static final boolean useBlockColors = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "otherBlocks", true);
 
     static final boolean enableSmoothBiomes = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "smoothBiomes", true);
-    static final boolean enableTestColorSmoothing = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "testColorSmoothing", false);
+    static final boolean enableTestColorSmoothing = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "testColorSmoothing", false);//debug thing
 
     private static final Identifier REDSTONE_COLORS = TexturePackAPI.newMCPatcherIdentifier("/misc/redstonecolor.png", "colormap/redstone.png");
     private static final Identifier STEM_COLORS = TexturePackAPI.newMCPatcherIdentifier("/misc/stemcolor.png", "colormap/stem.png");
@@ -350,7 +352,7 @@ public class ColorizeBlock {
         return null;
     }
 
-    private static IColorMap findColorMap(Block block, IBlockAccess blockAccess, int i, int j, int k) {
+    private static IColorMap findColorMap(Block block, BlockRenderView blockAccess, int i, int j, int k) {
         List<BlockStateMatcher> maps = findColorMaps(block);
         if (maps != null) {
             for (BlockStateMatcher matcher : maps) {
@@ -378,12 +380,12 @@ public class ColorizeBlock {
         }
     }
 
-    public static boolean colorizeBlock(Block block, IBlockAccess blockAccess, int i, int j, int k) {
+    public static boolean colorizeBlock(Block block, BlockRenderView blockAccess, int i, int j, int k) {
         IColorMap colorMap = findColorMap(block, blockAccess, i, j, k);
         return colorizeBlock(block, blockAccess, colorMap, i, j, k);
     }
 
-    private static boolean colorizeBlock(Block block, IBlockAccess blockAccess, IColorMap colorMap, int i, int j, int k) {
+    private static boolean colorizeBlock(Block block, BlockRenderView blockAccess, IColorMap colorMap, int i, int j, int k) {
         if (colorMap == null) {
             return false;
         } else {
@@ -412,6 +414,7 @@ public class ColorizeBlock {
         }
     }
 
+
     public static void colorizeWaterBlockGL(Block block) {
         if (block == waterBlock || block == staticWaterBlock) {
             float[] waterColor;
@@ -434,16 +437,15 @@ public class ColorizeBlock {
         }
     }
 
-    public static int colorizeRedstoneWire(IBlockAccess blockAccess, int i, int j, int k, int defaultColor) {
+    public static int colorizeRedstoneWire(int current) {
         if (redstoneColor == null) {
-            return defaultColor;
+            return -1;
         } else {
-            int metadata = Math.max(Math.min(BlockAPI.getMetadataAt(blockAccess, i, j, k), 15), 0);
-            return ColorUtils.float3ToInt(redstoneColor[metadata]);
+            return ColorUtils.float3ToInt(redstoneColor[current]);
         }
     }
 
-    private static float[] getVertexColor(IBlockAccess blockAccess, IColorMap colorMap, int i, int j, int k, int[] offsets) {
+    private static float[] getVertexColor(BlockRenderView blockAccess, IColorMap colorMap, int i, int j, int k, int[] offsets) {
         if (enableTestColorSmoothing) {
             int rgb = 0;
             if ((i + offsets[0]) % 2 == 0) {
@@ -462,7 +464,7 @@ public class ColorizeBlock {
         }
     }
 
-    public static boolean setupBlockSmoothing(RenderBlocks renderBlocks, Block block, IBlockAccess blockAccess,
+    public static boolean setupBlockSmoothing(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                               int i, int j, int k, int face,
                                               float topLeft, float bottomLeft, float bottomRight, float topRight) {
         return RenderBlocksUtils.useColorMultiplier(face) &&
@@ -471,14 +473,14 @@ public class ColorizeBlock {
 
     // TODO: remove
     @Deprecated
-    public static boolean setupBlockSmoothingGrassSide(RenderBlocks renderBlocks, Block block, IBlockAccess blockAccess,
+    public static boolean setupBlockSmoothingGrassSide(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                                        int i, int j, int k, int face,
                                                        float topLeft, float bottomLeft, float bottomRight, float topRight) {
         return checkBiomeSmoothing(block, face) &&
             setupBiomeSmoothing(renderBlocks, block, blockAccess, i, j, k, face, true, topLeft, bottomLeft, bottomRight, topRight);
     }
 
-    public static boolean setupBlockSmoothing(RenderBlocks renderBlocks, Block block, IBlockAccess blockAccess,
+    public static boolean setupBlockSmoothing(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                               int i, int j, int k, int face) {
         return checkBiomeSmoothing(block, face) &&
             setupBiomeSmoothing(renderBlocks, block, blockAccess, i, j, k, face, true, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -488,7 +490,7 @@ public class ColorizeBlock {
         return enableSmoothBiomes && face >= 0 && RenderBlocksUtils.isAmbientOcclusionEnabled() && BlockAPI.getBlockLightValue(block) == 0;
     }
 
-    private static boolean setupBiomeSmoothing(RenderBlocks renderBlocks, Block block, IBlockAccess blockAccess,
+    private static boolean setupBiomeSmoothing(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                                int i, int j, int k, int face,
                                                boolean useAO, float topLeft, float bottomLeft, float bottomRight, float topRight) {
         if (!setupBlockSmoothing(block, blockAccess, i, j, k, face)) {
@@ -522,14 +524,14 @@ public class ColorizeBlock {
         return true;
     }
 
-    public static void setupBlockSmoothing(Block block, IBlockAccess blockAccess, int i, int j, int k, int face,
+    public static void setupBlockSmoothing(Block block, BlockRenderView blockAccess, int i, int j, int k, int face,
                                            float r, float g, float b) {
         if (!setupBlockSmoothing(block, blockAccess, i, j, k, face)) {
             setVertexColors(r, g, b);
         }
     }
 
-    private static boolean setupBlockSmoothing(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
+    private static boolean setupBlockSmoothing(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         if (!checkBiomeSmoothing(block, face)) {
             return false;
         }

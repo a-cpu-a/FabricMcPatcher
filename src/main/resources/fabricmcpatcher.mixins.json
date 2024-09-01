@@ -6,15 +6,16 @@
   "mixins": [
     "ReloadableResourceManagerImplMixin",
     "color.DyeColorMixin",
-    "color.DyedColorComponentMixin",
-    "color.FormattingMixin",
-    "color.MapColorMixin",
     "color.PotionContentsComponentMixin",
-    "color.SheepEntityMixin",
     "color.SpawnEggItemMixin",
     "color.StatusEffectMixin",
-    "color.StyleMixin",
-    "color.TextColorMixin"
+    "color.block.RedstoneWireBlockMixin",
+    "color.entity.DyedColorComponentMixin",
+    "color.entity.MapColorMixin",
+    "color.entity.SheepEntityMixin",
+    "color.text.FormattingMixin",
+    "color.text.StyleMixin",
+    "color.text.TextColorMixin"
   ],
   "client": [
     "BackgroundRendererMixin",
@@ -35,15 +36,16 @@
     "cit.BuiltinModelItemRendererMixin",
     "cit.ItemRendererMixin",
     "cit.WorldRendererMixin",
-    "color.BlockLeakParticleMixin",
-    "color.BlockLeakParticleMixin$DrippingLava",
-    "color.BossBarHudMixin",
-    "color.CatCollarFeatureRendererMixin",
-    "color.ExperienceOrbEntityRendererMixin",
+    "color.particle.BlockLeakParticleMixin$DrippingLava",
     "color.LightmapTextureManagerMixin",
-    "color.PortalParticleMixin",
-    "color.TextRendererMixin",
-    "color.WolfCollarFeatureRendererMixin"
+    "color.block.BlockColorsMixin",
+    "color.entity.CatCollarFeatureRendererMixin",
+    "color.entity.WolfCollarFeatureRendererMixin",
+    "color.particle.BlockLeakParticleMixin",
+    "color.particle.ExperienceOrbEntityRendererMixin",
+    "color.particle.PortalParticleMixin",
+    "color.text.BossBarHudMixin",
+    "color.text.TextRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

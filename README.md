@@ -2,22 +2,22 @@
 
 >Completed:  
 Skyboxes, sun / moon  
-Firework blending modes (particle.properties)  
-Text color overrides  
-Cloud type override  
-Under (water / lava) fog colormaps  
-sky.end color, portal and water particle colors  
+Lightmaps  
 Fog, sky colormaps  
+cit.properties  
+Map colors  
+Potion colors  
+Text color overrides  
+Under (water / lava) fog colormaps  
+Multilayer enchantment CIT on armor, normal items, shields and tridents  
+sky.end color, portal and water particle colors  
 Dripping lava, xp orb colorarrays  
 Sheep, collar, dye colors  
 Armor color: dye crafting  
 Default armor color
-Multilayer enchantment CIT on armor, normal items, shields and tridents  
-cit.properties  
-Map colors  
-Potion colors  
+Firework blending modes (particle.properties)  
 Spawn egg colors  
-Lightmaps  
+Cloud type override
 
 >Currently working on:  
 Block colormaps  

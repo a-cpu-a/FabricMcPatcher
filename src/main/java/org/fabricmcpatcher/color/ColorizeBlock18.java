@@ -2,8 +2,11 @@ package org.fabricmcpatcher.color;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.color.biome.ColorUtils;
 import org.fabricmcpatcher.color.biome.IColorMap;
 import org.fabricmcpatcher.resource.PropertiesFile;
@@ -13,13 +16,14 @@ import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 import org.fabricmcpatcher.utils.block.BlockAPI;
 import org.fabricmcpatcher.utils.block.BlockStateMatcher;
+import org.fabricmcpatcher.utils.block.RenderPassAPI;
 
 import java.util.List;
 
 public class ColorizeBlock18 {
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_COLORS);
 
-    private static final Identifier COLOR_PROPERTIES = TexturePackAPI.newMCPatcherIdentifier("color.properties");
+    private static final String COLOR_PROPERTIES = "color.properties";
 
     private static Block grassBlock;
     private static Block mycelBlock;
@@ -150,7 +154,7 @@ public class ColorizeBlock18 {
         this.ctm = ctm;
     }
 
-    public void preRender(IBlockAccess blockAccess, IModel model, IBlockState blockState, Position position, Block block, boolean useAO) {
+    public void preRender(BlockRenderView blockAccess, IModel model, BlockState blockState, BlockPos position, Block block, boolean useAO) {
         colorMap = null;
         useCM = RenderPassAPI.instance.useColorMultiplierThisPass(block);
         if (useCM) {
@@ -167,7 +171,7 @@ public class ColorizeBlock18 {
         isSmooth = false;
     }
 
-    public void preRenderHeld(IModel model, IBlockState blockState, Block block) {
+    public void preRenderHeld(IModel model, BlockState blockState, Block block) {
         colorMap = null;
         isSmooth = false;
         List<BlockStateMatcher> maps = ColorizeBlock.findColorMaps(block);
@@ -278,25 +282,25 @@ public class ColorizeBlock18 {
         return vertexColor[index];
     }
 
-    public int getParticleColor(IBlockAccess blockAccess, IBlockState blockState, Position position, int defaultColor) {
+    public int getParticleColor(BlockRenderView blockAccess, BlockState blockState, BlockPos position, int defaultColor) {
         return getColorMultiplier(blockAccess, blockState, position, defaultColor);
     }
 
     // public static methods requested by MamiyaOtaru for VoxelMap
-    public static int getColorMultiplier(IBlockAccess blockAccess, IBlockState blockState, Position position, int defaultColor) {
+    public static int getColorMultiplier(BlockRenderView blockAccess, BlockState blockState, BlockPos position, int defaultColor) {
         List<BlockStateMatcher> maps = ColorizeBlock.findColorMaps(blockState.getBlock());
         if (maps != null) {
             for (BlockStateMatcher matcher : maps) {
                 if (matcher.matchBlockState(blockState)) {
                     IColorMap colorMap = ColorizeBlock.getThreadLocal(matcher);
-                    return colorMap.getColorMultiplier(blockAccess, position.getI(), position.getJ(), position.getK());
+                    return colorMap.getColorMultiplier(blockAccess, position.getX(), position.getY(), position.getZ());
                 }
             }
         }
         return defaultColor;
     }
 
-    public static int getColorMultiplier(IBlockAccess blockAccess, IBlockState blockState, Position position) {
+    public static int getColorMultiplier(BlockRenderView blockAccess, BlockState blockState, BlockPos position) {
         return getColorMultiplier(blockAccess, blockState, position, 0xffffff);
     }
 }

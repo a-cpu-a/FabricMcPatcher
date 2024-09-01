@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins.color;
+package org.fabricmcpatcher.mixins.color.entity;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;

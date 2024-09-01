@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins.color;
+package org.fabricmcpatcher.mixins.color.entity;
 
 import net.minecraft.block.MapColor;
 import org.fabricmcpatcher.accessors.IOriginalColor;

@@ -1,6 +1,10 @@
 package org.fabricmcpatcher.utils.block;
 
 
+import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
+import org.fabricmcpatcher.resource.BlendMethod;
+
 public class RenderPassAPI {
     public static RenderPassAPI instance = new RenderPassAPI();
 

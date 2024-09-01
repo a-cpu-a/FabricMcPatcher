@@ -2,7 +2,14 @@ package org.fabricmcpatcher.utils.block;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.registry.DefaultedRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.resource.PropertiesFile;
+import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.utils.MAL;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 
@@ -11,7 +18,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 
-abstract public class BlockAPI {
+public class BlockAPI {
     private static final HashMap<String, Integer> canonicalIdByName = new HashMap<String, Integer>();
 
     static {
@@ -184,7 +191,7 @@ abstract public class BlockAPI {
         //TODO: add 1.12 stuff
     }
 
-    private static final BlockAPI instance = MAL.newInstance(BlockAPI.class, "block");
+    private static final BlockAPI instance = new BlockAPI();
 
     public static Block getFixedBlock(String name) {
         Block block = parseBlockName(name);
@@ -221,19 +228,19 @@ abstract public class BlockAPI {
         return blocks;
     }
 
-    public static Block getBlockAt(IBlockAccess blockAccess, int i, int j, int k) {
+    public static Block getBlockAt(BlockRenderView blockAccess, int i, int j, int k) {
         return instance.getBlockAt_Impl(blockAccess, i, j, k);
     }
 
-    public static int getMetadataAt(IBlockAccess blockAccess, int i, int j, int k) {
+    public static int getMetadataAt(BlockRenderView blockAccess, int i, int j, int k) {
         return instance.getMetadataAt_Impl(blockAccess, i, j, k);
     }
 
-    public static Icon getBlockIcon(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
+    public static Icon getBlockIcon(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         return instance.getBlockIcon_Impl(block, blockAccess, i, j, k, face);
     }
 
-    public static boolean shouldSideBeRendered(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
+    public static boolean shouldSideBeRendered(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         return instance.shouldSideBeRendered_Impl(block, blockAccess, i, j, k, face);
     }
 
@@ -312,244 +319,134 @@ abstract public class BlockAPI {
         return instance.expandTileName_Impl(tileName);
     }
 
-    abstract protected Block getBlockAt_Impl(IBlockAccess blockAccess, int i, int j, int k);
-
-    abstract protected int getMetadataAt_Impl(IBlockAccess blockAccess, int i, int j, int k);
-
-    abstract protected Icon getBlockIcon_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face);
-
-    abstract protected boolean shouldSideBeRendered_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face);
-
-    abstract protected Iterator<Block> iterator_Impl();
-
-    abstract protected Block getBlockById_Impl(int id);
-
-    abstract protected Block getBlockByName_Impl(String name);
-
-    abstract protected String getBlockName_Impl(Block block);
-
-    abstract protected int getBlockLightValue_Impl(Block block);
-
-    abstract protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl();
-
-    abstract protected String expandTileName_Impl(String tileName);
-
     BlockAPI() {
     }
-
-    final private static class V1 extends BlockAPI {
-        @Override
-        protected Block getBlockAt_Impl(IBlockAccess blockAccess, int i, int j, int k) {
-            return Block.blocksList[blockAccess.getBlockId(i, j, k)];
-        }
-
-        @Override
-        protected int getMetadataAt_Impl(IBlockAccess blockAccess, int i, int j, int k) {
-            return blockAccess.getBlockMetadata(i, j, k);
-        }
-
-        @Override
-        protected Icon getBlockIcon_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
-            return block.getBlockIcon(blockAccess, i, j, k, face);
-        }
-
-        @Override
-        protected boolean shouldSideBeRendered_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
-            return block.shouldSideBeRendered(blockAccess, i, j, k, face);
-        }
-
-        @Override
-        protected Iterator<Block> iterator_Impl() {
-            return Arrays.asList(Block.blocksList).iterator();
-        }
-
-        @Override
-        protected Block getBlockById_Impl(int id) {
-            return id >= 0 && id < Block.blocksList.length ? Block.blocksList[id] : null;
-        }
-
-        @Override
-        protected Block getBlockByName_Impl(String name) {
-            Integer id = canonicalIdByName.get(name);
-            return id == null ? null : getBlockById_Impl(id);
-        }
-
-        @Override
-        protected String getBlockName_Impl(Block block) {
-            int id = block.blockID;
-            for (Map.Entry<String, Integer> entry : canonicalIdByName.entrySet()) {
-                if (id == entry.getValue()) {
-                    return entry.getKey();
+    protected final DefaultedRegistry<Block> registry=Registries.BLOCK;
+    private final Block airBlock= Blocks.AIR;
+    /*
+    V2(Registry<Block> registry) {
+        this.registry = registry;
+        File outputFile = new File("blocks17.txt");
+        if (outputFile.isFile()) {
+            PrintStream ps = null;
+            try {
+                ps = new PrintStream(outputFile);
+                String[] nameList = new String[4096];
+                for (String name17 : registry.getKeys()) {
+                    Block block = registry.getValue(name17);
+                    if (block != null) {
+                        int id = registry.getId(block);
+                        if (id >= 0 && id < nameList.length) {
+                            nameList[id] = name17;
+                        }
+                    }
                 }
+                for (int id = 0; id < nameList.length; id++) {
+                    if (nameList[id] != null) {
+                        ps.printf("canonicalIdByName.put(\"%s\", %d);\n", nameList[id], id);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                MCPatcherUtils.close(ps);
             }
-            return String.valueOf(id);
-        }
-
-        @Override
-        protected int getBlockLightValue_Impl(Block block) {
-            return Block.lightValue[block.blockID];
-        }
-
-        @Override
-        protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
-            return BlockStateMatcher.V1.class;
-        }
-
-        @Override
-        protected String expandTileName_Impl(String tileName) {
-            return tileName;
         }
     }
 
-    private static class V2 extends BlockAPI {
-        protected final Registry<Block> registry;
+    V2() {
+        this(Block.blockRegistry);
+    }*/
+    /*
+    protected Block getBlockAt_Impl(BlockRenderView blockAccess, int i, int j, int k) {
+        return blockAccess.getBlock(i, j, k);
+    }
 
-        V2(Registry<Block> registry) {
-            this.registry = registry;
-            File outputFile = new File("blocks17.txt");
-            if (outputFile.isFile()) {
-                PrintStream ps = null;
-                try {
-                    ps = new PrintStream(outputFile);
-                    String[] nameList = new String[4096];
-                    for (String name17 : registry.getKeys()) {
-                        Block block = registry.getValue(name17);
-                        if (block != null) {
-                            int id = registry.getId(block);
-                            if (id >= 0 && id < nameList.length) {
-                                nameList[id] = name17;
-                            }
-                        }
-                    }
-                    for (int id = 0; id < nameList.length; id++) {
-                        if (nameList[id] != null) {
-                            ps.printf("canonicalIdByName.put(\"%s\", %d);\n", nameList[id], id);
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    MCPatcherUtils.close(ps);
-                }
-            }
-        }
+    protected int getMetadataAt_Impl(BlockRenderView blockAccess, int i, int j, int k) {
+        return blockAccess.getBlockMetadata(i, j, k);
+    }
 
-        V2() {
-            this(Block.blockRegistry);
-        }
+    protected Icon getBlockIcon_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+        return block.getBlockIcon(blockAccess, i, j, k, face);
+    }
 
-        @Override
-        protected Block getBlockAt_Impl(IBlockAccess blockAccess, int i, int j, int k) {
-            return blockAccess.getBlock(i, j, k);
-        }
+    protected boolean shouldSideBeRendered_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+        return block.shouldSideBeRendered(blockAccess, i, j, k, face);
+    }*/
 
-        @Override
-        protected int getMetadataAt_Impl(IBlockAccess blockAccess, int i, int j, int k) {
-            return blockAccess.getBlockMetadata(i, j, k);
-        }
+    protected Iterator<Block> iterator_Impl() {
+        return registry.iterator();
+    }
 
-        @Override
-        protected Icon getBlockIcon_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
-            return block.getBlockIcon(blockAccess, i, j, k, face);
-        }
+    protected Block getBlockById_Impl(int id) {
+        return registry.getById(id);
+    }
+    /*
+    protected Block getBlockByName_Impl(String name) {
+        return registry.getValue(name);
+    }
 
-        @Override
-        protected boolean shouldSideBeRendered_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
-            return block.shouldSideBeRendered(blockAccess, i, j, k, face);
-        }
+    protected String getBlockName_Impl(Block block) {
+        String name = registry.getKey(block);
+        return name == null ? String.valueOf(registry.getId(block)) : name;
+    }*/
 
-        @Override
-        protected Iterator<Block> iterator_Impl() {
-            return registry.iterator();
-        }
+    protected int getBlockLightValue_Impl(Block block) {
+        return block.getLightValue();
+    }
+    /*
+    protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
+        return BlockStateMatcher.V1.class;
+    }
 
-        @Override
-        protected Block getBlockById_Impl(int id) {
-            return registry.getById(id);
-        }
+    protected String expandTileName_Impl(String tileName) {
+        return tileName;
+    }*/
 
-        @Override
-        protected Block getBlockByName_Impl(String name) {
-            return registry.getValue(name);
-        }
+    /*
+    V3() {
+        super(Block.blockRegistry1);
+        airBlock = registry.getValueObject(null);
+    }*/
 
-        @Override
-        protected String getBlockName_Impl(Block block) {
-            String name = registry.getKey(block);
-            return name == null ? String.valueOf(registry.getId(block)) : name;
-        }
+    protected Block getBlockAt_Impl(BlockRenderView blockAccess, int i, int j, int k) {
+        return blockAccess.getBlockState(new Position(i, j, k)).getBlock();
+    }
 
-        @Override
-        protected int getBlockLightValue_Impl(Block block) {
-            return block.getLightValue();
-        }
+    protected int getMetadataAt_Impl(BlockRenderView blockAccess, int i, int j, int k) {
+        return 0; // TODO
+    }
 
-        @Override
-        protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
-            return BlockStateMatcher.V1.class;
-        }
+    protected Icon getBlockIcon_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+        return null; // TODO
+    }
 
-        @Override
-        protected String expandTileName_Impl(String tileName) {
-            return tileName;
+    protected boolean shouldSideBeRendered_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+        return block.shouldSideBeRendered(blockAccess, new BlockPos(i, j, k), Direction.values()[face]);
+    }
+
+    protected Block getBlockByName_Impl(String name) {
+        Block block = registry.getValueObject(TexturePackAPI.parseIdentifier(name));
+        if (block == airBlock && !name.equals("minecraft:air")) {
+            return null;
+        } else {
+            return block;
         }
     }
 
-    final private static class V3 extends V2 {
-        private final Block airBlock;
+    protected String getBlockName_Impl(Block block) {
+        Object name = registry.getKeyObject(block);
+        return name == null ? String.valueOf(registry.getId(block)) : name.toString();
+    }
 
-        V3() {
-            super(Block.blockRegistry1);
-            airBlock = registry.getValueObject(null);
-        }
+    protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
+        return BlockStateMatcher.V2.class;
+    }
 
-        @Override
-        protected Block getBlockAt_Impl(IBlockAccess blockAccess, int i, int j, int k) {
-            return blockAccess.getBlockState(new Position(i, j, k)).getBlock();
+    protected String expandTileName_Impl(String tileName) {
+        if (!tileName.contains(":")) {
+            tileName = "minecraft:blocks/" + tileName;
         }
-
-        @Override
-        protected int getMetadataAt_Impl(IBlockAccess blockAccess, int i, int j, int k) {
-            return 0; // TODO
-        }
-
-        @Override
-        protected Icon getBlockIcon_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
-            return null; // TODO
-        }
-
-        @Override
-        protected boolean shouldSideBeRendered_Impl(Block block, IBlockAccess blockAccess, int i, int j, int k, int face) {
-            return block.shouldSideBeRendered(blockAccess, new Position(i, j, k), Direction.values()[face]);
-        }
-
-        @Override
-        protected Block getBlockByName_Impl(String name) {
-            Block block = registry.getValueObject(TexturePackAPI.parseIdentifier(name));
-            if (block == airBlock && !name.equals("minecraft:air")) {
-                return null;
-            } else {
-                return block;
-            }
-        }
-
-        @Override
-        protected String getBlockName_Impl(Block block) {
-            Object name = registry.getKeyObject(block);
-            return name == null ? String.valueOf(registry.getId(block)) : name.toString();
-        }
-
-        @Override
-        protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
-            return BlockStateMatcher.V2.class;
-        }
-
-        @Override
-        protected String expandTileName_Impl(String tileName) {
-            if (!tileName.contains(":")) {
-                tileName = "minecraft:blocks/" + tileName;
-            }
-            return tileName;
-        }
+        return tileName;
     }
 }

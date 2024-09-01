@@ -1,4 +1,4 @@
-package org.fabricmcpatcher.mixins.color;
+package org.fabricmcpatcher.mixins.color.text;
 
 import net.minecraft.client.gui.hud.BossBarHud;
 import org.fabricmcpatcher.color.ColorizeWorld;

@@ -2,6 +2,7 @@ package org.fabricmcpatcher.utils.block;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.utils.Config;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 
@@ -42,7 +43,7 @@ public class RenderBlocksUtils {
         fcDirtSlab = block;
     }
 
-    public static void setupColorMultiplier(Block block, IBlockAccess blockAccess, int i, int j, int k,
+    public static void setupColorMultiplier(Block block, BlockRenderView blockAccess, int i, int j, int k,
                                             boolean haveOverrideTexture, float r, float g, float b) {
         if (haveOverrideTexture || !RenderPassAPI.instance.useColorMultiplierThisPass(block)) {
             colorMultiplierType[0] = COLOR;
@@ -156,7 +157,7 @@ public class RenderBlocksUtils {
         return face < 0 ? 1 : face % 6;
     }
 
-    public static Icon getGrassTexture(Block block, IBlockAccess blockAccess, int i, int j, int k, int face, Icon topIcon) {
+    public static Icon getGrassTexture(Block block, BlockRenderView blockAccess, int i, int j, int k, int face, Icon topIcon) {
         if (!enableBetterGrass || face < 2) {
             return null;
         }
@@ -215,7 +216,7 @@ public class RenderBlocksUtils {
         }
     }
 
-    private static boolean isSnowCovered(IBlockAccess blockAccess, int i, int j, int k) {
+    private static boolean isSnowCovered(BlockRenderView blockAccess, int i, int j, int k) {
         Block topBlock = BlockAPI.getBlockAt(blockAccess, i, j + 1, k);
         return topBlock == snowBlock || topBlock == craftedSnowBlock;
     }
