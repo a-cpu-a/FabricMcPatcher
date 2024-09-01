@@ -16,13 +16,15 @@ Multilayer enchantment CIT on armor, normal items, shields and tridents
 cit.properties  
 Map colors  
 Potion colors  
+Spawn egg colors
 
 >Currently working on:  
-Spawn egg colors  
 Enchantment CIT on compasses, clocks, ...  
+Texture CIT  
 Mycelium particle colorarray  
 
 >Eventually  
 Map fog.nether, fog.end to (fixed) nether & end biome fog colormaps  
 Optionally allow uppercase assets  
 Fix block entity enchantment overlays (vanilla bug)  
+Optifine's /colormap/durability.png, loading screen colors, xporb antimation duration

@@ -127,7 +127,7 @@ public class ColorizeWorld {
             cloudType = CLOUDS_FAST;
         } else if (value.equals("fancy")) {
             cloudType = CLOUDS_FANCY;
-        } else if (value.equals("none")) {
+        } else if (value.equals("none")||value.equals("off")) {
             cloudType = CLOUDS_NONE;
         }
     }

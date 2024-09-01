@@ -3,6 +3,8 @@ package org.fabricmcpatcher.color;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.MapColor;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import org.fabricmcpatcher.accessors.IOriginalColor;
 import org.fabricmcpatcher.accessors.IOverrideColor;
@@ -21,9 +23,9 @@ import static org.fabricmcpatcher.utils.id.PotionIdUtils.effects;
 public class ColorizeItem {
     private static final MCLogger logger = MCLogger.getLogger(MCPatcherUtils.CUSTOM_COLORS);
 
-    private static final Map<Integer, String> entityNamesByID = new HashMap<Integer, String>();
-    private static final Map<Integer, Integer> spawnerEggShellColors = new HashMap<Integer, Integer>(); // egg.shell.*
-    private static final Map<Integer, Integer> spawnerEggSpotColors = new HashMap<Integer, Integer>(); // egg.spots.*
+    private static final Map<EntityType<?>, List<String>> entityNamesByID = new HashMap<>();
+    private static final Map<EntityType<?>, Integer> spawnerEggShellColors = new HashMap<>(); // egg.shell.*
+    private static final Map<EntityType<?>, Integer> spawnerEggSpotColors = new HashMap<>(); // egg.spots.*
 
     private static int waterBottleColor; // potion.water
     private static final List<StatusEffect> potions = new ArrayList<>(); // potion.*
@@ -185,10 +187,10 @@ public class ColorizeItem {
         }
     }
 
-    public static void setupSpawnerEgg(String entityName, int entityID, int defaultShellColor, int defaultSpotColor) {
-        logger.config("egg.shell.%s=%06x", entityName, defaultShellColor);
-        logger.config("egg.spots.%s=%06x", entityName, defaultSpotColor);
-        entityNamesByID.put(entityID, entityName);
+    public static void setupSpawnerEgg(List<String> entityNames, EntityType<?> entityID, int defaultShellColor, int defaultSpotColor) {
+        logger.config("egg.shell.%s=%06x", entityNames.getFirst(), defaultShellColor);
+        logger.config("egg.spots.%s=%06x", entityNames.getFirst(), defaultSpotColor);
+        entityNamesByID.put(entityID, entityNames);
     }
 
     public static void setupPotion(StatusEffect potion) {
@@ -196,19 +198,21 @@ public class ColorizeItem {
         potions.add(potion);
     }
 
-    public static int colorizeSpawnerEgg(int defaultColor, int entityID, int spots) {
+    public static int colorizeSpawnerEgg(int defaultColor, EntityType<?> entityID, int spots) {
         if (!Colorizer.useEggColors) {
             return defaultColor;
         }
         Integer value = null;
-        Map<Integer, Integer> eggMap = (spots == 0 ? spawnerEggShellColors : spawnerEggSpotColors);
+        Map<EntityType<?>, Integer> eggMap = (spots == 0 ? spawnerEggShellColors : spawnerEggSpotColors);
         if (eggMap.containsKey(entityID)) {
             value = eggMap.get(entityID);
         } else if (entityNamesByID.containsKey(entityID)) {
-            String name = entityNamesByID.get(entityID);
-            if (name != null) {
+            List<String> names = entityNamesByID.get(entityID);
+            if (names != null) {
                 int[] tmp = new int[]{defaultColor};
-                Colorizer.loadIntColor((spots == 0 ? "egg.shell." : "egg.spots.") + name, tmp, 0);
+                for (String name : names) {
+                    Colorizer.loadIntColor((spots == 0 ? "egg.shell." : "egg.spots.") + name, tmp, 0);
+                }
                 eggMap.put(entityID, tmp[0]);
                 value = tmp[0];
             }

@@ -11,13 +11,13 @@
     "color.MapColorMixin",
     "color.PotionContentsComponentMixin",
     "color.SheepEntityMixin",
+    "color.SpawnEggItemMixin",
     "color.StatusEffectMixin",
     "color.StyleMixin",
     "color.TextColorMixin"
   ],
   "client": [
     "BackgroundRendererMixin",
-    "color.BlockLeakParticleMixin$DrippingLava",
     "BufferBuilderMixin",
     "ClientWorldMixin",
     "FireworksSparkParticleMixin",
@@ -36,6 +36,7 @@
     "cit.ItemRendererMixin",
     "cit.WorldRendererMixin",
     "color.BlockLeakParticleMixin",
+    "color.BlockLeakParticleMixin$DrippingLava",
     "color.BossBarHudMixin",
     "color.CatCollarFeatureRendererMixin",
     "color.ExperienceOrbEntityRendererMixin",
