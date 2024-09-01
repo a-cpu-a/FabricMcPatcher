@@ -114,6 +114,7 @@ final class EnchantmentList {
                     } else {
                         layer.intensity = layer.level > 0 ? 1.0f : 0.0f;
                     }
+                    if(layer.intensity<0.0 || layer.intensity>1.0)throw new AssertionError();
                 }
             } else {
                 for (Layer layer : enchantments.layers) {
@@ -171,6 +172,8 @@ final class EnchantmentList {
                 if (timestamp < duration) {
                     float denominator = (float) Math.sin(PI * fade / duration);
                     layer.intensity = (float) (Math.sin(PI * timestamp / duration) / (denominator == 0.0f ? 1.0f : denominator));
+                    if(layer.intensity<0.0f)layer.intensity=0.0f;
+                    if(layer.intensity>1.0f)layer.intensity=1.0f;
                 }
                 timestamp -= duration;
             }

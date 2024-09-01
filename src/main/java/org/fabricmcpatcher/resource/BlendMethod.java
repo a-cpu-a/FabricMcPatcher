@@ -106,6 +106,9 @@ public class BlendMethod {
 
     /** returns in ARGB */
     public Vector4f getFade(float fade) {
+
+        //if(fade<0.0 || fade>1.0)throw new AssertionError();
+
         if (fadeRGB && fadeAlpha) {
             return new Vector4f(fade, fade,fade,fade);
             //GLAPI.glColor4f(fade, fade, fade, fade);

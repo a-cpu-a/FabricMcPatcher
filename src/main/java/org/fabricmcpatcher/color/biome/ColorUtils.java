@@ -12,7 +12,7 @@ public class ColorUtils {
             f[offset + 3] = (float) (argb & 0xff) / (float) 0xff;
         }
 
-        f[offset] = (float) (argb & 0xff000000) / (float) 0xff000000;
+        f[offset] = (float) ((argb & 0xff000000)>>>24) / (float) 0xff;
     }
 
 

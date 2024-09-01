@@ -16,7 +16,6 @@ Multilayer enchantment CIT on armor, normal items, shields and tridents
 cit.properties  
 
 >Currently working on:  
-Fix enchantment fading, unless its a feature  
 Enchantment CIT on compasses, clocks, ...  
 Mycelium particle colorarray  
 
