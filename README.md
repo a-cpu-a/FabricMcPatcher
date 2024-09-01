@@ -3,7 +3,7 @@
 >Completed:  
 Skyboxes, sun / moon  
 Firework blending modes (particle.properties)  
-Text color overrides (except text.code.(16-31))  
+Text color overrides  
 Cloud type override  
 Under (water / lava) fog colormaps  
 sky.end color, portal and water particle colors  
@@ -20,11 +20,13 @@ Spawn egg colors
 Lightmaps  
 
 >Currently working on:  
+Block colormaps  
 Enchantment CIT on compasses, clocks, ...  
 Texture CIT  
 Mycelium particle colorarray  
 
 >Eventually  
+text.code.(16-31) to edit text shadow colors  
 Map fog.nether, fog.end to (fixed) nether & end biome fog colormaps  
 Optionally allow uppercase assets  
 Fix block entity enchantment overlays (vanilla bug)  
