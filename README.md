@@ -20,6 +20,7 @@ Spawn egg colors
 Cloud type override
 
 >Currently working on:  
+Add get fabric biome to client world
 Block colormaps  
 CTM  
 Enchantment CIT on compasses, clocks, ...  

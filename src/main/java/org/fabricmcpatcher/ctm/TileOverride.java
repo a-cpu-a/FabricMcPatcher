@@ -172,6 +172,7 @@ abstract class TileOverride implements ITileOverride {
     private boolean addIcon(Identifier resource) {
         tileNames.add(resource);
         //return tileLoader.preloadTile(resource, renderPass > RenderPassAPI.MAX_BASE_RENDER_PASS); //TODO: needed?
+        return true;
     }
 
     private void loadIcons() {
@@ -432,7 +433,7 @@ abstract class TileOverride implements ITileOverride {
         if (height != null && !height.get(j)) {
             return null;
         }
-        if (biomes != null && !biomes.get(BiomeAPI.getBiomeIDAt(blockAccess, i, j, k))) {
+        if (biomes != null && !biomes.get(BiomeAPI.getNewBiomeIdAt(blockAccess, i, j, k))) {
             return null;
         }
         return getTileWorld_Impl(renderBlockState, origIcon);

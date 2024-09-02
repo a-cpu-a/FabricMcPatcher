@@ -21,6 +21,7 @@ import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 import org.fabricmcpatcher.utils.PortUtils;
 import org.fabricmcpatcher.utils.block.ExtendedBlockView;
+import org.fabricmcpatcher.utils.id.BiomeIdUtils;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.lang.reflect.Method;
@@ -41,7 +42,7 @@ public class BiomeAPI {
     private static int lastI;
     private static int lastK;
 
-    /*
+
     public static void parseBiomeList(String list, BitSet bits) {
         logBiomes();
         if (MCPatcherUtils.isNullOrEmpty(list)) {
@@ -50,10 +51,10 @@ public class BiomeAPI {
         for (String s : list.split(list.contains(",") ? "\\s*,\\s*" : "\\s+")) {
             Biome biome = findBiomeByName(s);
             if (biome != null) {
-                bits.set(biome.biomeID);
+                bits.set(MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME).getRawId(biome));
             }
         }
-    }*/
+    }
 
     public static BitSet getHeightListProperty(PropertiesFile properties, String suffix) {
         int minHeight = Math.max(properties.getInt("minHeight" + suffix, 0), 0);
@@ -96,6 +97,10 @@ public class BiomeAPI {
     public static int getBiomeIDAt(BlockView blockAccess, int i, int j, int k) {
         Identifier biome = getBiomeRegGenAt(blockAccess, i, j, k);
         return biome==null?0xFF : PortUtils.getBiomeId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
+    }
+    public static int getNewBiomeIdAt(BlockView blockAccess, int i, int j, int k) {
+        Biome biome = getBiomeGenAt(blockAccess, i, j, k);
+        return biome==null?-1 : MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME).getRawId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
     }
 
     public static Identifier getBiomeRegGenAt(BlockView blockAccess, int i, int j, int k) {
@@ -176,7 +181,11 @@ public class BiomeAPI {
         return biome.getKey().get().getValue();
     }
     protected Biome getBiomeGenAt_Impl_(BlockView blockAccess, int i, int j, int k) {
-        return ((ExtendedBlockView)blockAccess).mcPatcher$getBiomeRegistry().get(blockAccess.getBiomeFabric(new BlockPos(i, j, k)).getKey().get());
+        @UnknownNullability RegistryEntry<Biome> biome = blockAccess.getBiomeFabric(new BlockPos(i, j, k));
+        if(biome==null) {
+            return ((ExtendedBlockView)blockAccess).mcPatcher$getBiomeRegistry().get(Identifier.ofVanilla("plains"));
+        }
+        return ((ExtendedBlockView)blockAccess).mcPatcher$getBiomeRegistry().get(biome.getKey().get());
     }
 
     protected float getTemperaturef_Impl(Biome biome, int i, int j, int k,int seaLevel) {

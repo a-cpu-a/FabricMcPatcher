@@ -9,7 +9,7 @@
     "color.PotionContentsComponentMixin",
     "color.SpawnEggItemMixin",
     "color.StatusEffectMixin",
-    "color.block.BlockRenderViewMixin",
+    "color.block.BlockViewMixin",
     "color.block.RedstoneWireBlockMixin",
     "color.entity.DyedColorComponentMixin",
     "color.entity.MapColorMixin",
