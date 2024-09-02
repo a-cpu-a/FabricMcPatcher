@@ -3,6 +3,7 @@ package org.fabricmcpatcher.cit;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.util.Identifier;
 import org.fabricmcpatcher.resource.BlendMethod;
@@ -134,7 +135,7 @@ final class Enchantment extends OverrideBase {
         end();*/
     }
 
-    boolean bindTexture(SpriteContents icon) {
+    boolean bindTexture(Sprite icon) {
         Identifier texture;
         if (alternateTextures != null && icon != null) {
             texture = alternateTextures.get(IconAPI.getIconName(icon));

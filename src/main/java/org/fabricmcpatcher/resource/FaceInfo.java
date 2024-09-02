@@ -1,11 +1,20 @@
 package org.fabricmcpatcher.resource;
 
 
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.util.math.Direction;
+import org.fabricmcpatcher.utils.MCLogger;
+import org.fabricmcpatcher.utils.PortUtils;
+
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 final public class FaceInfo {
-    /*private static final MCLogger logger = MCLogger.getLogger("Tilesheet");
+
+    //ModelFaceSprite -> BreakingFour (https://skmedix.github.io/ForgeJavaDocs/javadoc/forge/1.8.9-11.15.1.2318/net/minecraft/client/renderer/block/model/BreakingFour.html)
+
+    private static final MCLogger logger = MCLogger.getLogger("Tilesheet");
 
     // duplicated from RenderBlockState
     private static final int BOTTOM_FACE = 0; // 0, -1, 0
@@ -31,21 +40,21 @@ final public class FaceInfo {
         GO_EAST,
     };
 
-    private static final Map<ModelFace, FaceInfo> faceInfoMap = new IdentityHashMap<ModelFace, FaceInfo>();
+    private static final Map<BakedQuad, FaceInfo> faceInfoMap = new IdentityHashMap<>();
 
-    private final ModelFace face;
-    private final TextureAtlasSprite sprite;
+    private final BakedQuad face;
+    private final Sprite sprite;
     private final String textureName;
     private final int effectiveFace;
     private final int uvRotation;
-    private final Map<Icon, ModelFace> altIcons = new IdentityHashMap<Icon, ModelFace>();
-    private ModelFace nonAtlasFace;
+    private final Map<Sprite, BakedQuad> altIcons = new IdentityHashMap<>();
+    private BakedQuad nonAtlasFace;
 
     static void clear() {
         faceInfoMap.clear();
     }
 
-    public static ModelFace registerModelFaceSprite(ModelFace face, TextureAtlasSprite sprite, String textureName) {
+    /*public static BakedQuad registerModelFaceSprite(BakedQuad face, Sprite sprite, String textureName) {
         FaceInfo faceInfo = faceInfoMap.get(face);
         if (faceInfo == null) {
             faceInfo = new FaceInfo(face, sprite, textureName);
@@ -54,50 +63,45 @@ final public class FaceInfo {
         return face;
     }
 
-    public static void registerModelFaceSprite(ModelFace face, TextureAtlasSprite sprite) {
+    public static void registerModelFaceSprite(BakedQuad face, Sprite sprite) {
         registerModelFaceSprite(face, sprite, IconAPI.getIconName(sprite));
     }
-
-    public static FaceInfo getFaceInfo(ModelFace face) {
+    */
+    public static FaceInfo getFaceInfo(BakedQuad face) {
         return faceInfoMap.get(face);
     }
-
-    private FaceInfo(ModelFace face, TextureAtlasSprite sprite, String textureName) {
+    private FaceInfo(BakedQuad face, Sprite sprite, String textureName) {
         this.face = face;
-        if (face instanceof ModelFaceSprite) {
-            this.sprite = ((ModelFaceSprite) face).sprite;
-        } else {
-            this.sprite = sprite;
-        }
+        this.sprite = sprite;
         if (textureName.startsWith("#")) {
             textureName = textureName.substring(1);
         }
         textureName = textureName.toLowerCase().trim();
         this.textureName = textureName;
-        effectiveFace = computeEffectiveFace(face.getIntBuffer());
-        uvRotation = computeRotation(face.getIntBuffer(), getEffectiveFace());
+        effectiveFace = computeEffectiveFace(face.getVertexData());
+        uvRotation = computeRotation(face.getVertexData(), getEffectiveFace());
     }
 
     @Override
     public String toString() {
         return String.format("FaceInfo{%s,%s#%s -> %s R%+d}",
-            face, sprite.getIconName(), textureName, Direction.values()[effectiveFace], uvRotation * 45
+            face, sprite.getContents().getId(), textureName, Direction.values()[effectiveFace], uvRotation * 45
         );
     }
 
-    public TextureAtlasSprite getSprite() {
+    public Sprite getSprite() {
         return sprite;
     }
 
-    public ModelFace getAltFace(TextureAtlasSprite altSprite) {
+    public BakedQuad getAltFace(Sprite altSprite) {
         if (altSprite == sprite || altSprite == null) {
             return face;
         }
         synchronized (this) {
-            ModelFace newFace = altIcons.get(altSprite);
+            BakedQuad newFace = altIcons.get(altSprite);
             if (newFace == null) {
-                newFace = new ModelFaceSprite(face, altSprite);
-                calculateSpriteUV(sprite, face.getIntBuffer(), altSprite, newFace.getIntBuffer());
+                newFace = PortUtils.ModelFaceSprite(face, altSprite);
+                calculateSpriteUV(sprite, face.getVertexData(), altSprite, newFace.getVertexData());
                 altIcons.put(altSprite, newFace);
             }
             return newFace;
@@ -105,10 +109,10 @@ final public class FaceInfo {
     }
 
     // NOTE: not synchronized as item rendering is single-threaded
-    public ModelFace getNonAtlasFace() {
+    public BakedQuad getNonAtlasFace() {
         if (nonAtlasFace == null) {
-            nonAtlasFace = new ModelFaceSprite(face, sprite);
-            calculateNonAtlasUV(sprite, face.getIntBuffer(), nonAtlasFace.getIntBuffer());
+            nonAtlasFace = PortUtils.ModelFaceSprite(face, sprite);
+            calculateNonAtlasUV(sprite, face.getVertexData(), nonAtlasFace.getVertexData());
         }
         return nonAtlasFace;
     }
@@ -258,21 +262,21 @@ final public class FaceInfo {
         );
     }
 
-    private static void calculateSpriteUV(TextureAtlasSprite origIcon, int[] a, TextureAtlasSprite newIcon, int[] b) {
+    private static void calculateSpriteUV(Sprite origIcon, int[] a, Sprite newIcon, int[] b) {
         for (int i = 0; i < 28; i += 7) {
             float u = 16.0f * (Float.intBitsToFloat(a[i + 4]) - origIcon.getMinU()) / (origIcon.getMaxU() - origIcon.getMinU());
             float v = 16.0f * (Float.intBitsToFloat(a[i + 5]) - origIcon.getMinV()) / (origIcon.getMaxV() - origIcon.getMinV());
-            b[i + 4] = Float.floatToIntBits(newIcon.getInterpolatedU(u));
-            b[i + 5] = Float.floatToIntBits(newIcon.getInterpolatedV(v));
+            b[i + 4] = Float.floatToIntBits(newIcon.getFrameFromU(u));//getInterpolatedU
+            b[i + 5] = Float.floatToIntBits(newIcon.getFrameFromV(v));//getInterpolatedV
         }
     }
 
-    private static void calculateNonAtlasUV(TextureAtlasSprite origIcon, int[] a, int[] b) {
+    private static void calculateNonAtlasUV(Sprite origIcon, int[] a, int[] b) {
         for (int i = 0; i < 28; i += 7) {
             float u = (Float.intBitsToFloat(a[i + 4]) - origIcon.getMinU()) / (origIcon.getMaxU() - origIcon.getMinU());
             float v = (Float.intBitsToFloat(a[i + 5]) - origIcon.getMinV()) / (origIcon.getMaxV() - origIcon.getMinV());
             b[i + 4] = Float.floatToIntBits(u);
             b[i + 5] = Float.floatToIntBits(v);
         }
-    }*/
+    }
 }

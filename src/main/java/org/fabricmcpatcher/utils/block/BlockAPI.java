@@ -3,6 +3,7 @@ package org.fabricmcpatcher.utils.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
@@ -236,7 +237,7 @@ public class BlockAPI {
         return instance.getMetadataAt_Impl(blockAccess, i, j, k);
     }
 
-    public static Icon getBlockIcon(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+    public static Sprite getBlockIcon(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         return instance.getBlockIcon_Impl(block, blockAccess, i, j, k, face);
     }
 
@@ -258,7 +259,7 @@ public class BlockAPI {
     }
 
     public static BlockStateMatcher createMatcher(PropertiesFile source, String matchString) {
-        Map<String, String> propertyMap = new HashMap<String, String>();
+        Map<String, String> propertyMap = new HashMap<>();
         String namespace = null;
         String blockName = null;
         StringBuilder metadata = new StringBuilder();
@@ -392,7 +393,7 @@ public class BlockAPI {
     }*/
 
     protected int getBlockLightValue_Impl(Block block) {
-        return block.getLightValue();
+        return block.getDefaultState().getLuminance();
     }
     /*
     protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
@@ -410,14 +411,14 @@ public class BlockAPI {
     }*/
 
     protected Block getBlockAt_Impl(BlockRenderView blockAccess, int i, int j, int k) {
-        return blockAccess.getBlockState(new Position(i, j, k)).getBlock();
+        return blockAccess.getBlockState(new BlockPos(i, j, k)).getBlock();
     }
 
     protected int getMetadataAt_Impl(BlockRenderView blockAccess, int i, int j, int k) {
         return 0; // TODO
     }
 
-    protected Icon getBlockIcon_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+    protected Sprite getBlockIcon_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         return null; // TODO
     }
 
@@ -440,7 +441,7 @@ public class BlockAPI {
     }
 
     protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {
-        return BlockStateMatcher.V2.class;
+        return BlockStateMatcher.class;
     }
 
     protected String expandTileName_Impl(String tileName) {

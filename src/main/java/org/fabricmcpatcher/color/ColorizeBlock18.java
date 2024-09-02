@@ -3,12 +3,15 @@ package org.fabricmcpatcher.color;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.color.biome.ColorUtils;
 import org.fabricmcpatcher.color.biome.IColorMap;
+import org.fabricmcpatcher.ctm.CTMUtils18;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.resource.TexturePackChangeHandler;
@@ -160,7 +163,7 @@ public class ColorizeBlock18 {
         this.ctm = ctm;
     }
 
-    public void preRender(BlockRenderView blockAccess, IModel model, BlockState blockState, BlockPos position, Block block, boolean useAO) {
+    public void preRender(BlockRenderView blockAccess, BakedModel model, BlockState blockState, BlockPos position, Block block, boolean useAO) {
         colorMap = null;
         useCM = RenderPassAPI.instance.useColorMultiplierThisPass(block);
         if (useCM) {
@@ -177,7 +180,7 @@ public class ColorizeBlock18 {
         isSmooth = false;
     }
 
-    public void preRenderHeld(IModel model, BlockState blockState, Block block) {
+    public void preRenderHeld(BakedModel model, BlockState blockState, Block block) {
         colorMap = null;
         isSmooth = false;
         List<BlockStateMatcher> maps = ColorizeBlock.findColorMaps(block);
@@ -241,8 +244,8 @@ public class ColorizeBlock18 {
         }
     }
 
-    public boolean useColormap(ModelFace face) {
-        return useCM && (face.useColormap() || (colorMap != null && ctm.getBlock() != grassBlock && ctm.getBlock() != mycelBlock));
+    public boolean useColormap(BakedQuad face) {
+        return useCM && (face.hasColor() || (colorMap != null && ctm.getBlock() != grassBlock && ctm.getBlock() != mycelBlock));
     }
 
     public int colorMultiplier(int color) {

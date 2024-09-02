@@ -21,6 +21,7 @@ Cloud type override
 
 >Currently working on:  
 Block colormaps  
+CTM  
 Enchantment CIT on compasses, clocks, ...  
 Texture CIT  
 Mycelium particle colorarray  

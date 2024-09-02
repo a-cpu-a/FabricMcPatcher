@@ -19,6 +19,13 @@ public class IconAPI {
         return instance.getIconY0_Impl(icon);
     }
 
+    public static int getIconWidth(Sprite icon) {
+        return instance.getIconWidth_Impl(icon.getContents());
+    }
+
+    public static int getIconHeight(Sprite icon) {
+        return instance.getIconHeight_Impl(icon.getContents());
+    }
     public static int getIconWidth(SpriteContents icon) {
         return instance.getIconWidth_Impl(icon);
     }
@@ -27,6 +34,9 @@ public class IconAPI {
         return instance.getIconHeight_Impl(icon);
     }
 
+    public static String getIconName(Sprite icon) {
+        return instance.getIconName_Impl(icon.getContents());
+    }
     public static String getIconName(SpriteContents icon) {
         return instance.getIconName_Impl(icon);
     }

@@ -2,6 +2,9 @@ package org.fabricmcpatcher.utils;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.BakedQuadFactory;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -9,6 +12,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.biome.Biome;
 import org.fabricmcpatcher.FabricMcPatcher;
 import org.fabricmcpatcher.utils.id.BiomeIdUtils;
@@ -86,5 +90,58 @@ public class PortUtils {
 
     public static NbtCompound getTagCompound(ItemStack itemStack) {
         return null;//TODO: implement, by converting components & adding to custom data
+    }
+
+    public static int[] setVertexDataSprite(int[] vtx, Sprite newSprite, Direction face) {
+
+        for (int j = 0; j < 4; j++) {
+            int i = 7 * j;
+            float f = Float.intBitsToFloat(vtx[i]);
+            float f1 = Float.intBitsToFloat(vtx[i + 1]);
+            float f2 = Float.intBitsToFloat(vtx[i + 2]);
+            float f3 = 0.0F;
+            float f4 = 0.0F;
+
+            switch (face)
+            {
+                case DOWN:
+                    f3 = f * 16.0F;
+                    f4 = (1.0F - f2) * 16.0F;
+                    break;
+
+                case UP:
+                    f3 = f * 16.0F;
+                    f4 = f2 * 16.0F;
+                    break;
+
+                case NORTH:
+                    f3 = (1.0F - f) * 16.0F;
+                    f4 = (1.0F - f1) * 16.0F;
+                    break;
+
+                case SOUTH:
+                    f3 = f * 16.0F;
+                    f4 = (1.0F - f1) * 16.0F;
+                    break;
+
+                case WEST:
+                    f3 = f2 * 16.0F;
+                    f4 = (1.0F - f1) * 16.0F;
+                    break;
+
+                case EAST:
+                    f3 = (1.0F - f2) * 16.0F;
+                    f4 = (1.0F - f1) * 16.0F;
+            }
+
+            vtx[i + 4] = Float.floatToRawIntBits(newSprite.getFrameFromU(f3));
+            vtx[i + 4 + 1] = Float.floatToRawIntBits(newSprite.getFrameFromV(f4));
+        }
+        return vtx;
+    }
+
+    public static BakedQuad ModelFaceSprite(BakedQuad face, Sprite altSprite) {
+        Direction dir = BakedQuadFactory.decodeDirection(face.getVertexData());
+        return new BakedQuad(setVertexDataSprite(face.getVertexData().clone(),altSprite,dir),face.getColorIndex(), dir, altSprite,face.hasShade(),face.getLightEmission() );
     }
 }

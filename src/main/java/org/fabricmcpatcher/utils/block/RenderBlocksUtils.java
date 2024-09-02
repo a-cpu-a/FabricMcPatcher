@@ -2,6 +2,8 @@ package org.fabricmcpatcher.utils.block;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.utils.Config;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
@@ -27,10 +29,10 @@ public class RenderBlocksUtils {
     public static final float[] AO_BASE = new float[]{0.5f, 1.0f, 0.8f, 0.8f, 0.6f, 0.6f};
 
     public static int layerIndex;
-    public static Icon blankIcon;
+    public static Sprite blankIcon;
 
     private static int grassFace;
-    private static Icon grassIcon;
+    private static Sprite grassIcon;
 
     static {
         Block block = null;
@@ -157,7 +159,7 @@ public class RenderBlocksUtils {
         return face < 0 ? 1 : face % 6;
     }
 
-    public static Icon getGrassTexture(Block block, BlockRenderView blockAccess, int i, int j, int k, int face, Icon topIcon) {
+    public static Sprite getGrassTexture(Block block, BlockRenderView blockAccess, int i, int j, int k, int face, Sprite topIcon) {
         if (!enableBetterGrass || face < 2) {
             return null;
         }
@@ -193,7 +195,7 @@ public class RenderBlocksUtils {
         return isSnow ? BlockAPI.getBlockIcon(snowBlock, blockAccess, i, j, k, face) : topIcon;
     }
 
-    public static Icon getGrassIconBTW(Icon origIcon, int face) {
+    public static Sprite getGrassIconBTW(Sprite origIcon, int face) {
         grassFace = face;
         if (blankIcon != null && colorMultiplierType[face] == COLOR) {
             grassIcon = origIcon;
@@ -204,9 +206,9 @@ public class RenderBlocksUtils {
         }
     }
 
-    public static Icon getGrassOverlayIconBTW(Icon origIcon) {
+    public static Sprite getGrassOverlayIconBTW(Sprite origIcon) {
         if (grassIcon != null) {
-            Icon t = grassIcon;
+            Sprite t = grassIcon;
             grassIcon = null;
             return t;
         } else if (blankIcon != null && colorMultiplierType[grassFace] == NONCOLOR) {
@@ -222,6 +224,6 @@ public class RenderBlocksUtils {
     }
 
     public static boolean isAmbientOcclusionEnabled() {
-        return Minecraft.isAmbientOcclusionEnabled();
+        return MinecraftClient.isAmbientOcclusionEnabled();
     }
 }

@@ -44,10 +44,10 @@ public class TileLoader {
     protected final MCLogger subLogger;
 
     private SpriteAtlasTexture baseTextureMap;
-    private final Map<String, SpriteContents> baseTexturesByName = new HashMap<String, SpriteContents>();
-    private final Set<Identifier> tilesToRegister = new HashSet<Identifier>();
-    private final Map<Identifier, BufferedImage> tileImages = new HashMap<Identifier, BufferedImage>();
-    private final Map<String, Sprite> iconMap = new HashMap<String, Sprite>();
+    private final Map<String, Sprite> baseTexturesByName = new HashMap<>();
+    private final Set<Identifier> tilesToRegister = new HashSet<>();
+    private final Map<Identifier, BufferedImage> tileImages = new HashMap<>();
+    private final Map<String, Sprite> iconMap = new HashMap<>();
 
     static {
         long maxSize = 4096L;
@@ -329,7 +329,7 @@ public class TileLoader {
         tilesToRegister.clear();
         tileImages.clear();
     }
-/*
+
     public Sprite getIcon(String name) {
         if (MCPatcherUtils.isNullOrEmpty(name)) {
             return null;
@@ -343,5 +343,5 @@ public class TileLoader {
 
     public Sprite getIcon(Identifier resource) {
         return resource == null ? null : getIcon(resource.toString());
-    }*/
+    }
 }

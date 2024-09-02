@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -178,8 +179,8 @@ public class CITUtils {
 
     private static ItemStack lastItemStack;
     private static int lastRenderPass;
-    static SpriteContents lastOrigIcon;
-    private static SpriteContents lastIcon;
+    static Sprite lastOrigIcon;
+    private static Sprite lastIcon;
 
     static {
         TexturePackChangeHandler.register(new TexturePackChangeHandler(MCPatcherUtils.CUSTOM_ITEM_TEXTURES, 3) {
@@ -302,7 +303,7 @@ public class CITUtils {
     public static void init() {
     }
 
-    public static SpriteContents getIcon(SpriteContents icon, ItemStack itemStack, int renderPass) {
+    public static Sprite getIcon(Sprite icon, ItemStack itemStack, int renderPass) {
         if (icon == lastIcon && itemStack == lastItemStack && renderPass == lastRenderPass) {
             return icon;
         }
@@ -312,7 +313,7 @@ public class CITUtils {
         if (enableItems) {
             ItemOverride override = findItemOverride(itemStack);
             if (override != null) {
-                SpriteContents newIcon = override.getReplacementIcon(icon.getId()).getContents();
+                Sprite newIcon = override.getReplacementIcon(icon.getContents().getId());
                 if (newIcon != null) {
                     lastIcon = newIcon;
                 }
@@ -321,7 +322,7 @@ public class CITUtils {
         return lastIcon;
     }
 
-    public static SpriteContents getEntityIcon(SpriteContents icon, Entity entity) {
+    public static Sprite getEntityIcon(Sprite icon, Entity entity) {
         if (entity instanceof PotionEntity) {
             return getIcon(icon, ((PotionEntity) entity).getStack(), 1);
         }

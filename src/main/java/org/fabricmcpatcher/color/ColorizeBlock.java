@@ -29,24 +29,24 @@ public class ColorizeBlock {
     static final boolean enableSmoothBiomes = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "smoothBiomes", true);
     static final boolean enableTestColorSmoothing = Config.getBoolean(MCPatcherUtils.CUSTOM_COLORS, "testColorSmoothing", false);//debug thing
 
-    private static final Identifier REDSTONE_COLORS = TexturePackAPI.newMCPatcherIdentifier("/misc/redstonecolor.png", "colormap/redstone.png");
-    private static final Identifier STEM_COLORS = TexturePackAPI.newMCPatcherIdentifier("/misc/stemcolor.png", "colormap/stem.png");
-    private static final Identifier PUMPKIN_STEM_COLORS = TexturePackAPI.newMCPatcherIdentifier("/misc/pumpkinstemcolor.png", "colormap/pumpkinstem.png");
-    private static final Identifier MELON_STEM_COLORS = TexturePackAPI.newMCPatcherIdentifier("/misc/melonstemcolor.png", "colormap/melonstem.png");
-    private static final Identifier SWAMPGRASSCOLOR = TexturePackAPI.newMCPatcherIdentifier("/misc/swampgrasscolor.png", "colormap/swampgrass.png");
-    private static final Identifier SWAMPFOLIAGECOLOR = TexturePackAPI.newMCPatcherIdentifier("/misc/swampfoliagecolor.png", "colormap/swampfoliage.png");
+    private static final String REDSTONE_COLORS = "colormap/redstone.png";
+    private static final String STEM_COLORS = "colormap/stem.png";
+    private static final String PUMPKIN_STEM_COLORS = "colormap/pumpkinstem.png";
+    private static final String MELON_STEM_COLORS = "colormap/melonstem.png";
+    private static final String SWAMPGRASSCOLOR = "colormap/swampgrass.png";
+    private static final String SWAMPFOLIAGECOLOR = "colormap/swampfoliage.png";
     private static final Identifier DEFAULT_GRASSCOLOR = Identifier.of(TexturePackAPI.select("/misc/grasscolor.png", "minecraft:textures/colormap/grass.png"));
     private static final Identifier DEFAULT_FOLIAGECOLOR = Identifier.of(TexturePackAPI.select("/misc/foliagecolor.png", "minecraft:textures/colormap/foliage.png"));
-    private static final Identifier PINECOLOR = TexturePackAPI.newMCPatcherIdentifier("/misc/pinecolor.png", "colormap/pine.png");
-    private static final Identifier BIRCHCOLOR = TexturePackAPI.newMCPatcherIdentifier("/misc/birchcolor.png", "colormap/birch.png");
-    private static final Identifier WATERCOLOR = TexturePackAPI.newMCPatcherIdentifier("/misc/watercolorX.png", "colormap/water.png");
+    private static final String PINECOLOR = "colormap/pine.png";
+    private static final String BIRCHCOLOR = "colormap/birch.png";
+    private static final String WATERCOLOR = "colormap/water.png";
 
     private static final String PALETTE_BLOCK_KEY = "palette.block.";
 
     private static Block waterBlock;
     private static Block staticWaterBlock;
 
-    private static final Map<Block, List<BlockStateMatcher>> blockColorMaps = new IdentityHashMap<Block, List<BlockStateMatcher>>(); // bitmaps from palette.block.*
+    private static final Map<Block, List<BlockStateMatcher>> blockColorMaps = new IdentityHashMap<>(); // bitmaps from palette.block.*
     private static IColorMap waterColorMap;
     private static float[][] redstoneColor; // colormap/redstone.png
 
@@ -196,12 +196,12 @@ public class ColorizeBlock {
     }
 
     private static void reloadFoliageColors(PropertiesFile properties) {
-        IColorMap colorMap = ColorMap.loadVanillaColorMap(DEFAULT_GRASSCOLOR, SWAMPGRASSCOLOR);
+        IColorMap colorMap = ColorMap.loadVanillaColorMap(DEFAULT_GRASSCOLOR, TexturePackAPI.newMCPatcherIdentifier(SWAMPGRASSCOLOR));
         registerColorMap(colorMap, DEFAULT_GRASSCOLOR, "minecraft:grass:snowy=false minecraft:tallgrass:1,2:type=tall_grass,fern minecraft:double_plant:2,3:variant=double_grass,double_fern");
-        colorMap = ColorMap.loadVanillaColorMap(DEFAULT_FOLIAGECOLOR, SWAMPFOLIAGECOLOR);
+        colorMap = ColorMap.loadVanillaColorMap(DEFAULT_FOLIAGECOLOR, TexturePackAPI.newMCPatcherIdentifier(SWAMPFOLIAGECOLOR));
         registerColorMap(colorMap, DEFAULT_FOLIAGECOLOR, "minecraft:leaves:0,4,8,12:variant=oak minecraft:vine");
-        registerColorMap(PINECOLOR, "minecraft:leaves:1,5,9,13:variant=spruce");
-        registerColorMap(BIRCHCOLOR, "minecraft:leaves:2,6,10,14:variant=birch");
+        registerColorMap(TexturePackAPI.newMCPatcherIdentifier(PINECOLOR), "minecraft:leaves:1,5,9,13:variant=spruce");
+        registerColorMap(TexturePackAPI.newMCPatcherIdentifier(BIRCHCOLOR), "minecraft:leaves:2,6,10,14:variant=birch");
     }
 
     private static IColorMap wrapBlockMap(IColorMap map) {
@@ -218,7 +218,7 @@ public class ColorizeBlock {
     }
 
     private static void reloadWaterColors(PropertiesFile properties) {
-        waterColorMap = registerColorMap(WATERCOLOR, "minecraft:flowing_water minecraft:water");
+        waterColorMap = registerColorMap(TexturePackAPI.newMCPatcherIdentifier(WATERCOLOR), "minecraft:flowing_water minecraft:water");
         if (waterColorMap == null) {
             waterColorMap = new ColorMap.Water();
             registerColorMap(waterColorMap, null, "minecraft:flowing_water minecraft:water");
@@ -229,7 +229,7 @@ public class ColorizeBlock {
         int[] lilypadColor = new int[]{0x020830};
         if (Colorizer.loadIntColor("lilypad", lilypadColor, 0)) {
             IColorMap colorMap = new ColorMap.Fixed(lilypadColor[0]);
-            registerColorMap(colorMap, Colorizer.COLOR_PROPERTIES, "minecraft:waterlily");
+            registerColorMap(colorMap, TexturePackAPI.newMCPatcherIdentifier(Colorizer.COLOR_PROPERTIES), "minecraft:waterlily");
         }
     }
 
@@ -241,7 +241,7 @@ public class ColorizeBlock {
                 continue;
             }
             key = key.substring(PALETTE_BLOCK_KEY.length()).trim();
-            Identifier resource = TexturePackAPI.parseIdentifier(Colorizer.COLOR_PROPERTIES, key);
+            Identifier resource = TexturePackAPI.parseIdentifier(TexturePackAPI.newMCPatcherIdentifier(Colorizer.COLOR_PROPERTIES), key);
             if (resource == null) {
                 continue;
             }
@@ -296,7 +296,7 @@ public class ColorizeBlock {
     }
 
     private static void reloadRedstoneColors(PropertiesFile properties) {
-        int[] rgb = MCPatcherUtils.getImageRGB(TexturePackAPI.getImage(REDSTONE_COLORS));
+        int[] rgb = MCPatcherUtils.getImageRGB(TexturePackAPI.getImage(TexturePackAPI.newMCPatcherIdentifier(REDSTONE_COLORS)));
         if (rgb != null && rgb.length >= 16) {
             redstoneColor = new float[16][];
             for (int i = 0; i < 16; i++) {
@@ -308,9 +308,14 @@ public class ColorizeBlock {
     }
 
     private static void reloadStemColors(PropertiesFile properties) {
-        Identifier resource = TexturePackAPI.hasResource(PUMPKIN_STEM_COLORS) ? PUMPKIN_STEM_COLORS : STEM_COLORS;
+
+        Identifier stemColors = TexturePackAPI.newMCPatcherIdentifier(STEM_COLORS);
+        Identifier pumpkinColors = TexturePackAPI.newMCPatcherIdentifier(PUMPKIN_STEM_COLORS);
+        Identifier melonColors = TexturePackAPI.newMCPatcherIdentifier(MELON_STEM_COLORS);
+
+        Identifier resource = TexturePackAPI.hasResource(pumpkinColors) ? pumpkinColors : stemColors;
         registerMetadataRGB("minecraft:pumpkin_stem", resource, "age", 8);
-        resource = TexturePackAPI.hasResource(MELON_STEM_COLORS) ? MELON_STEM_COLORS : STEM_COLORS;
+        resource = TexturePackAPI.hasResource(melonColors) ? melonColors : stemColors;
         registerMetadataRGB("minecraft:melon_stem", resource, "age", 8);
     }
 
