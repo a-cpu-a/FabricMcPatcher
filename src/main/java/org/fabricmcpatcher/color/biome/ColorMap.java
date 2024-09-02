@@ -1,17 +1,15 @@
 package org.fabricmcpatcher.color.biome;
 
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.resource.ResourceList;
 import org.fabricmcpatcher.resource.TexturePackAPI;
 import org.fabricmcpatcher.utils.*;
+import org.fabricmcpatcher.utils.block.ExtendedBlockView;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -203,7 +201,7 @@ abstract public class ColorMap implements IColorMap {
         maxY = height - 1.0f;
     }
 
-    abstract protected void computeXY(ClientWorld biome, int i, int j, int k, float[] f, int seaLevel);
+    abstract protected void computeXY(BlockView biome, int i, int j, int k, float[] f, int seaLevel);
 
     @Override
     public String toString() {
@@ -211,13 +209,13 @@ abstract public class ColorMap implements IColorMap {
     }
 
     @Override
-    public final int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-        computeXY(blockAccess, i, j, k, xy, blockAccess.getSeaLevel());
+    public final int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
+        computeXY(blockAccess, i, j, k, xy, ((ExtendedBlockView)blockAccess).mcPatcher$getSeaLevel());
         return getRGB(xy[0], xy[1]);
     }
 
     @Override
-    public final float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+    public final float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
         int rgb = getColorMultiplier(blockAccess, i, j, k);
         ColorUtils.intToFloat3(rgb, lastColor);
         return lastColor;
@@ -336,12 +334,12 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
             return colorI;
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             return colorF;
         }
 
@@ -374,12 +372,12 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-            return BiomeAPI.getWaterColorMultiplier(BiomeAPI.getBiomeGenAt(blockAccess, i, j, k));
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
+            return BiomeAPI.getWaterColorMultiplier(BiomeAPI.getBiomeGenAt((BlockView)blockAccess, i, j, k));
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             ColorUtils.intToFloat3(getColorMultiplier(blockAccess, i, j, k), lastColor);
             return lastColor;
         }
@@ -422,12 +420,12 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        final public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-            return getColorMultiplier(blockAccess,i,j,k);
+        final public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
+            return getColorMultiplier((BlockRenderView)blockAccess,i,j,k);
         }
 
         @Override
-        final public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        final public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             ColorUtils.intToFloat3(getColorMultiplier(blockAccess, i, j, k), lastColor);
             return lastColor;
         }
@@ -506,14 +504,14 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-            IColorMap map = BiomeAPI.getBiomeGenAt(blockAccess, i, j, k) == swampBiome ? swampMap : defaultMap;
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
+            IColorMap map = BiomeAPI.getBiomeGenAt((BlockView) blockAccess, i, j, k) == swampBiome ? swampMap : defaultMap;
             return map.getColorMultiplier(blockAccess, i, j, k);
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
-            IColorMap map = BiomeAPI.getBiomeGenAt(blockAccess, i, j, k) == swampBiome ? swampMap : defaultMap;
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
+            IColorMap map = BiomeAPI.getBiomeGenAt((BlockView)blockAccess, i, j, k) == swampBiome ? swampMap : defaultMap;
             return map.getColorMultiplierF(blockAccess, i, j, k);
         }
 
@@ -558,7 +556,7 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        protected void computeXY(ClientWorld biome, int i, int j, int k, float[] f, int seaLevel) {
+        protected void computeXY(BlockView biome, int i, int j, int k, float[] f, int seaLevel) {
             float temperature = ColorUtils.clamp(BiomeAPI.getTemperature(biome, i, j, k,seaLevel));
             float rainfall = ColorUtils.clamp(BiomeAPI.getRainfall(biome, i, j, k));
             f[0] = maxX * (1.0f - temperature);
@@ -647,9 +645,9 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        protected void computeXY(ClientWorld biome, int i, int j, int k, float[] f, int seaLevel) {
-            f[0] = getX(BiomeAPI.getBiomeRegGenAt(biome.getBiomeAccess(), i, j, k), i, j, k);
-            f[1] = getY(BiomeAPI.getBiomeRegGenAt(biome.getBiomeAccess(), i, j, k), i, j, k);
+        protected void computeXY(BlockView biome, int i, int j, int k, float[] f, int seaLevel) {
+            f[0] = getX(BiomeAPI.getBiomeRegGenAt(biome, i, j, k), i, j, k);
+            f[1] = getY(BiomeAPI.getBiomeRegGenAt(biome, i, j, k), i, j, k);
         }
 
         private float getX(Identifier biome, int i, int j, int k) {
@@ -707,12 +705,12 @@ abstract public class ColorMap implements IColorMap {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
-            return getRGB(BiomeAPI.getBiomeIDAt(blockAccess.getBiomeAccess(), i, j, k), j);
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
+            return getRGB(BiomeAPI.getBiomeIDAt(blockAccess, i, j, k), j);
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             int rgb = getColorMultiplier(blockAccess, i, j, k);
             ColorUtils.intToFloat3(rgb, lastColor);
             return lastColor;

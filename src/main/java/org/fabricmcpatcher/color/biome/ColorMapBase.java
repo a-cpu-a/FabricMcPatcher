@@ -1,8 +1,8 @@
 package org.fabricmcpatcher.color.biome;
 
 
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.BlockView;
 import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 
@@ -105,12 +105,12 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
             return ColorUtils.float3ToInt(getColorMultiplierF(blockAccess, i, j, k));
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             lastColor[0] = 0.0f;
             lastColor[1] = 0.0f;
             lastColor[2] = 0.0f;
@@ -165,7 +165,7 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
             if (i != lastI || j != lastJ || k != lastK) {
                 lastColorI = parent.getColorMultiplier(blockAccess, i, j, k);
                 lastI = i;
@@ -176,7 +176,7 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             if (i != lastI || j != lastJ || k != lastK) {
                 lastColorF = parent.getColorMultiplierF(blockAccess, i, j, k);
                 lastI = i;
@@ -225,12 +225,12 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
             return ColorUtils.float3ToInt(getColorMultiplierF(blockAccess, i, j, k));
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             float[] currentColor = parent.getColorMultiplierF(blockAccess, i, j, k);
             long now = System.currentTimeMillis();
             if (lastTime == 0L) {
@@ -306,12 +306,12 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
             return ColorUtils.float3ToInt(getColorMultiplierF(blockAccess, i, j, k));
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             int offset = getChunkOffset(i, j, k);
             calls++;
             if (offset < 0) {
@@ -408,7 +408,7 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k) {
+        public int getColorMultiplier(BlockView blockAccess, int i, int j, int k) {
             if (!isHeightDependent) {
                 j = DEFAULT_HEIGHT;
             }
@@ -416,7 +416,7 @@ abstract public class ColorMapBase {
         }
 
         @Override
-        public float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k) {
+        public float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k) {
             if (!isHeightDependent) {
                 j = DEFAULT_HEIGHT;
             }

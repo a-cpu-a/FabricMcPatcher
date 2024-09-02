@@ -2,6 +2,7 @@ package org.fabricmcpatcher.color.biome;
 
 
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
+import net.fabricmc.fabric.impl.client.indigo.renderer.render.BlockRenderInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.world.ClientWorld;
@@ -12,12 +13,15 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.utils.MCLogger;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
 import org.fabricmcpatcher.utils.PortUtils;
+import org.fabricmcpatcher.utils.block.ExtendedBlockView;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.lang.reflect.Method;
 import java.util.BitSet;
@@ -89,12 +93,12 @@ public class BiomeAPI {
         return MinecraftClient.getInstance().world;
     }
 
-    public static int getBiomeIDAt(BiomeAccess blockAccess, int i, int j, int k) {
+    public static int getBiomeIDAt(BlockView blockAccess, int i, int j, int k) {
         Identifier biome = getBiomeRegGenAt(blockAccess, i, j, k);
         return biome==null?0xFF : PortUtils.getBiomeId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
     }
 
-    public static Identifier getBiomeRegGenAt(BiomeAccess blockAccess, int i, int j, int k) {
+    public static Identifier getBiomeRegGenAt(BlockView blockAccess, int i, int j, int k) {
         if (lastBiomeId == null || i != lastI || k != lastK) {
             if(i != lastI || k != lastK)
                 lastBiome=null;
@@ -104,13 +108,13 @@ public class BiomeAPI {
         }
         return lastBiomeId;
     }
-    public static Biome getBiomeGenAt(ClientWorld blockAccess, int i, int j, int k) {
+    public static Biome getBiomeGenAt(BlockView blockAccess, int i, int j, int k) {
         if (lastBiome == null || i != lastI || k != lastK) {
             if(i != lastI || k != lastK)
                 lastBiomeId=null;
             lastI = i;
             lastK = k;
-            lastBiome =instance.getBiomeGenAt_Impl(blockAccess, i, j, k);
+            lastBiome =instance.getBiomeGenAt_Impl_(blockAccess, i, j, k);
         }
         return lastBiome;
     }
@@ -119,7 +123,7 @@ public class BiomeAPI {
         return instance.getTemperaturef_Impl(biome, i, j, k,seaLevel);
     }
 
-    public static float getTemperature(ClientWorld blockAccess, int i, int j, int k,int seaLevel) {
+    public static float getTemperature(BlockView blockAccess, int i, int j, int k,int seaLevel) {
         return getTemperature(getBiomeGenAt(blockAccess, i, j, k), i, j, k,seaLevel);
     }
 
@@ -127,7 +131,7 @@ public class BiomeAPI {
         return biome.weather.downfall();
     }
 
-    public static float getRainfall(ClientWorld blockAccess, int i, int j, int k) {
+    public static float getRainfall(BlockView blockAccess, int i, int j, int k) {
         return getRainfall(getBiomeGenAt(blockAccess, i, j, k), i, j, k);
     }
 
@@ -165,11 +169,14 @@ public class BiomeAPI {
         return true;
     }
 
-    protected Identifier getBiomeGenAt_Impl(BiomeAccess blockAccess, int i, int j, int k) {
-        return blockAccess.getBiome(new BlockPos(i, j, k)).getKey().get().getValue();
+    protected Identifier getBiomeGenAt_Impl(BlockView blockAccess, int i, int j, int k) {
+        @UnknownNullability RegistryEntry<Biome> biome = blockAccess.getBiomeFabric(new BlockPos(i, j, k));
+        if(biome==null)
+            return Identifier.ofVanilla("plains");
+        return biome.getKey().get().getValue();
     }
-    protected Biome getBiomeGenAt_Impl(ClientWorld blockAccess, int i, int j, int k) {
-        return blockAccess.getRegistryManager().get(RegistryKeys.BIOME).get(blockAccess.getBiome(new BlockPos(i, j, k)).getKey().get());
+    protected Biome getBiomeGenAt_Impl_(BlockView blockAccess, int i, int j, int k) {
+        return ((ExtendedBlockView)blockAccess).mcPatcher$getBiomeRegistry().get(blockAccess.getBiomeFabric(new BlockPos(i, j, k)).getKey().get());
     }
 
     protected float getTemperaturef_Impl(Biome biome, int i, int j, int k,int seaLevel) {

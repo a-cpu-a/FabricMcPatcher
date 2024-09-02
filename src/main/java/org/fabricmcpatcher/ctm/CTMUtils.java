@@ -162,6 +162,8 @@ public class CTMUtils {
     }
 
     private static boolean checkRenderType(Block block) {
+        return true;
+        /*
         switch (block.getRenderType()) {
             case 11: // fence
             case 21: // fence gate
@@ -169,7 +171,7 @@ public class CTMUtils {
 
             default:
                 return true;
-        }
+        }*/
     }
 
     private static boolean skipDefaultRendering(Block block) {

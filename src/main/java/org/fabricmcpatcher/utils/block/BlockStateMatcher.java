@@ -5,10 +5,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.utils.MCPatcherUtils;
+import org.fabricmcpatcher.utils.PortUtils;
 
 import java.util.*;
 
@@ -32,7 +34,7 @@ public class BlockStateMatcher {
             if (!properties.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 for (Map.Entry<String, String> entry : properties.entrySet()) {
-                    if (sb.length() > 0) {
+                    if (!sb.isEmpty()) {
                         sb.append(':');
                     }
                     sb.append(entry.getKey()).append('=').append(entry.getValue());
@@ -51,7 +53,7 @@ public class BlockStateMatcher {
                         valueSet = new HashSet<>();
                         propertyMap.put(property, valueSet);
                     }
-                    if (Integer.class.isAssignableFrom(property.getValueClass())) {
+                    if (Integer.class.isAssignableFrom(property.getType())) {
                         parseIntegerValues(property, valueSet, entry.getValue());
                     } else {
                         for (String s : entry.getValue().split("\\s*,\\s*")) {
@@ -119,7 +121,7 @@ public class BlockStateMatcher {
         Map<Property<?>, Set<Comparable<?>>> tmpMap = new HashMap<>();
         for (int i : metadataList) {
             try {
-                BlockState blockState = block.getStateFromMetadata(i);
+                BlockState blockState = PortUtils.getStateFromMetadata(block,i);
                 for (Property<?> property : blockState.getProperties()) {
                     Set<Comparable<?>> values = tmpMap.get(property);
                     if (values == null) {
@@ -180,8 +182,8 @@ public class BlockStateMatcher {
     }
 
     public static String propertyValueToString(Comparable<?> propertyValue) {
-        if (propertyValue instanceof INamed) {
-            return ((INamed) propertyValue).getName();
+        if (propertyValue instanceof StringIdentifiable) {
+            return ((StringIdentifiable) propertyValue).asString();
         } else {
             return propertyValue.toString();
         }

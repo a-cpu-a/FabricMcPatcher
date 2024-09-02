@@ -1,8 +1,10 @@
 package org.fabricmcpatcher.color;
 
 import net.minecraft.client.particle.LavaEmberParticle;
+import net.minecraft.client.particle.WaterSuspendParticle;
 import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.BlockRenderView;
 import org.fabricmcpatcher.color.biome.BiomeAPI;
 import org.fabricmcpatcher.color.biome.ColorUtils;
 import org.fabricmcpatcher.resource.PropertiesFile;
@@ -169,16 +171,18 @@ public class ColorizeEntity {
             return true;
         }
     }
+
 /*
     public static int getPotionEffectColor(int defaultColor, LivingEntity entity) {
         return defaultColor == 0 ? defaultColor : entity.overridePotionColor;
     }*/
 
-    public static void computeSuspendColor(int defaultColor, int i, int j, int k) {
+    public static boolean computeSuspendColor(int i, int j, int k) {
         if (ColorizeWorld.underwaterColor != null) {
-            defaultColor = ColorizeWorld.underwaterColor.getColorMultiplier(BiomeAPI.getWorld(), i, j, k);
+            Colorizer.setColorF( ColorizeWorld.underwaterColor.getColorMultiplier(BiomeAPI.getWorld(), i, j, k));
+            return true;
         }
-        Colorizer.setColorF(defaultColor);
+        return false;
     }
 
     public static int getDyeColor(int rgb, int index) {

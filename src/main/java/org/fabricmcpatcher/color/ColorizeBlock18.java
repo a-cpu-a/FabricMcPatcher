@@ -270,7 +270,7 @@ public class ColorizeBlock18 {
     public void applyVertexColor(Tessellator tessellator, float base, int vertex) {
         if (isSmooth) {
             float[] rgb = vertexColors[vertex];
-            TessellatorAPI.setColorOpaque_F(tessellator, base * rgb[0], base * rgb[1], base * rgb[2]);
+            //TessellatorAPI.setColorOpaque_F(tessellator, base * rgb[0], base * rgb[1], base * rgb[2]); //TODO
         }
     }
 

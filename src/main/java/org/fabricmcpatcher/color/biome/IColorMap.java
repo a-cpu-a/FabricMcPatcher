@@ -1,8 +1,8 @@
 package org.fabricmcpatcher.color.biome;
 
 
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.BlockView;
 
 import java.util.Collection;
 
@@ -11,9 +11,9 @@ public interface IColorMap {
 
     int getColorMultiplier();
 
-    int getColorMultiplier(ClientWorld blockAccess, int i, int j, int k);
+    int getColorMultiplier(BlockView blockAccess, int i, int j, int k);
 
-    float[] getColorMultiplierF(ClientWorld blockAccess, int i, int j, int k);
+    float[] getColorMultiplierF(BlockView blockAccess, int i, int j, int k);
 
     void claimResources(Collection<Identifier> resources);
 
