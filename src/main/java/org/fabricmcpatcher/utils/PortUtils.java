@@ -1,6 +1,7 @@
 package org.fabricmcpatcher.utils;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
@@ -143,5 +144,9 @@ public class PortUtils {
     public static BakedQuad ModelFaceSprite(BakedQuad face, Sprite altSprite) {
         Direction dir = BakedQuadFactory.decodeDirection(face.getVertexData());
         return new BakedQuad(setVertexDataSprite(face.getVertexData().clone(),altSprite,dir),face.getColorIndex(), dir, altSprite,face.hasShade(),face.getLightEmission() );
+    }
+
+    public static int getRenderType(Block block) {
+        return 3;//not really used in 1.8+
     }
 }

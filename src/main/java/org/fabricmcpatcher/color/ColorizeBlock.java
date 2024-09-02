@@ -429,7 +429,7 @@ public class ColorizeBlock {
                 waterColor = new float[3];
                 ColorUtils.intToFloat3(waterColorMap.getColorMultiplier(), waterColor);
             }
-            GLAPI.glColor4f(waterColor[0], waterColor[1], waterColor[2], 1.0f);
+            //GLAPI.glColor4f(waterColor[0], waterColor[1], waterColor[2], 1.0f); //TODO
         }
     }
 
@@ -468,14 +468,15 @@ public class ColorizeBlock {
             return colorMap.getColorMultiplierF(blockAccess, i + offsets[0], j + offsets[1], k + offsets[2]);
         }
     }
-
+/*
     public static boolean setupBlockSmoothing(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                               int i, int j, int k, int face,
                                               float topLeft, float bottomLeft, float bottomRight, float topRight) {
         return RenderBlocksUtils.useColorMultiplier(face) &&
             setupBiomeSmoothing(renderBlocks, block, blockAccess, i, j, k, face, true, topLeft, bottomLeft, bottomRight, topRight);
-    }
+    }*/
 
+    /*
     // TODO: remove
     @Deprecated
     public static boolean setupBlockSmoothingGrassSide(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
@@ -485,16 +486,17 @@ public class ColorizeBlock {
             setupBiomeSmoothing(renderBlocks, block, blockAccess, i, j, k, face, true, topLeft, bottomLeft, bottomRight, topRight);
     }
 
+
     public static boolean setupBlockSmoothing(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                               int i, int j, int k, int face) {
         return checkBiomeSmoothing(block, face) &&
             setupBiomeSmoothing(renderBlocks, block, blockAccess, i, j, k, face, true, 1.0f, 1.0f, 1.0f, 1.0f);
     }
-
+*/
     private static boolean checkBiomeSmoothing(Block block, int face) {
         return enableSmoothBiomes && face >= 0 && RenderBlocksUtils.isAmbientOcclusionEnabled() && BlockAPI.getBlockLightValue(block) == 0;
     }
-
+/*
     private static boolean setupBiomeSmoothing(RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess,
                                                int i, int j, int k, int face,
                                                boolean useAO, float topLeft, float bottomLeft, float bottomRight, float topRight) {
@@ -528,7 +530,7 @@ public class ColorizeBlock {
 
         return true;
     }
-
+*/
     public static void setupBlockSmoothing(Block block, BlockRenderView blockAccess, int i, int j, int k, int face,
                                            float r, float g, float b) {
         if (!setupBlockSmoothing(block, blockAccess, i, j, k, face)) {

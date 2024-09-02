@@ -2,10 +2,14 @@ package org.fabricmcpatcher.utils.block;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
@@ -21,175 +25,181 @@ import java.util.*;
 
 public class BlockAPI {
     private static final HashMap<String, Integer> canonicalIdByName = new HashMap<String, Integer>();
+    private static final HashMap<Integer,String> nameByCanonicalId = new HashMap<>();
+
+    private static void addBlock(String id,int oldId) {
+        canonicalIdByName.put(id,oldId);
+        nameByCanonicalId.put(oldId,id);
+    }
 
     static {
-        canonicalIdByName.put("minecraft:air", 0);
-        canonicalIdByName.put("minecraft:stone", 1);
-        canonicalIdByName.put("minecraft:grass", 2);
-        canonicalIdByName.put("minecraft:dirt", 3);
-        canonicalIdByName.put("minecraft:cobblestone", 4);
-        canonicalIdByName.put("minecraft:planks", 5);
-        canonicalIdByName.put("minecraft:sapling", 6);
-        canonicalIdByName.put("minecraft:bedrock", 7);
-        canonicalIdByName.put("minecraft:flowing_water", 8);
-        canonicalIdByName.put("minecraft:water", 9);
-        canonicalIdByName.put("minecraft:flowing_lava", 10);
-        canonicalIdByName.put("minecraft:lava", 11);
-        canonicalIdByName.put("minecraft:sand", 12);
-        canonicalIdByName.put("minecraft:gravel", 13);
-        canonicalIdByName.put("minecraft:gold_ore", 14);
-        canonicalIdByName.put("minecraft:iron_ore", 15);
-        canonicalIdByName.put("minecraft:coal_ore", 16);
-        canonicalIdByName.put("minecraft:log", 17);
-        canonicalIdByName.put("minecraft:leaves", 18);
-        canonicalIdByName.put("minecraft:sponge", 19);
-        canonicalIdByName.put("minecraft:glass", 20);
-        canonicalIdByName.put("minecraft:lapis_ore", 21);
-        canonicalIdByName.put("minecraft:lapis_block", 22);
-        canonicalIdByName.put("minecraft:dispenser", 23);
-        canonicalIdByName.put("minecraft:sandstone", 24);
-        canonicalIdByName.put("minecraft:noteblock", 25);
-        canonicalIdByName.put("minecraft:bed", 26);
-        canonicalIdByName.put("minecraft:golden_rail", 27);
-        canonicalIdByName.put("minecraft:detector_rail", 28);
-        canonicalIdByName.put("minecraft:sticky_piston", 29);
-        canonicalIdByName.put("minecraft:web", 30);
-        canonicalIdByName.put("minecraft:tallgrass", 31);
-        canonicalIdByName.put("minecraft:deadbush", 32);
-        canonicalIdByName.put("minecraft:piston", 33);
-        canonicalIdByName.put("minecraft:piston_head", 34);
-        canonicalIdByName.put("minecraft:wool", 35);
-        canonicalIdByName.put("minecraft:piston_extension", 36);
-        canonicalIdByName.put("minecraft:yellow_flower", 37);
-        canonicalIdByName.put("minecraft:red_flower", 38);
-        canonicalIdByName.put("minecraft:brown_mushroom", 39);
-        canonicalIdByName.put("minecraft:red_mushroom", 40);
-        canonicalIdByName.put("minecraft:gold_block", 41);
-        canonicalIdByName.put("minecraft:iron_block", 42);
-        canonicalIdByName.put("minecraft:double_stone_slab", 43);
-        canonicalIdByName.put("minecraft:stone_slab", 44);
-        canonicalIdByName.put("minecraft:brick_block", 45);
-        canonicalIdByName.put("minecraft:tnt", 46);
-        canonicalIdByName.put("minecraft:bookshelf", 47);
-        canonicalIdByName.put("minecraft:mossy_cobblestone", 48);
-        canonicalIdByName.put("minecraft:obsidian", 49);
-        canonicalIdByName.put("minecraft:torch", 50);
-        canonicalIdByName.put("minecraft:fire", 51);
-        canonicalIdByName.put("minecraft:mob_spawner", 52);
-        canonicalIdByName.put("minecraft:oak_stairs", 53);
-        canonicalIdByName.put("minecraft:chest", 54);
-        canonicalIdByName.put("minecraft:redstone_wire", 55);
-        canonicalIdByName.put("minecraft:diamond_ore", 56);
-        canonicalIdByName.put("minecraft:diamond_block", 57);
-        canonicalIdByName.put("minecraft:crafting_table", 58);
-        canonicalIdByName.put("minecraft:wheat", 59);
-        canonicalIdByName.put("minecraft:farmland", 60);
-        canonicalIdByName.put("minecraft:furnace", 61);
-        canonicalIdByName.put("minecraft:lit_furnace", 62);
-        canonicalIdByName.put("minecraft:standing_sign", 63);
-        canonicalIdByName.put("minecraft:wooden_door", 64);
-        canonicalIdByName.put("minecraft:ladder", 65);
-        canonicalIdByName.put("minecraft:rail", 66);
-        canonicalIdByName.put("minecraft:stone_stairs", 67);
-        canonicalIdByName.put("minecraft:wall_sign", 68);
-        canonicalIdByName.put("minecraft:lever", 69);
-        canonicalIdByName.put("minecraft:stone_pressure_plate", 70);
-        canonicalIdByName.put("minecraft:iron_door", 71);
-        canonicalIdByName.put("minecraft:wooden_pressure_plate", 72);
-        canonicalIdByName.put("minecraft:redstone_ore", 73);
-        canonicalIdByName.put("minecraft:lit_redstone_ore", 74);
-        canonicalIdByName.put("minecraft:unlit_redstone_torch", 75);
-        canonicalIdByName.put("minecraft:redstone_torch", 76);
-        canonicalIdByName.put("minecraft:stone_button", 77);
-        canonicalIdByName.put("minecraft:snow_layer", 78);
-        canonicalIdByName.put("minecraft:ice", 79);
-        canonicalIdByName.put("minecraft:snow", 80);
-        canonicalIdByName.put("minecraft:cactus", 81);
-        canonicalIdByName.put("minecraft:clay", 82);
-        canonicalIdByName.put("minecraft:reeds", 83);
-        canonicalIdByName.put("minecraft:jukebox", 84);
-        canonicalIdByName.put("minecraft:fence", 85);
-        canonicalIdByName.put("minecraft:pumpkin", 86);
-        canonicalIdByName.put("minecraft:netherrack", 87);
-        canonicalIdByName.put("minecraft:soul_sand", 88);
-        canonicalIdByName.put("minecraft:glowstone", 89);
-        canonicalIdByName.put("minecraft:portal", 90);
-        canonicalIdByName.put("minecraft:lit_pumpkin", 91);
-        canonicalIdByName.put("minecraft:cake", 92);
-        canonicalIdByName.put("minecraft:unpowered_repeater", 93);
-        canonicalIdByName.put("minecraft:powered_repeater", 94);
-        canonicalIdByName.put("minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this", 95);
-        canonicalIdByName.put("minecraft:trapdoor", 96);
-        canonicalIdByName.put("minecraft:monster_egg", 97);
-        canonicalIdByName.put("minecraft:stonebrick", 98);
-        canonicalIdByName.put("minecraft:brown_mushroom_block", 99);
-        canonicalIdByName.put("minecraft:red_mushroom_block", 100);
-        canonicalIdByName.put("minecraft:iron_bars", 101);
-        canonicalIdByName.put("minecraft:glass_pane", 102);
-        canonicalIdByName.put("minecraft:melon_block", 103);
-        canonicalIdByName.put("minecraft:pumpkin_stem", 104);
-        canonicalIdByName.put("minecraft:melon_stem", 105);
-        canonicalIdByName.put("minecraft:vine", 106);
-        canonicalIdByName.put("minecraft:fence_gate", 107);
-        canonicalIdByName.put("minecraft:brick_stairs", 108);
-        canonicalIdByName.put("minecraft:stone_brick_stairs", 109);
-        canonicalIdByName.put("minecraft:mycelium", 110);
-        canonicalIdByName.put("minecraft:waterlily", 111);
-        canonicalIdByName.put("minecraft:nether_brick", 112);
-        canonicalIdByName.put("minecraft:nether_brick_fence", 113);
-        canonicalIdByName.put("minecraft:nether_brick_stairs", 114);
-        canonicalIdByName.put("minecraft:nether_wart", 115);
-        canonicalIdByName.put("minecraft:enchanting_table", 116);
-        canonicalIdByName.put("minecraft:brewing_stand", 117);
-        canonicalIdByName.put("minecraft:cauldron", 118);
-        canonicalIdByName.put("minecraft:end_portal", 119);
-        canonicalIdByName.put("minecraft:end_portal_frame", 120);
-        canonicalIdByName.put("minecraft:end_stone", 121);
-        canonicalIdByName.put("minecraft:dragon_egg", 122);
-        canonicalIdByName.put("minecraft:redstone_lamp", 123);
-        canonicalIdByName.put("minecraft:lit_redstone_lamp", 124);
-        canonicalIdByName.put("minecraft:double_wooden_slab", 125);
-        canonicalIdByName.put("minecraft:wooden_slab", 126);
-        canonicalIdByName.put("minecraft:cocoa", 127);
-        canonicalIdByName.put("minecraft:sandstone_stairs", 128);
-        canonicalIdByName.put("minecraft:emerald_ore", 129);
-        canonicalIdByName.put("minecraft:ender_chest", 130);
-        canonicalIdByName.put("minecraft:tripwire_hook", 131);
-        canonicalIdByName.put("minecraft:tripwire", 132);
-        canonicalIdByName.put("minecraft:emerald_block", 133);
-        canonicalIdByName.put("minecraft:spruce_stairs", 134);
-        canonicalIdByName.put("minecraft:birch_stairs", 135);
-        canonicalIdByName.put("minecraft:jungle_stairs", 136);
-        canonicalIdByName.put("minecraft:command_block", 137);
-        canonicalIdByName.put("minecraft:beacon", 138);
-        canonicalIdByName.put("minecraft:cobblestone_wall", 139);
-        canonicalIdByName.put("minecraft:flower_pot", 140);
-        canonicalIdByName.put("minecraft:carrots", 141);
-        canonicalIdByName.put("minecraft:potatoes", 142);
-        canonicalIdByName.put("minecraft:wooden_button", 143);
-        canonicalIdByName.put("minecraft:skull", 144);
-        canonicalIdByName.put("minecraft:anvil", 145);
-        canonicalIdByName.put("minecraft:trapped_chest", 146);
-        canonicalIdByName.put("minecraft:light_weighted_pressure_plate", 147);
-        canonicalIdByName.put("minecraft:heavy_weighted_pressure_plate", 148);
-        canonicalIdByName.put("minecraft:unpowered_comparator", 149);
-        canonicalIdByName.put("minecraft:powered_comparator", 150);
-        canonicalIdByName.put("minecraft:daylight_detector", 151);
-        canonicalIdByName.put("minecraft:redstone_block", 152);
-        canonicalIdByName.put("minecraft:quartz_ore", 153);
-        canonicalIdByName.put("minecraft:hopper", 154);
-        canonicalIdByName.put("minecraft:quartz_block", 155);
-        canonicalIdByName.put("minecraft:quartz_stairs", 156);
-        canonicalIdByName.put("minecraft:activator_rail", 157);
-        canonicalIdByName.put("minecraft:dropper", 158);
-        canonicalIdByName.put("minecraft:stained_hardened_clay", 159);
-        canonicalIdByName.put("minecraft:hay_block", 170);
-        canonicalIdByName.put("minecraft:carpet", 171);
-        canonicalIdByName.put("minecraft:hardened_clay", 172);
-        canonicalIdByName.put("minecraft:coal_block", 173);
-        canonicalIdByName.put("minecraft:packed_ice", 174);
-        canonicalIdByName.put("minecraft:double_plant", 175);
-        //TODO: add 1.12 stuff
+        addBlock("minecraft:air", 0);
+        addBlock("minecraft:stone", 1);
+        addBlock("minecraft:grass", 2);
+        addBlock("minecraft:dirt", 3);
+        addBlock("minecraft:cobblestone", 4);
+        addBlock("minecraft:planks", 5);
+        addBlock("minecraft:sapling", 6);
+        addBlock("minecraft:bedrock", 7);
+        addBlock("minecraft:flowing_water", 8);
+        addBlock("minecraft:water", 9);
+        addBlock("minecraft:flowing_lava", 10);
+        addBlock("minecraft:lava", 11);
+        addBlock("minecraft:sand", 12);
+        addBlock("minecraft:gravel", 13);
+        addBlock("minecraft:gold_ore", 14);
+        addBlock("minecraft:iron_ore", 15);
+        addBlock("minecraft:coal_ore", 16);
+        addBlock("minecraft:log", 17);
+        addBlock("minecraft:leaves", 18);
+        addBlock("minecraft:sponge", 19);
+        addBlock("minecraft:glass", 20);
+        addBlock("minecraft:lapis_ore", 21);
+        addBlock("minecraft:lapis_block", 22);
+        addBlock("minecraft:dispenser", 23);
+        addBlock("minecraft:sandstone", 24);
+        addBlock("minecraft:noteblock", 25);
+        addBlock("minecraft:bed", 26);
+        addBlock("minecraft:golden_rail", 27);
+        addBlock("minecraft:detector_rail", 28);
+        addBlock("minecraft:sticky_piston", 29);
+        addBlock("minecraft:web", 30);
+        addBlock("minecraft:tallgrass", 31);
+        addBlock("minecraft:deadbush", 32);
+        addBlock("minecraft:piston", 33);
+        addBlock("minecraft:piston_head", 34);
+        addBlock("minecraft:wool", 35);
+        addBlock("minecraft:piston_extension", 36);
+        addBlock("minecraft:yellow_flower", 37);
+        addBlock("minecraft:red_flower", 38);
+        addBlock("minecraft:brown_mushroom", 39);
+        addBlock("minecraft:red_mushroom", 40);
+        addBlock("minecraft:gold_block", 41);
+        addBlock("minecraft:iron_block", 42);
+        addBlock("minecraft:double_stone_slab", 43);
+        addBlock("minecraft:stone_slab", 44);
+        addBlock("minecraft:brick_block", 45);
+        addBlock("minecraft:tnt", 46);
+        addBlock("minecraft:bookshelf", 47);
+        addBlock("minecraft:mossy_cobblestone", 48);
+        addBlock("minecraft:obsidian", 49);
+        addBlock("minecraft:torch", 50);
+        addBlock("minecraft:fire", 51);
+        addBlock("minecraft:mob_spawner", 52);
+        addBlock("minecraft:oak_stairs", 53);
+        addBlock("minecraft:chest", 54);
+        addBlock("minecraft:redstone_wire", 55);
+        addBlock("minecraft:diamond_ore", 56);
+        addBlock("minecraft:diamond_block", 57);
+        addBlock("minecraft:crafting_table", 58);
+        addBlock("minecraft:wheat", 59);
+        addBlock("minecraft:farmland", 60);
+        addBlock("minecraft:furnace", 61);
+        addBlock("minecraft:lit_furnace", 62);
+        addBlock("minecraft:standing_sign", 63);
+        addBlock("minecraft:wooden_door", 64);
+        addBlock("minecraft:ladder", 65);
+        addBlock("minecraft:rail", 66);
+        addBlock("minecraft:stone_stairs", 67);
+        addBlock("minecraft:wall_sign", 68);
+        addBlock("minecraft:lever", 69);
+        addBlock("minecraft:stone_pressure_plate", 70);
+        addBlock("minecraft:iron_door", 71);
+        addBlock("minecraft:wooden_pressure_plate", 72);
+        addBlock("minecraft:redstone_ore", 73);
+        addBlock("minecraft:lit_redstone_ore", 74);
+        addBlock("minecraft:unlit_redstone_torch", 75);
+        addBlock("minecraft:redstone_torch", 76);
+        addBlock("minecraft:stone_button", 77);
+        addBlock("minecraft:snow_layer", 78);
+        addBlock("minecraft:ice", 79);
+        addBlock("minecraft:snow", 80);
+        addBlock("minecraft:cactus", 81);
+        addBlock("minecraft:clay", 82);
+        addBlock("minecraft:reeds", 83);
+        addBlock("minecraft:jukebox", 84);
+        addBlock("minecraft:fence", 85);
+        addBlock("minecraft:pumpkin", 86);
+        addBlock("minecraft:netherrack", 87);
+        addBlock("minecraft:soul_sand", 88);
+        addBlock("minecraft:glowstone", 89);
+        addBlock("minecraft:portal", 90);
+        addBlock("minecraft:lit_pumpkin", 91);
+        addBlock("minecraft:cake", 92);
+        addBlock("minecraft:unpowered_repeater", 93);
+        addBlock("minecraft:powered_repeater", 94);
+        addBlock("minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this", 95);
+        addBlock("minecraft:trapdoor", 96);
+        addBlock("minecraft:monster_egg", 97);
+        addBlock("minecraft:stonebrick", 98);
+        addBlock("minecraft:brown_mushroom_block", 99);
+        addBlock("minecraft:red_mushroom_block", 100);
+        addBlock("minecraft:iron_bars", 101);
+        addBlock("minecraft:glass_pane", 102);
+        addBlock("minecraft:melon_block", 103);
+        addBlock("minecraft:pumpkin_stem", 104);
+        addBlock("minecraft:melon_stem", 105);
+        addBlock("minecraft:vine", 106);
+        addBlock("minecraft:fence_gate", 107);
+        addBlock("minecraft:brick_stairs", 108);
+        addBlock("minecraft:stone_brick_stairs", 109);
+        addBlock("minecraft:mycelium", 110);
+        addBlock("minecraft:waterlily", 111);
+        addBlock("minecraft:nether_brick", 112);
+        addBlock("minecraft:nether_brick_fence", 113);
+        addBlock("minecraft:nether_brick_stairs", 114);
+        addBlock("minecraft:nether_wart", 115);
+        addBlock("minecraft:enchanting_table", 116);
+        addBlock("minecraft:brewing_stand", 117);
+        addBlock("minecraft:cauldron", 118);
+        addBlock("minecraft:end_portal", 119);
+        addBlock("minecraft:end_portal_frame", 120);
+        addBlock("minecraft:end_stone", 121);
+        addBlock("minecraft:dragon_egg", 122);
+        addBlock("minecraft:redstone_lamp", 123);
+        addBlock("minecraft:lit_redstone_lamp", 124);
+        addBlock("minecraft:double_wooden_slab", 125);
+        addBlock("minecraft:wooden_slab", 126);
+        addBlock("minecraft:cocoa", 127);
+        addBlock("minecraft:sandstone_stairs", 128);
+        addBlock("minecraft:emerald_ore", 129);
+        addBlock("minecraft:ender_chest", 130);
+        addBlock("minecraft:tripwire_hook", 131);
+        addBlock("minecraft:tripwire", 132);
+        addBlock("minecraft:emerald_block", 133);
+        addBlock("minecraft:spruce_stairs", 134);
+        addBlock("minecraft:birch_stairs", 135);
+        addBlock("minecraft:jungle_stairs", 136);
+        addBlock("minecraft:command_block", 137);
+        addBlock("minecraft:beacon", 138);
+        addBlock("minecraft:cobblestone_wall", 139);
+        addBlock("minecraft:flower_pot", 140);
+        addBlock("minecraft:carrots", 141);
+        addBlock("minecraft:potatoes", 142);
+        addBlock("minecraft:wooden_button", 143);
+        addBlock("minecraft:skull", 144);
+        addBlock("minecraft:anvil", 145);
+        addBlock("minecraft:trapped_chest", 146);
+        addBlock("minecraft:light_weighted_pressure_plate", 147);
+        addBlock("minecraft:heavy_weighted_pressure_plate", 148);
+        addBlock("minecraft:unpowered_comparator", 149);
+        addBlock("minecraft:powered_comparator", 150);
+        addBlock("minecraft:daylight_detector", 151);
+        addBlock("minecraft:redstone_block", 152);
+        addBlock("minecraft:quartz_ore", 153);
+        addBlock("minecraft:hopper", 154);
+        addBlock("minecraft:quartz_block", 155);
+        addBlock("minecraft:quartz_stairs", 156);
+        addBlock("minecraft:activator_rail", 157);
+        addBlock("minecraft:dropper", 158);
+        addBlock("minecraft:stained_hardened_clay", 159);
+        addBlock("minecraft:hay_block", 170);
+        addBlock("minecraft:carpet", 171);
+        addBlock("minecraft:hardened_clay", 172);
+        addBlock("minecraft:coal_block", 173);
+        addBlock("minecraft:packed_ice", 174);
+        addBlock("minecraft:double_plant", 175);
+        //TODO: add 1.12 stuff, fix some block mappings with 1.13 ids
     }
 
     private static final BlockAPI instance = new BlockAPI();
@@ -322,7 +332,6 @@ public class BlockAPI {
 
     BlockAPI() {
     }
-    protected final DefaultedRegistry<Block> registry=Registries.BLOCK;
     private final Block airBlock= Blocks.AIR;
     /*
     V2(Registry<Block> registry) {
@@ -344,7 +353,7 @@ public class BlockAPI {
                 }
                 for (int id = 0; id < nameList.length; id++) {
                     if (nameList[id] != null) {
-                        ps.printf("canonicalIdByName.put(\"%s\", %d);\n", nameList[id], id);
+                        ps.printf("addBlock(\"%s\", %d);\n", nameList[id], id);
                     }
                 }
             } catch (IOException e) {
@@ -376,11 +385,11 @@ public class BlockAPI {
     }*/
 
     protected Iterator<Block> iterator_Impl() {
-        return registry.iterator();
+        return Registries.BLOCK.iterator();
     }
 
     protected Block getBlockById_Impl(int id) {
-        return registry.getById(id);
+        return Registries.BLOCK.get(Identifier.of(nameByCanonicalId.get(id)));
     }
     /*
     protected Block getBlockByName_Impl(String name) {
@@ -419,15 +428,24 @@ public class BlockAPI {
     }
 
     protected Sprite getBlockIcon_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
-        return null; // TODO
+        return MinecraftClient.getInstance()
+                .getBlockRenderManager()
+                .getModel(blockAccess
+                        .getBlockState(new BlockPos(i,j,k))).getParticleSprite();//null;
     }
 
     protected boolean shouldSideBeRendered_Impl(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
-        return block.shouldSideBeRendered(blockAccess, new BlockPos(i, j, k), Direction.values()[face]);
+        BlockPos pos = new BlockPos(i, j, k);
+
+        BlockState state = blockAccess.getBlockState(pos);
+        Direction dir = Direction.values()[face];
+        BlockState state2 = blockAccess.getBlockState(pos.add(dir.getVector()));
+
+        return Block.shouldDrawSide(state, state2, dir);
     }
 
     protected Block getBlockByName_Impl(String name) {
-        Block block = registry.getValueObject(TexturePackAPI.parseIdentifier(name));
+        Block block = Registries.BLOCK.get(TexturePackAPI.parseIdentifier(name));
         if (block == airBlock && !name.equals("minecraft:air")) {
             return null;
         } else {
@@ -436,8 +454,8 @@ public class BlockAPI {
     }
 
     protected String getBlockName_Impl(Block block) {
-        Object name = registry.getKeyObject(block);
-        return name == null ? String.valueOf(registry.getId(block)) : name.toString();
+        Identifier name = Registries.BLOCK.getId(block);
+        return name.toString();
     }
 
     protected Class<? extends BlockStateMatcher> getBlockStateMatcherClass_Impl() {

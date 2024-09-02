@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.BlockRenderView;
-import org.fabricmcpatcher.resource.BlendMethod;
 import org.fabricmcpatcher.resource.ResourceList;
 import org.fabricmcpatcher.resource.TexturePackChangeHandler;
 import org.fabricmcpatcher.resource.TileLoader;
@@ -123,7 +122,7 @@ public class CTMUtils {
         haveBlockFace = false;
     }
 
-    public static Sprite getBlockIcon(Sprite icon, RenderBlocks renderBlocks, Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
+    public static Sprite getBlockIcon(Sprite icon, Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         lastOverride = null;
         if (blockAccess != null && checkFace(face)) {
             if (!haveBlockFace) {
@@ -139,7 +138,7 @@ public class CTMUtils {
         return lastOverride == null && skipDefaultRendering(block) ? RenderBlocksUtils.blankIcon : icon;
     }
 
-    public static Sprite getBlockIcon(Sprite icon, RenderBlocks renderBlocks, Block block, int face, int metadata) {
+    public static Sprite getBlockIcon(Sprite icon, Block block, int face, int metadata) {
         lastOverride = null;
         if (checkFace(face) && checkRenderType(block)) {
             renderBlockState.setBlockMetadata(block, metadata, face);
@@ -151,8 +150,8 @@ public class CTMUtils {
         return icon;
     }
 
-    public static Sprite getBlockIcon(Sprite icon, RenderBlocks renderBlocks, Block block, int face) {
-        return getBlockIcon(icon, renderBlocks, block, face, 0);
+    public static Sprite getBlockIcon(Sprite icon, Block block, int face) {
+        return getBlockIcon(icon, block, face, 0);
     }
 
     public static void reset() {

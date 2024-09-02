@@ -4,6 +4,7 @@ package org.fabricmcpatcher.ctm;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
@@ -76,7 +77,7 @@ public class CTMUtils18 extends RenderBlockState {
                         halfProperties.put(block, property);
                     }
                 }
-                logger.config("  %s(%s):%s", name, property.getValueClass().getName(), BlockStateMatcher.getPropertyValues(property));
+                logger.config("  %s(%s):%s", name, property.getName(), BlockStateMatcher.getPropertyValues(property));
             }
         }
     }
@@ -144,8 +145,8 @@ public class CTMUtils18 extends RenderBlockState {
         return true;
     }
 
-    public boolean preRenderHeld(BakedModel model, Block block, int metadata) {
-        return preRenderHeld(model, block.getStateFromMetadata(metadata), block);
+    public boolean preRenderHeld(BakedModel model, Block block, BlockState blockState) {
+        return preRenderHeld(model, blockState, block);
     }
 
     public boolean preRenderHeld(BakedModel model, BlockState blockState, Block block) {
@@ -165,14 +166,14 @@ public class CTMUtils18 extends RenderBlockState {
 
         return true;
     }
-
+/*
     private static BlockState fixupState(BlockState blockState, BlockRenderView blockAccess, Block block, BlockPos position) {
         if (block == doublePlantBlock) {
             // for some reason, this is needed to fix the variant property on the bottom half of double grass
             blockState = block.getBlockStateInWorld(blockState, blockAccess, position);
         }
         return blockState;
-    }
+    }*/
 
     public void setDirection(Direction direction) {
         this.direction = direction;
@@ -391,6 +392,7 @@ public class CTMUtils18 extends RenderBlockState {
         return sb.append('}').toString();
     }
 
+    /*
     public static BlockState setBetterGrassProperty(BlockState state, Block block, BlockRenderView blockAccess, BlockPos position, Property<?> property, int direction) {
         boolean isBetterGrass = false;
         if (RenderBlocksUtils.enableBetterGrass) {
@@ -400,7 +402,7 @@ public class CTMUtils18 extends RenderBlockState {
             }
         }
         return state.setProperty(property, isBetterGrass);
-    }
+    }*/ //TODO: it adds NWSE booleans to the grass block states....
 
     public int getParticleColor(BlockRenderView blockAccess, BlockState blockState, BlockPos position, int color) {
         //blockState = fixupState(blockState, blockAccess, blockState.getBlock(), position);

@@ -4,6 +4,7 @@ package org.fabricmcpatcher.ctm;
 import net.minecraft.block.Block;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.world.BlockRenderView;
+import org.fabricmcpatcher.utils.PortUtils;
 import org.fabricmcpatcher.utils.block.BlockAPI;
 import org.fabricmcpatcher.utils.block.BlockStateMatcher;
 
@@ -183,7 +184,7 @@ final class BlockOrientation extends RenderBlockState {
         this.i = i;
         this.j = j;
         this.k = k;
-        renderType = block.getRenderType();
+        renderType = PortUtils.getRenderType(block);
         metadata = altMetadata = BlockAPI.getMetadataAt(blockAccess, i, j, k);
         offsetsComputed = false;
     }
@@ -201,7 +202,7 @@ final class BlockOrientation extends RenderBlockState {
         blockAccess = null;
         inWorld = false;
         i = j = k = 0;
-        renderType = block.getRenderType();
+        renderType = PortUtils.getRenderType(block);
         blockFace = textureFace = textureFaceOrig = face;
         this.metadata = metadata;
         metadataBits = 1 << metadata;
