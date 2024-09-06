@@ -254,6 +254,9 @@ public class BlockAPI {
     public static boolean shouldSideBeRendered(Block block, BlockRenderView blockAccess, int i, int j, int k, int face) {
         return instance.shouldSideBeRendered_Impl(block, blockAccess, i, j, k, face);
     }
+    public static boolean shouldSideBeRendered(Block block, BlockRenderView blockAccess, BlockPos p, Direction face) {
+        return instance.shouldSideBeRendered_Impl(block, blockAccess, p, face);
+    }
 
     // used by custom colors ItemRenderer patch in 1.6 only
     public static Block getBlockById(int id) {
@@ -439,6 +442,13 @@ public class BlockAPI {
 
         BlockState state = blockAccess.getBlockState(pos);
         Direction dir = Direction.values()[face];
+        BlockState state2 = blockAccess.getBlockState(pos.add(dir.getVector()));
+
+        return Block.shouldDrawSide(state, state2, dir);
+    }
+    protected boolean shouldSideBeRendered_Impl(Block block, BlockRenderView blockAccess, BlockPos pos, Direction dir) {
+        BlockState state = blockAccess.getBlockState(pos);
+
         BlockState state2 = blockAccess.getBlockState(pos.add(dir.getVector()));
 
         return Block.shouldDrawSide(state, state2, dir);

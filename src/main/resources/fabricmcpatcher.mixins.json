@@ -11,6 +11,7 @@
     "color.StatusEffectMixin",
     "color.block.BlockViewMixin",
     "color.block.RedstoneWireBlockMixin",
+    "color.block.WorldMixin",
     "color.entity.DyedColorComponentMixin",
     "color.entity.MapColorMixin",
     "color.entity.SheepEntityMixin",
