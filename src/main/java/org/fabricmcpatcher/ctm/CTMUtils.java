@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.BlockRenderView;
+import org.fabricmcpatcher.renderlayer.RenderPass;
 import org.fabricmcpatcher.resource.ResourceList;
 import org.fabricmcpatcher.resource.TexturePackChangeHandler;
 import org.fabricmcpatcher.resource.TileLoader;
@@ -24,9 +25,9 @@ public class CTMUtils {
     private static final boolean enableStandard = Config.getBoolean(MCPatcherUtils.CONNECTED_TEXTURES, "standard", true);
     private static final boolean enableNonStandard = Config.getBoolean(MCPatcherUtils.CONNECTED_TEXTURES, "nonStandard", true);
 
-    private static final List<ITileOverride> allOverrides = new ArrayList<ITileOverride>();
-    private static final Map<Block, List<BlockStateMatcher>> blockOverrides = new IdentityHashMap<Block, List<BlockStateMatcher>>();
-    private static final Map<String, List<ITileOverride>> tileOverrides = new HashMap<String, List<ITileOverride>>();
+    private static final List<ITileOverride> allOverrides = new ArrayList<>();
+    private static final Map<Block, List<BlockStateMatcher>> blockOverrides = new IdentityHashMap<>();
+    private static final Map<String, List<ITileOverride>> tileOverrides = new HashMap<>();
     private static TileLoader tileLoader;
 
     private static ITileOverride lastOverride;
@@ -38,11 +39,7 @@ public class CTMUtils {
     private static final BlockOrientation renderBlockState = new BlockOrientation();
 
     static {
-        /*
-        try {
-            Class.forName(MCPatcherUtils.RENDER_PASS_CLASS).getMethod("finish").invoke(null);
-        } catch (Throwable e) {
-        }*/ //TODO
+        RenderPass.finish();
 
         TexturePackChangeHandler.register(new TexturePackChangeHandler(MCPatcherUtils.CONNECTED_TEXTURES, 3) {
             @Override
@@ -190,7 +187,7 @@ public class CTMUtils {
                     Block block = matcher.getBlock();
                     List<BlockStateMatcher> list = blockOverrides.get(block);
                     if (list == null) {
-                        list = new ArrayList<BlockStateMatcher>();
+                        list = new ArrayList<>();
                         blockOverrides.put(block, list);
                     }
                     list.add(matcher);
@@ -203,7 +200,7 @@ public class CTMUtils {
                 for (String name : matchingTiles) {
                     List<ITileOverride> list = tileOverrides.get(name);
                     if (list == null) {
-                        list = new ArrayList<ITileOverride>();
+                        list = new ArrayList<>();
                         tileOverrides.put(name, list);
                     }
                     list.add(override);
