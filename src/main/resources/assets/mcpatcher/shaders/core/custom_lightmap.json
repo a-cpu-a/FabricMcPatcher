@@ -1,0 +1,15 @@
+{
+    "vertex": "core/blit_screen",
+    "fragment": "mcpatcher:core/custom_lightmap",
+    "samplers": [
+        { "name": "origMap" }
+    ],
+    "uniforms": [
+        { "name": "sun",                 "type": "float",     "count": 1,  "values": [1.0] },
+        { "name": "torch",               "type": "float",     "count": 1,  "values": [1.0] },
+        { "name": "nightVisionStrength", "type": "float",     "count": 1,  "values": [1.0] },
+        { "name": "gamma",               "type": "float",     "count": 1,  "values": [1.0] },
+        { "name": "customNightvision",   "type": "int",       "count": 1,  "values": [0] },
+        { "name": "heightR",             "type": "float",     "count": 1,  "values": [0.5] }
+    ]
+}
