@@ -46,6 +46,8 @@
     "color.particle.BlockLeakParticleMixin$DrippingLava",
     "color.particle.ExperienceOrbEntityRendererMixin",
     "color.particle.PortalParticleMixin",
+    "color.particle.SuspendParticleMixin",
+    "color.particle.SuspendParticleMixin$MyceliumFactoryMixin",
     "color.particle.WaterSuspendParticleMixin",
     "color.particle.WaterSuspendParticleMixin$UnderwaterFactory",
     "color.text.BossBarHudMixin",

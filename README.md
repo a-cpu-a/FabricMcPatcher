@@ -17,7 +17,8 @@ Armor color: dye crafting
 Default armor color
 Firework blending modes (particle.properties)  
 Spawn egg colors  
-Cloud type override
+Cloud type override  
+Mycelium particle colorarray
 
 >Currently working on:  
 Renderpass config  
@@ -25,7 +26,6 @@ Block colormaps
 CTM  
 Enchantment CIT on compasses, clocks, ...  
 Texture CIT  
-Mycelium particle colorarray  
 
 >Eventually  
 text.code.(16-31) to edit text shadow colors  
