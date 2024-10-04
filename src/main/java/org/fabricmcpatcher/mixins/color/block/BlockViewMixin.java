@@ -17,6 +17,6 @@ public interface BlockViewMixin extends ExtendedBlockView {
 
     @Override
     public default Registry<Biome> mcPatcher$getBiomeRegistry() {
-        return MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME);
+        return MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(RegistryKeys.BIOME);
     }
 }

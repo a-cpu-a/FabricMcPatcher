@@ -51,7 +51,7 @@ public class BiomeAPI {
         for (String s : list.split(list.contains(",") ? "\\s*,\\s*" : "\\s+")) {
             Biome biome = findBiomeByName(s);
             if (biome != null) {
-                bits.set(MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME).getRawId(biome));
+                bits.set(MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(RegistryKeys.BIOME).getRawId(biome));
             }
         }
     }
@@ -100,7 +100,7 @@ public class BiomeAPI {
     }
     public static int getNewBiomeIdAt(BlockView blockAccess, int i, int j, int k) {
         Biome biome = getBiomeGenAt(blockAccess, i, j, k);
-        return biome==null?-1 : MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME).getRawId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
+        return biome==null?-1 : MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(RegistryKeys.BIOME).getRawId(biome);//biome == null ? Biome.biomeList.length : biome.biomeID;
     }
 
     public static Identifier getBiomeRegGenAt(BlockView blockAccess, int i, int j, int k) {
@@ -153,9 +153,10 @@ public class BiomeAPI {
     }
 
     private static void logBiomes() {
+        if(MinecraftClient.getInstance().world==null)return;
         if (!biomesLogged) {
             biomesLogged = true;
-            Registry<Biome> bioReg = MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME);
+            Registry<Biome> bioReg = MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(RegistryKeys.BIOME);
             Set<Identifier> ids = bioReg.getIds();
             int i = 0;
             for (Identifier id : ids) {

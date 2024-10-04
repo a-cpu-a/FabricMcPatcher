@@ -49,7 +49,7 @@ public class BuiltinModelItemRendererMixin {
     }
     @WrapOperation(method = "render",at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/TridentEntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V"))
     void renderTridentRender(TridentEntityModel instance, MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, Operation<Void> original, ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
-        mcPatcher$renderRender(instance,instance.getPart(),matrixStack,vertexConsumer,light,overlay,original,stack,mode,matrices,vertexConsumers);
+        mcPatcher$renderRender(instance,instance.getRootPart(),matrixStack,vertexConsumer,light,overlay,original,stack,mode,matrices,vertexConsumers);
     }
     @WrapOperation(method = "render",at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelPart;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V"))
     void renderShieldRender(ModelPart instance, MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, Operation<Void> original, ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {

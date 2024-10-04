@@ -11,14 +11,14 @@ Text color overrides
 Under (water / lava) fog colormaps  
 Multilayer enchantment CIT on armor, normal items, shields and tridents  
 sky.end color, portal and water particle colors  
-Dripping lava, xp orb colorarrays  
+Dripping lava, xp orb colormaps  
 Sheep, collar, dye colors  
 Armor color: dye crafting  
 Default armor color
 Firework blending modes (particle.properties)  
 Spawn egg colors  
 Cloud type override  
-Mycelium particle colorarray
+redstone, Mycelium particle colormaps
 
 >Currently working on:  
 Renderpass config  

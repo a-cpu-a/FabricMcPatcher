@@ -165,7 +165,7 @@ public class ColorizeBlock {
     }
 
     static void reset() {
-        waterBlock = BlockAPI.getFixedBlock("minecraft:flowing_water");
+        waterBlock = BlockAPI.getFixedBlock("minecraft:water");//flowing_water
         staticWaterBlock = BlockAPI.getFixedBlock("minecraft:water");
 
         blockColorMaps.clear();
@@ -197,11 +197,12 @@ public class ColorizeBlock {
 
     private static void reloadFoliageColors(PropertiesFile properties) {
         IColorMap colorMap = ColorMap.loadVanillaColorMap(DEFAULT_GRASSCOLOR, TexturePackAPI.newMCPatcherIdentifier(SWAMPGRASSCOLOR));
-        registerColorMap(colorMap, DEFAULT_GRASSCOLOR, "minecraft:grass:snowy=false minecraft:tallgrass:1,2:type=tall_grass,fern minecraft:double_plant:2,3:variant=double_grass,double_fern");
+        registerColorMap(colorMap, DEFAULT_GRASSCOLOR,
+                "minecraft:grass_block:snowy=false minecraft:short_grass minecraft:fern minecraft:tall_grass minecraft:large_fern"); //minecraft:grass:snowy=false minecraft:tallgrass:1,2:type=tall_grass,fern minecraft:double_plant:2,3:variant=double_grass,double_fern
         colorMap = ColorMap.loadVanillaColorMap(DEFAULT_FOLIAGECOLOR, TexturePackAPI.newMCPatcherIdentifier(SWAMPFOLIAGECOLOR));
-        registerColorMap(colorMap, DEFAULT_FOLIAGECOLOR, "minecraft:leaves:0,4,8,12:variant=oak minecraft:vine");
-        registerColorMap(TexturePackAPI.newMCPatcherIdentifier(PINECOLOR), "minecraft:leaves:1,5,9,13:variant=spruce");
-        registerColorMap(TexturePackAPI.newMCPatcherIdentifier(BIRCHCOLOR), "minecraft:leaves:2,6,10,14:variant=birch");
+        registerColorMap(colorMap, DEFAULT_FOLIAGECOLOR, "minecraft:oak_leaves minecraft:vine"); //minecraft:leaves:0,4,8,12:variant=oak minecraft:vine
+        registerColorMap(TexturePackAPI.newMCPatcherIdentifier(PINECOLOR), "minecraft:spruce_leaves"); //minecraft:leaves:1,5,9,13:variant=spruce
+        registerColorMap(TexturePackAPI.newMCPatcherIdentifier(BIRCHCOLOR), "minecraft:birch-leaves"); //minecraft:leaves:2,6,10,14:variant=birch
     }
 
     private static IColorMap wrapBlockMap(IColorMap map) {
@@ -218,10 +219,10 @@ public class ColorizeBlock {
     }
 
     private static void reloadWaterColors(PropertiesFile properties) {
-        waterColorMap = registerColorMap(TexturePackAPI.newMCPatcherIdentifier(WATERCOLOR), "minecraft:flowing_water minecraft:water");
+        waterColorMap = registerColorMap(TexturePackAPI.newMCPatcherIdentifier(WATERCOLOR), "minecraft:water"); //minecraft:flowing_water
         if (waterColorMap == null) {
             waterColorMap = new ColorMap.Water();
-            registerColorMap(waterColorMap, null, "minecraft:flowing_water minecraft:water");
+            registerColorMap(waterColorMap, null, "minecraft:water");//minecraft:flowing_water
         }
     }
 
@@ -229,7 +230,7 @@ public class ColorizeBlock {
         int[] lilypadColor = new int[]{0x020830};
         if (Colorizer.loadIntColor("lilypad", lilypadColor, 0)) {
             IColorMap colorMap = new ColorMap.Fixed(lilypadColor[0]);
-            registerColorMap(colorMap, TexturePackAPI.newMCPatcherIdentifier(Colorizer.COLOR_PROPERTIES), "minecraft:waterlily");
+            registerColorMap(colorMap, TexturePackAPI.newMCPatcherIdentifier(Colorizer.COLOR_PROPERTIES), "minecraft:lily_pad"); //minecraft:waterlily
         }
     }
 
@@ -421,7 +422,7 @@ public class ColorizeBlock {
 
 
     public static void colorizeWaterBlockGL(Block block) {
-        if (block == waterBlock || block == staticWaterBlock) {
+        if (block == waterBlock) {// || block == staticWaterBlock
             float[] waterColor;
             if (waterColorMap == null) {
                 waterColor = ColorizeEntity.waterBaseColor;

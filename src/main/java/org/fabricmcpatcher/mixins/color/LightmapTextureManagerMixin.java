@@ -7,6 +7,7 @@ import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.profiler.Profilers;
 import org.fabricmcpatcher.color.Lightmap;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -47,7 +48,7 @@ public class LightmapTextureManagerMixin {
             bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
             BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
             this.lightmapFramebuffer.endWrite();
-            this.client.getProfiler().pop();
+            Profilers.get().pop();
 
 
             ci.cancel();

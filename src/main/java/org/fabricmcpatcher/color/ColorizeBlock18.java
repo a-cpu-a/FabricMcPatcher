@@ -152,7 +152,7 @@ public class ColorizeBlock18 {
 
     public static void reset() {
         try {
-            grassBlock = BlockAPI.getFixedBlock("minecraft:grass");
+            grassBlock = BlockAPI.getFixedBlock("minecraft:grass_block");//minecraft:grass
             mycelBlock = BlockAPI.getFixedBlock("minecraft:mycelium");
             ColorizeBlock.reset();
         } catch (Throwable e) {

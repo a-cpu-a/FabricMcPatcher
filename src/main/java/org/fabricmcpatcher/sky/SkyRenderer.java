@@ -1,6 +1,7 @@
 package org.fabricmcpatcher.sky;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
@@ -476,7 +477,7 @@ public class SkyRenderer {
             return bufferBuilder.end();
         }
         private static VertexBuffer createSkyBuffer() {
-            VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            VertexBuffer vertexBuffer = new VertexBuffer(GlUsage.STATIC_WRITE);
             vertexBuffer.bind();
             vertexBuffer.upload(tessellateSky(Tessellator.getInstance()));
             VertexBuffer.unbind();

@@ -12,6 +12,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.Resource;
@@ -87,8 +88,8 @@ public class PortUtils {
 
         if(info==null)
             return null;
-
-        Registry<Biome> bioReg = MinecraftClient.getInstance().world.getRegistryManager().get(RegistryKeys.BIOME);
+        //TODO: dont load biome stuff before joining world
+        Registry<Biome> bioReg = MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(RegistryKeys.BIOME);
         return bioReg.get(Identifier.of(info.newId));
     }
 

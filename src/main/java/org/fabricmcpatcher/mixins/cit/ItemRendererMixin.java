@@ -23,7 +23,8 @@ public abstract class ItemRendererMixin {
 
     @Shadow protected abstract void renderBakedItemModel(BakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, VertexConsumer vertices);
 
-    @WrapOperation(method = "method_62476",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasGlint()Z",ordinal = 1))
+    @WrapOperation(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;Z)V",
+            at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasGlint()Z",ordinal = 1))
     boolean renderItemQuadsHasGlint(ItemStack instance, Operation<Boolean> original) {
 
         if(CITUtils.setupArmorEnchantments(instance)) {
@@ -31,7 +32,10 @@ public abstract class ItemRendererMixin {
         }
         return original.call(instance);
     }
-    @WrapOperation(method = "method_62476",at= @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderBakedItemModel(Lnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/item/ItemStack;IILnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;)V"))
+    @WrapOperation(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;Z)V",
+            at= @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/item/ItemRenderer;renderBakedItemModel(Lnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/item/ItemStack;IILnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;)V"
+            ))
     void renderItemRenderBakedItemModel(ItemRenderer instance, BakedModel model, ItemStack stack, int light,
                                         int overlay, MatrixStack matrices, VertexConsumer vertices, Operation<Void> original,
                                         ItemStack itemStack,
