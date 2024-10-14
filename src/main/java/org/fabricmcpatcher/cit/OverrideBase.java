@@ -46,24 +46,29 @@ abstract class OverrideBase implements Comparable<OverrideBase> {
         }
         String type = properties.getString("type", "item").toLowerCase();
         OverrideBase override;
-        if (type.equals("item")) {
-            if (!CITUtils.enableItems) {
+        switch (type) {
+            case "item" -> {
+                if (!CITUtils.enableItems) {
+                    return null;
+                }
+                override = new ItemOverride(properties);
+            }
+            case "enchantment", "overlay" -> {
+                if (!CITUtils.enableEnchantments) {
+                    return null;
+                }
+                override = new Enchantment(properties);
+            }
+            case "armor" -> {
+                if (!CITUtils.enableArmor) {
+                    return null;
+                }
+                override = new ArmorOverride(properties);
+            }
+            default -> {
+                logger.error("%s: unknown type '%s'", filename, type);
                 return null;
             }
-            override = new ItemOverride(properties);
-        } else if (type.equals("enchantment") || type.equals("overlay")) {
-            if (!CITUtils.enableEnchantments) {
-                return null;
-            }
-            override = new Enchantment(properties);
-        } else if (type.equals("armor")) {
-            if (!CITUtils.enableArmor) {
-                return null;
-            }
-            override = new ArmorOverride(properties);
-        } else {
-            logger.error("%s: unknown type '%s'", filename, type);
-            return null;
         }
         return override.properties.valid() ? override : null;
     }
@@ -75,13 +80,13 @@ abstract class OverrideBase implements Comparable<OverrideBase> {
 
         String value = properties.getString("source", "");
         Identifier resource = null;
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             value = properties.getString("texture", "");
         }
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             value = properties.getString("tile", "");
         }
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             if (MCPatcherUtils.isNullOrEmpty(alternateTextures)) {
                 resource = TileLoader.getDefaultAddress(properties.getResource());
                 if (!TexturePackAPI.hasResource(resource)) {
@@ -100,10 +105,10 @@ abstract class OverrideBase implements Comparable<OverrideBase> {
         weight = properties.getInt("weight", 0);
 
         value = properties.getString("items", "");
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             value = properties.getString("matchItems", "");
         }
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             items = null;
         } else {
             items = new HashSet<Item>();
@@ -116,7 +121,7 @@ abstract class OverrideBase implements Comparable<OverrideBase> {
         }
 
         value = properties.getString("damage", "");
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             damage = null;
             damagePercent = null;
         } else if (value.contains("%")) {
@@ -283,7 +288,7 @@ abstract class OverrideBase implements Comparable<OverrideBase> {
     }
 
     private static BitSet parseBitSet(String value, int min, int max) {
-        if (value.equals("")) {
+        if (value.isEmpty()) {
             return null;
         }
         BitSet bits = new BitSet();

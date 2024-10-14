@@ -10,8 +10,12 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.PotionContentsComponent;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -21,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.biome.Biome;
 import org.fabricmcpatcher.FabricMcPatcher;
 import org.fabricmcpatcher.utils.id.BiomeIdUtils;
+import org.fabricmcpatcher.utils.id.PotionIdUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +99,87 @@ public class PortUtils {
     }
 
     public static NbtCompound getTagCompound(ItemStack itemStack) {
-        return null;//TODO: implement, by converting components & adding to custom data
+
+        NbtCompound baseNbt;
+
+        {
+            NbtComponent nbtComponent = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+            if(nbtComponent ==null)
+                baseNbt = new NbtCompound();
+            else
+                baseNbt = nbtComponent.copyNbt();
+        }
+
+        short damage = (short) itemStack.getDamage();
+
+        //if damage==0 { TODO: getStateFromMetadata() }
+
+        if(damage!=0) {
+
+            baseNbt.put("Damage", NbtShort.of(damage));
+            baseNbt.put("damage", NbtShort.of(damage));
+        }
+
+        //always add it, just in case
+        baseNbt.put("Unbreakable", NbtByte.of(itemStack.get(DataComponentTypes.UNBREAKABLE)!=null));
+        {
+            PotionContentsComponent cmp = itemStack.get(DataComponentTypes.POTION_CONTENTS);
+            if (cmp != null) {
+
+                NbtList customPotionEffects = new NbtList();
+
+                for (StatusEffectInstance eff : cmp.getEffects())
+                {
+                    NbtCompound obj = new NbtCompound();
+
+                    obj.put("id",NbtString.of(eff.getEffectType().getIdAsString()));
+                    obj.put("Id",NbtByte.of((byte) PotionIdUtils.getEffectId(eff.getEffectType())));
+
+                    obj.put("amplifier",NbtByte.of((byte) eff.getAmplifier()));
+                    obj.put("Amplifier",NbtByte.of((byte) eff.getAmplifier()));
+
+                    obj.put("duration",NbtInt.of(eff.getDuration()));
+                    obj.put("Duration",NbtInt.of( eff.getDuration()));
+
+                    obj.put("ambient",NbtByte.of( eff.isAmbient()));
+                    obj.put("Ambient",NbtByte.of( eff.isAmbient()));
+
+                    obj.put("show_particles",NbtByte.of( eff.shouldShowParticles()));
+                    obj.put("ShowParticles",NbtByte.of( eff.shouldShowParticles()));
+
+                    obj.put("show_icon",NbtByte.of( eff.shouldShowIcon()));
+
+                    customPotionEffects.add(obj);
+                }
+
+                if (cmp.customColor().isPresent())
+                    baseNbt.put("CustomPotionColor", NbtInt.of(cmp.customColor().get()));
+
+                if (cmp.potion().isPresent())
+                    baseNbt.put("Potion", NbtString.of(cmp.potion().get().getIdAsString()));
+
+                if(!customPotionEffects.isEmpty())
+                {
+                    baseNbt.put("CustomPotionEffects", customPotionEffects);
+                    baseNbt.put("custom_potion_effects", customPotionEffects);
+                }
+            }
+        }
+
+
+
+
+
+
+
+//TODO: implement, by converting components & adding to custom data
+
+        //https://minecraft.wiki/w/Item_format#NBT_structure
+        //https://minecraft.wiki/w/Player.dat_format?action=history&limit=500&offset=
+//https://minecraft.wiki/w/Player.dat_format?oldid=953022#Item_structure
+        //https://minecraft.wiki/w/Player.dat_format?oldid=385693
+
+        return baseNbt;
     }
 
     public static int[] setVertexDataSprite(int[] vtx, Sprite newSprite, Direction face) {
@@ -260,6 +345,10 @@ public class PortUtils {
 
 
         return block.getDefaultState();
+    }
+
+    public static short getMetadataFromState(Block state) {
+        return 0;//TODO: implement using   getStateFromMeta
     }
 
     private static BlockState getRailState(Block block, int i) {
