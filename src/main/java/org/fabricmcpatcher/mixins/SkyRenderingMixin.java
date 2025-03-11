@@ -33,11 +33,11 @@ public abstract class SkyRenderingMixin {
     *
     * */
 //TODO:
-    @Redirect(method = "renderSun",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V",remap = false))
+    /*@Redirect(method = "renderSun",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V",remap = false))
     void renderSunOverlayBlendFunc() {
         if(SkyRenderer.sunTex!=null)return;
         RenderSystem.overlayBlendFunc();
-    }
+    }*/
     @WrapOperation(method = "renderSun",at= @At(value = "FIELD", target = "Lnet/minecraft/client/render/SkyRendering;SUN_TEXTURE:Lnet/minecraft/util/Identifier;"))
     Identifier renderSetShaderTexture(Operation<Identifier> original) {
         if(SkyRenderer.sunTex!=null) {
@@ -48,11 +48,11 @@ public abstract class SkyRenderingMixin {
 
 
     //TODO:
-    @Redirect(method = "renderMoon",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V",remap = false))
+    /*@Redirect(method = "renderMoon",at= @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;overlayBlendFunc()V",remap = false))
     void renderMoonOverlayBlendFunc() {
         if(SkyRenderer.moonTex!=null)return;
         RenderSystem.overlayBlendFunc();
-    }
+    }*/
     @WrapOperation(method = "renderMoon",at= @At(value = "FIELD", target = "Lnet/minecraft/client/render/SkyRendering;MOON_PHASES_TEXTURE:Lnet/minecraft/util/Identifier;"))
     Identifier renderMoonShaderTexture(Operation<Identifier> original) {
         if(SkyRenderer.moonTex!=null) {

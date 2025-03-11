@@ -24,7 +24,7 @@ public abstract class ArmorFeatureRendererMixin<S extends BipedEntityRenderState
     public ArmorFeatureRendererMixin(FeatureRendererContext<S, M> context) {
         super(context);
     }
-
+/*
     @WrapOperation(method = "renderArmor",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasGlint()Z"))
     boolean renderArmorHasGlint(ItemStack instance, Operation<Boolean> original, MatrixStack matrices, VertexConsumerProvider vertexConsumers, ItemStack stack, EquipmentSlot armorSlot, int light, A model) {
 
@@ -46,5 +46,5 @@ public abstract class ArmorFeatureRendererMixin<S extends BipedEntityRenderState
         }
 
         return original.call(instance);
-    }
+    }*/
 }
