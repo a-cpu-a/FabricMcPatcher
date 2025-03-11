@@ -192,15 +192,15 @@ public class TexturePackAPI {
         return instance.select_Impl(v1, v2);
     }
 
-    public static Identifier newMCPatcherIdentifier(String path) {
+    public static Identifier newMCPatcherIdentifierNS(String ns,String path) {
         path = path.replaceFirst("^/+", "");
         Identifier fallback = null;
         for (String folder : FabricMcPatcher.CHECK_FOLDERS) {
             try {
-                fallback = Identifier.ofVanilla(folder+path);
+                fallback = Identifier.of(ns,folder+path);
             }
             catch (InvalidIdentifierException ignored) {
-                fallback = Identifier.ofVanilla(folder+path.toLowerCase());//fallback, for some old assets (damageBoost, ...)
+                fallback = Identifier.of(ns,folder+path.toLowerCase());//fallback, for some old assets (damageBoost, ...)
             }
             Optional<Resource> testRes =  MinecraftClient.getInstance().getResourceManager().getResource(fallback);
             if(testRes.isEmpty())
@@ -210,6 +210,9 @@ public class TexturePackAPI {
         }
         return fallback;
         //return new Identifier(MCPATCHER_SUBDIR + path.replaceFirst("^/+", ""));
+    }
+    public static Identifier newMCPatcherIdentifier(String path) {
+        return newMCPatcherIdentifierNS("minecraft",path);
     }
     public static Identifier newMCPatcherIdentifier(String v1Path, String v2Path) {
         return newMCPatcherIdentifier(select(v1Path, v2Path));
