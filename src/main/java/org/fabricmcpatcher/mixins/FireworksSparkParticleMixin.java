@@ -24,7 +24,9 @@ public class FireworksSparkParticleMixin {
         }
 
         @Shadow
-        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {}
+        public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+        }
+
 
         @Override
         public ParticleTextureSheet getType() {

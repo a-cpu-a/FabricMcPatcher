@@ -15,10 +15,8 @@ import org.fabricmcpatcher.utils.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
@@ -76,7 +74,7 @@ public class SkyRenderer {
         }
     }
 
-    public static boolean renderAll(float partialTick) {
+    public static boolean renderAll(VertexConsumerProvider.Immediate entityVertexConsumers, float partialTick) {
         ClientWorld world = MinecraftClient.getInstance().world;
         float rot = world.getSkyAngle(partialTick);
 
@@ -98,9 +96,9 @@ public class SkyRenderer {
             SkyRendering sky = MinecraftClient.getInstance().worldRenderer.skyRendering;
 
             SkyRenderer.sunTex = setupCelestialObject(Identifier.ofVanilla("textures/environment/sun.png"));
-            sky.renderSun(alpha,Tessellator.getInstance(),matrices);
+            sky.renderSun(alpha,entityVertexConsumers,matrices);
             SkyRenderer.moonTex = setupCelestialObject(Identifier.ofVanilla("textures/environment/moon_phases.png"));
-            sky.renderMoon(phase,alpha,Tessellator.getInstance(),matrices);
+            sky.renderMoon(phase,alpha,entityVertexConsumers,matrices);
 
             if (starBrightness > 0.0F) {
                 sky.renderStars(RenderSystem.getShaderFog(), starBrightness, matrices);

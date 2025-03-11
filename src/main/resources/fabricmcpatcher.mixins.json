@@ -31,6 +31,7 @@
     "SkyRenderingMixin",
     "SpriteTexturedVertexConsumerMixin",
     "WorldRendererMixin",
+    "cit.ArmorFeatureRendererMixin",
     "cit.BannerBlockEntityRendererMixin",
     "cit.BedBlockEntityRendererMixin",
     "cit.BufferBuilderStorageMixin",

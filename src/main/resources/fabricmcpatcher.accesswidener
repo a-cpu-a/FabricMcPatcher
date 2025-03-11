@@ -2,8 +2,8 @@ accessWidener v2 named
 
 accessible field net/minecraft/client/render/WorldRenderer skyRendering Lnet/minecraft/client/render/SkyRendering;
 
-accessible method net/minecraft/client/render/SkyRendering renderSun (FLnet/minecraft/client/render/Tessellator;Lnet/minecraft/client/util/math/MatrixStack;)V
-accessible method net/minecraft/client/render/SkyRendering renderMoon (IFLnet/minecraft/client/render/Tessellator;Lnet/minecraft/client/util/math/MatrixStack;)V
+accessible method net/minecraft/client/render/SkyRendering renderSun (FLnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/util/math/MatrixStack;)V
+accessible method net/minecraft/client/render/SkyRendering renderMoon (IFLnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/util/math/MatrixStack;)V
 accessible method net/minecraft/client/render/SkyRendering renderStars (Lnet/minecraft/client/render/Fog;FLnet/minecraft/client/util/math/MatrixStack;)V
 
 accessible method net/minecraft/world/biome/Biome getTemperature (Lnet/minecraft/util/math/BlockPos;I)F

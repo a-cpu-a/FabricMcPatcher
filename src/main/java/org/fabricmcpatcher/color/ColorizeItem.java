@@ -3,7 +3,6 @@ package org.fabricmcpatcher.color;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.MapColor;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import org.fabricmcpatcher.accessors.IOriginalColor;

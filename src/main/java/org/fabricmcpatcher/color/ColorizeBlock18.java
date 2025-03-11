@@ -246,7 +246,7 @@ public class ColorizeBlock18 {
     }
 
     public boolean useColormap(BakedQuad face) {
-        return useCM && (face.hasColor() || (colorMap != null && ctm.getBlock() != grassBlock && ctm.getBlock() != mycelBlock));
+        return useCM && (face.hasTint() || (colorMap != null && ctm.getBlock() != grassBlock && ctm.getBlock() != mycelBlock));
     }
 
     public int colorMultiplier(int color) {

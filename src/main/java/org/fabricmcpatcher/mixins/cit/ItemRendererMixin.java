@@ -9,9 +9,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.ColorHelper;
 import org.fabricmcpatcher.cit.CITUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,9 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
 
-    @Shadow protected abstract void renderBakedItemModel(BakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, VertexConsumer vertices);
-
-    @WrapOperation(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;Z)V",
+    @WrapOperation(method = "renderItem(Lnet/minecraft/item/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II[ILnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/client/render/RenderLayer;Lnet/minecraft/client/render/item/ItemRenderState$Glint;)V",
             at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasGlint()Z",ordinal = 1))
     boolean renderItemQuadsHasGlint(ItemStack instance, Operation<Boolean> original) {
 
@@ -32,20 +30,15 @@ public abstract class ItemRendererMixin {
         }
         return original.call(instance);
     }
-    @WrapOperation(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;Z)V",
+    @WrapOperation(method = "renderItem(Lnet/minecraft/item/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II[ILnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/client/render/RenderLayer;Lnet/minecraft/client/render/item/ItemRenderState$Glint;)V",
             at= @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/item/ItemRenderer;renderBakedItemModel(Lnet/minecraft/client/render/model/BakedModel;Lnet/minecraft/item/ItemStack;IILnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;)V"
+                    target = "Lnet/minecraft/client/render/item/ItemRenderer;renderBakedItemModel(Lnet/minecraft/client/render/model/BakedModel;[IIILnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;)V"
             ))
-    void renderItemRenderBakedItemModel(ItemRenderer instance, BakedModel model, ItemStack stack, int light,
-                                        int overlay, MatrixStack matrices, VertexConsumer vertices, Operation<Void> original,
-                                        ItemStack itemStack,
-                                        ModelTransformationMode modelTransformationMode,
-                                        MatrixStack matrixStack,
-                                        VertexConsumerProvider vertexConsumers) {
+    private static void renderItemRenderBakedItemModel(BakedModel model, int[] tints, int light, int overlay, MatrixStack matrices, VertexConsumer vertexConsumer, Operation<Void> original) {
 
 
 
-        original.call(instance,model,stack,light,overlay,matrices,vertices);
+        original.call(model,tints,light,overlay,matrices,vertexConsumer);
 
         if (!CITUtils.isArmorEnchantmentActive())
             return;

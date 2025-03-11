@@ -55,6 +55,7 @@ public class ColorizeWorld {
     public static float[] netherFogColor;
     public static float[] endFogColor;
     public static int endSkyColor;
+    public static int endSkyColorPrev;
 
     static {
         try {
@@ -73,6 +74,7 @@ public class ColorizeWorld {
         netherFogColor = new float[]{0.2f, 0.03f, 0.03f};
         endFogColor = new float[]{0.075f, 0.075f, 0.094f};
         endSkyColor = -14145496;
+        endSkyColorPrev = endSkyColor;
 
         cloudType = CLOUDS_DEFAULT;
 
@@ -104,7 +106,7 @@ public class ColorizeWorld {
 
         loadFloatColor("fog.nether", netherFogColor);
         loadFloatColor("fog.end", endFogColor);
-        endSkyColor = loadIntColor("sky.end", endSkyColor);
+        endSkyColor = loadIntColor("sky.end", -14145496);
     }
 
     static IColorMap wrapFogMap(IColorMap map) {
