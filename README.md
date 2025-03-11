@@ -1,7 +1,7 @@
 # Currently work in progress,  
 
->Completed:  
-Skyboxes, sun / moon  
+### Completed:  
+>Skyboxes, sun / moon  
 Lightmaps  
 Fog, sky colormaps  
 cit.properties  
@@ -20,15 +20,15 @@ Spawn egg colors
 Cloud type override  
 redstone, Mycelium particle colormaps
 
->Currently working on:  
-Renderpass config  
+### Currently working on:  
+>Renderpass config  
 Block colormaps  
 CTM  
 Enchantment CIT on compasses, clocks, ...  
 Texture CIT  
 
->Eventually  
-text.code.(16-31) to edit text shadow colors  
+### Eventually  
+>text.code.(16-31) to edit text shadow colors  
 Map fog.nether, fog.end to (fixed) nether & end biome fog colormaps  
 Optionally allow uppercase assets  
 Fix block entity enchantment overlays (vanilla bug)  
