@@ -1,8 +1,13 @@
 package org.fabricmcpatcher.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.item.ItemStack;
 
 public class FabricMcPatcherClient implements ClientModInitializer {
+
+
+    public static ItemStack itemRendererCurrentStack;
+
     @Override
     public void onInitializeClient() {
         try {

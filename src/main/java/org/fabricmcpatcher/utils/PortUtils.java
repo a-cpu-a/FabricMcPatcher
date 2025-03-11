@@ -232,7 +232,7 @@ public class PortUtils {
 
     public static BakedQuad ModelFaceSprite(BakedQuad face, Sprite altSprite) {
         Direction dir = BakedQuadFactory.decodeDirection(face.getVertexData());
-        return new BakedQuad(setVertexDataSprite(face.getVertexData().clone(),altSprite,dir),face.getColorIndex(), dir, altSprite,face.hasShade(),face.getLightEmission() );
+        return new BakedQuad(setVertexDataSprite(face.getVertexData().clone(),altSprite,dir),face.getTintIndex(), dir, altSprite,face.hasShade(),face.getLightEmission() );
     }
 
     public static int getRenderType(Block block) {
@@ -362,7 +362,7 @@ public class PortUtils {
         i = i %6;
 
         Direction dir=Direction.NORTH;
-        if(i >=2) dir=Direction.fromHorizontal(i -2);
+        if(i >=2) dir=Direction.fromHorizontalQuarterTurns(i -2);
         return dir;
     }
 

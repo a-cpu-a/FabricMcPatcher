@@ -187,8 +187,8 @@ public class ColorizeItem {
     }
 
     public static void setupSpawnerEgg(List<String> entityNames, EntityType<?> entityID, int defaultShellColor, int defaultSpotColor) {
-        logger.config("egg.shell.%s=%06x", entityNames.getFirst(), defaultShellColor);
-        logger.config("egg.spots.%s=%06x", entityNames.getFirst(), defaultSpotColor);
+        logger.config("egg.shell.%s=???", entityNames.getFirst());
+        logger.config("egg.spots.%s=???", entityNames.getFirst());
         entityNamesByID.put(entityID, entityNames);
     }
 

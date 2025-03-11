@@ -9,14 +9,14 @@ Map colors
 Potion colors  
 Text color overrides  
 Under (water / lava) fog colormaps  
-Multilayer enchantment CIT on armor, normal items, shields and tridents  
+(kinda broken) Multilayer enchantment CIT on armor, normal items, shields and tridents
 sky.end color, portal and water particle colors  
 Dripping lava, xp orb colormaps  
 Sheep, collar, dye colors  
 Armor color: dye crafting  
 Default armor color
 Firework blending modes (particle.properties)  
-Spawn egg colors  
+(broken) Spawn egg colors  
 Cloud type override  
 redstone, Mycelium particle colormaps
 
@@ -26,6 +26,7 @@ Block colormaps
 CTM  
 Enchantment CIT on compasses, clocks, ...  
 Texture CIT  
+Random mob textures
 
 ### Eventually  
 >text.code.(16-31) to edit text shadow colors  

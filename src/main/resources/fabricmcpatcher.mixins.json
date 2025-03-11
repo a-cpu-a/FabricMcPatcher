@@ -36,7 +36,7 @@
     "cit.BasicItemModelMixin",
     "cit.BedBlockEntityRendererMixin",
     "cit.BufferBuilderStorageMixin",
-    "cit.BuiltinModelItemRendererMixin",
+    //"cit.BuiltinModelItemRendererMixin",
     "cit.EquipmentRendererMixin",
     "cit.ItemRendererMixin",
     "cit.LayerRenderStateMixin",

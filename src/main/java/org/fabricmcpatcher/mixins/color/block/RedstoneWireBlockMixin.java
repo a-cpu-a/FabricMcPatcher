@@ -18,10 +18,10 @@ public class RedstoneWireBlockMixin {
         if(ColorizeBlock.computeRedstoneWireColor(powerLevel))
             cir.setReturnValue(ColorizeBlock.colorizeRedstoneWire(powerLevel));
     }
-    @Redirect(method = "randomDisplayTick",at= @At(value = "FIELD",opcode = Opcodes.GETSTATIC,args = "array=get", target = "Lnet/minecraft/block/RedstoneWireBlock;COLORS:[Lorg/joml/Vector3f;"))
-    private Vector3f randomDisplayTickColorsGetElement(Vector3f[] arr,int powerLevel) {
+    @Redirect(method = "randomDisplayTick",at= @At(value = "FIELD",opcode = Opcodes.GETSTATIC,args = "array=get", target = "Lnet/minecraft/block/RedstoneWireBlock;COLORS:[I"))
+    private int randomDisplayTickColorsGetElement(int[] arr, int powerLevel) {
         if(ColorizeBlock.computeRedstoneWireColor(powerLevel))
-            return new Vector3f(Colorizer.setColor[0],Colorizer.setColor[1],Colorizer.setColor[2]);
+            return Colorizer.getColorInt();
         return arr[powerLevel];
     }
 }

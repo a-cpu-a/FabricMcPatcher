@@ -352,7 +352,7 @@ public class TexturePackAPI {
     }
 
     protected int getTextureIfLoaded_Impl(Identifier resource) {
-        AbstractTexture texture = MinecraftClient.getInstance().getTextureManager().getOrDefault(resource,null);
+        AbstractTexture texture = MinecraftClient.getInstance().getTextureManager().getTexture(resource);
         return texture==null?-1:texture.getGlId();
     }
 

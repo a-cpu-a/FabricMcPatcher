@@ -22,9 +22,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(BuiltinModelItemRenderer.class)
+//@Mixin(BuiltinModelItemRenderer.class)
 public class BuiltinModelItemRendererMixin {
-
+/*
     @Shadow private TridentEntityModel modelTrident;
 
     @Shadow private ShieldEntityModel modelShield;
@@ -76,7 +76,7 @@ public class BuiltinModelItemRendererMixin {
         }
         Identifier tex = trident ?TridentEntityModel.TEXTURE:ModelBaker.SHIELD_BASE.getAtlasId();
         CitMixinUtils.renderGlintLayers(realInst, instance, matrixStack, vertexConsumer, light, overlay, original, vertexConsumers, trident ? modelTrident.getLayer(tex) : modelShield.getLayer(tex));
-    }
+    }*/
 
 
 }

@@ -23,7 +23,7 @@ import java.util.List;
 public class SpawnEggItemMixin {
 
     @Shadow @Final private EntityType<?> type;
-
+/*
     @WrapOperation(method = "getColor",at= @At(value = "FIELD", target = "Lnet/minecraft/item/SpawnEggItem;primaryColor:I"))
     int getColorPrimaryColor(SpawnEggItem instance, Operation<Integer> original) {
 
@@ -33,10 +33,10 @@ public class SpawnEggItemMixin {
     int getColorSecondaryColor(SpawnEggItem instance, Operation<Integer> original) {
 
         return ColorizeItem.colorizeSpawnerEgg(original.call(instance),type,1);
-    }
+    }*/ //TODO
 
     @Inject(method = "<init>",at=@At(value = "RETURN"))
-    void initReturn(EntityType<?> type, int primaryColor, int secondaryColor, Item.Settings settings, CallbackInfo ci) {
+    void initReturn(EntityType type, Item.Settings settings, CallbackInfo ci) {
         List<String> names = new ArrayList<>();
         Identifier id = Registries.ENTITY_TYPE.getId(type);
         names.add(id.toString());
@@ -49,6 +49,6 @@ public class SpawnEggItemMixin {
         if(EntityIdUtils.type2Name.containsKey(type))
             names.add(EntityIdUtils.type2Name.get(type));
 
-        ColorizeItem.setupSpawnerEgg(names,type,primaryColor,secondaryColor);
+        ColorizeItem.setupSpawnerEgg(names,type,0,0);//rip, no defaults into log
     }
 }

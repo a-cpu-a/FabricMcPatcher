@@ -17,3 +17,5 @@ mutable field net/minecraft/block/MapColor color I
 accessible field net/minecraft/block/MapColor COLORS [Lnet/minecraft/block/MapColor;
 
 accessible field net/minecraft/client/render/LightmapTextureManager flickerIntensity F
+
+accessible method net/minecraft/client/render/model/BakedQuadFactory decodeDirection ([I)Lnet/minecraft/util/math/Direction;

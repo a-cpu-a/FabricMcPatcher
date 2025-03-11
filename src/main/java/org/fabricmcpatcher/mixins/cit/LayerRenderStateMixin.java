@@ -3,6 +3,7 @@ package org.fabricmcpatcher.mixins.cit;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.item.ItemStack;
 import org.fabricmcpatcher.accessors.IStackHolder;
+import org.fabricmcpatcher.client.FabricMcPatcherClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,8 +29,8 @@ public class LayerRenderStateMixin implements IStackHolder {
     void clearHead(CallbackInfo ci) {
         stack=null;
     }
-    @Inject(method = "render",at = @At(value = "HEAD"))
-    void clearHead(CallbackInfo ci) {
-        stack=null;
+    @Inject(method = "render",at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V"))
+    void renderPreRender(CallbackInfo ci) {
+        FabricMcPatcherClient.itemRendererCurrentStack = stack;
     }
 }

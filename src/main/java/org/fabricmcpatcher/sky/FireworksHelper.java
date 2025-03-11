@@ -1,7 +1,10 @@
 package org.fabricmcpatcher.sky;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.render.*;
+import net.minecraft.util.TriState;
 import org.fabricmcpatcher.resource.BlendMethod;
 import org.fabricmcpatcher.resource.PropertiesFile;
 import org.fabricmcpatcher.utils.Config;
@@ -11,17 +14,47 @@ import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.particle.FireworksSparkParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 
+import static net.minecraft.client.render.RenderPhase.*;
+
 public class FireworksHelper {
 
-    //TODO: replace layer of the vanilla particles
-    public static final ParticleTextureSheet PARTICLE_SHEET_FIREWORKS = new ParticleTextureSheet() {
+    public static final RenderPhase.Transparency FIREWORK_TRANSPARENCY = new RenderPhase.Transparency(
+            "translucent_transparency",
+            () -> {
+                RenderSystem.enableBlend();
+                setParticleBlendMethod(true);
+            },
+            () -> {
+                RenderSystem.disableBlend();
+                RenderSystem.defaultBlendFunc();
+            }
+    );
+
+    public static final RenderLayer FIREWORKS_RT = RenderLayer. of(
+            "fireworks",
+            VertexFormats.POSITION_TEXTURE_COLOR_LIGHT,
+            VertexFormat.DrawMode.QUADS,
+            1536,
+            false,
+            false,
+            RenderLayer.MultiPhaseParameters.builder()
+                    .program(PARTICLE)
+                    .texture(new RenderPhase.Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, TriState.FALSE, false))
+                    .transparency(FIREWORK_TRANSPARENCY)
+                    .target(PARTICLES_TARGET)
+                    .lightmap(ENABLE_LIGHTMAP)
+                    .writeMaskState(ALL_MASK)
+                    .build(false)
+    );
+
+    public static final ParticleTextureSheet PARTICLE_SHEET_FIREWORKS = new ParticleTextureSheet(
+            "PARTICLE_SHEET_FIREWORKS",FIREWORKS_RT
+    );
+
+    /*{
         @Override
         public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
             RenderSystem.depthMask(true);
@@ -35,7 +68,7 @@ public class FireworksHelper {
         public String toString() {
             return "PARTICLE_SHEET_FIREWORKS";
         }
-    };
+    };*/
 
 
     private static final ParticleTextureSheet LIT_LAYER = ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;//3;
@@ -70,8 +103,8 @@ public class FireworksHelper {
         return PARTICLE_SHEET_FIREWORKS;
     }
 
-    private static void setParticleBlendMethod(ParticleTextureSheet layer, boolean setDefault) {
-        if (enable && layer == EXTRA_LAYER && blendMethod != null) {
+    private static void setParticleBlendMethod(boolean setDefault) {
+        if (enable  && blendMethod != null) {
             blendMethod.applyBlending();
         } else if (setDefault) {
             RenderSystem.defaultBlendFunc();
